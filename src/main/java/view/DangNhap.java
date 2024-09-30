@@ -28,6 +28,7 @@ public class DangNhap {
     }
 	public static void print() {
 		// TODO Auto-generated constructor stub
-		System.out.println(menu_Cotroller.getDataKhachHang());
+//		System.out.println(menu_Cotroller.getDataKhachHang());
+//		System.out.println(menu_Cotroller.getGiamGia("KH1234567"));
 	}
 }
