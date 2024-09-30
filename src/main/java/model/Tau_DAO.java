@@ -41,7 +41,7 @@ public class Tau_DAO {
     }
 	
 	// Thêm thông tin tàu
-    public void themTau(Tau tau) throws SQLException {
+    public boolean themTau(Tau tau) throws SQLException {
         String sql = "INSERT INTO Tau (maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         
         try (Connection conn = ConnectDB.getConnection();
@@ -57,12 +57,15 @@ public class Tau_DAO {
             stmt.setString(8, tau.getTrangThai().name());
             stmt.setString(9, tau.getGhiChu());
             
-            stmt.executeUpdate();
-        }
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
     }
 
     // Cập nhật thông tin tàu
-    public void capNhapTau(Tau tau) throws SQLException {
+    public boolean capNhapTau(Tau tau) throws SQLException {
         String sql = "UPDATE Tau SET tenTau = ?, soToa = ?, namSanXuat = ?, nhaSanXuat = ?, tocDoTB = ?, tocDoToiDa = ?, trangThai = ?, ghiChu = ? WHERE maTau = ?";
         
         try (Connection conn = ConnectDB.getConnection();
@@ -78,12 +81,15 @@ public class Tau_DAO {
             stmt.setString(8, tau.getGhiChu());
             stmt.setString(9, tau.getMaTau());
             
-            stmt.executeUpdate();
-        }
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
     }
     
     //Cập nhập trạng thái tàu
-    public void capNhapTTTau(String maTau) throws SQLException {
+    public boolean capNhapTTTau(String maTau) throws SQLException {
         String sql = "UPDATE Tau SET trangThai = ? WHERE maTau = ?";
 
         try (Connection conn = ConnectDB.getConnection();
@@ -92,8 +98,11 @@ public class Tau_DAO {
             stmt.setString(1, TrangThaiChuyenTau.DUNG_HOAT_DONG.name());
             stmt.setString(2, maTau);
 
-            stmt.executeUpdate();
-        }
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
     }
 
     // Lấy thông tin tàu theo mã tàu

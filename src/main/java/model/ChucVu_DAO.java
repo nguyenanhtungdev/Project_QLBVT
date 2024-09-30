@@ -35,7 +35,7 @@ public class ChucVu_DAO {
         return dsChucVu;
     }
 	
-	public void themChucVu(ChucVu chucVu) {
+	public boolean themChucVu(ChucVu chucVu) {
 	    String sql = "INSERT INTO ChucVu (maChucVu, tenChucVu, ngayNhanChuc) VALUES (?, ?, ?)";
 	    
 	    try (Connection con = ConnectDB.getConnection();
@@ -45,13 +45,14 @@ public class ChucVu_DAO {
 	        stmt.setString(2, chucVu.getTenChucVu());
 	        stmt.setDate(3, Date.valueOf(chucVu.getNgayNhanChuc()));
 	        
-	        stmt.executeUpdate();
+	        return stmt.executeUpdate()>0;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
+	        return false;
 	    }
 	}
 	 
-	public void capNhapChucVu(ChucVu chucVu) {
+	public boolean capNhapChucVu(ChucVu chucVu) {
 	    String sql = "UPDATE ChucVu SET tenChucVu = ?, ngayNhanChuc = ? WHERE maChucVu = ?";
 	    
 	    try (Connection con = ConnectDB.getConnection();
@@ -61,9 +62,10 @@ public class ChucVu_DAO {
 	        stmt.setDate(2, Date.valueOf(chucVu.getNgayNhanChuc()));
 	        stmt.setString(3, chucVu.getMaChucVu());
 	        
-	        stmt.executeUpdate();
+	        return stmt.executeUpdate() > 0;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
+	        return false;
 	    }
 	}
 }

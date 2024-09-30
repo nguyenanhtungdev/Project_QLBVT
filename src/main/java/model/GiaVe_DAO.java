@@ -37,7 +37,7 @@ public class GiaVe_DAO {
         
         return dsGiaVe;
     }
-	public void themGiaVe(GiaVe giaVe) {
+	public boolean themGiaVe(GiaVe giaVe) {
 	    String sql = "INSERT INTO GiaVe (maGiaVe, giaVe, tiLeTangGia, ngayCapNhap, ghiChu) VALUES (?, ?, ?, ?, ?)";
 
 	    try (Connection con = ConnectDB.getConnection();
@@ -49,13 +49,14 @@ public class GiaVe_DAO {
 	        stmt.setTimestamp(4, Timestamp.valueOf(giaVe.getNgayCapNhap()));
 	        stmt.setString(5, giaVe.getGhiChu());
 
-	        stmt.executeUpdate();
+	        return stmt.executeUpdate() > 0;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
+	        return false;
 	    }
 	}
 	
-	public void capNhapGiaVe(GiaVe giaVe) {
+	public boolean capNhapGiaVe(GiaVe giaVe) {
 	    String sql = "UPDATE GiaVe SET giaVe = ?, tiLeTangGia = ?, ngayCapNhap = ?, ghiChu = ? WHERE maGiaVe = ?";
 
 	    try (Connection con = ConnectDB.getConnection();
@@ -67,9 +68,10 @@ public class GiaVe_DAO {
 	        stmt.setString(4, giaVe.getGhiChu());
 	        stmt.setString(5, giaVe.getMaGiaVe());
 
-	        stmt.executeUpdate();
+	        return stmt.executeUpdate() > 0;
 	    } catch (SQLException e) {
 	        e.printStackTrace();
+	        return false;
 	    }
 	}
 }
