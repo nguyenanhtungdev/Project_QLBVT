@@ -16,9 +16,9 @@ public class KhuyenMai {
 		return maKhuyenMai;
 	}
 
-	private void setMaKhuyenMai(String maKhuyenMai) throws Exception {
+	private void setMaKhuyenMai(String maKhuyenMai) {
 		if (!maKhuyenMai.matches("^KM\\d{4}$")) {
-			throw new Exception("Mã khuyến mãi phải bắt đầu bằng KM và theo sau là bốn ký số ngẫu nhiên (KMXXXX)");
+			throw new IllegalArgumentException("Mã khuyến mãi phải bắt đầu bằng KM và theo sau là bốn ký số ngẫu nhiên (KMXXXX)");
 		}
 
 		this.maKhuyenMai = maKhuyenMai;
@@ -28,9 +28,9 @@ public class KhuyenMai {
 		return tenKhuyenMai;
 	}
 
-	public void setTenKhuyenMai(String tenKhuyenMai) throws Exception {
+	public void setTenKhuyenMai(String tenKhuyenMai) {
 		if (tenKhuyenMai.isBlank()) {
-			throw new Exception("Tên khuyến mãi không được để trống");
+			throw new IllegalArgumentException("Tên khuyến mãi không được để trống");
 		}
 
 		this.tenKhuyenMai = tenKhuyenMai;
@@ -40,9 +40,9 @@ public class KhuyenMai {
 		return noiDungKhuyenMai;
 	}
 
-	public void setNoiDungKhuyenMai(String noiDungKhuyenMai) throws Exception {
+	public void setNoiDungKhuyenMai(String noiDungKhuyenMai) {
 		if (noiDungKhuyenMai.isBlank()) {
-			throw new Exception("Nội dung khuyến mãi không được để trống");
+			throw new IllegalArgumentException("Nội dung khuyến mãi không được để trống");
 		}
 
 		this.noiDungKhuyenMai = noiDungKhuyenMai;
@@ -52,9 +52,9 @@ public class KhuyenMai {
 		return soLuongToiDa;
 	}
 
-	public void setSoLuongToiDa(int soLuongToiDa) throws Exception {
+	public void setSoLuongToiDa(int soLuongToiDa) {
 		if (soLuongToiDa < 0) {
-			throw new Exception("Số lượng tối đa không được là số âm");
+			throw new IllegalArgumentException("Số lượng tối đa không được là số âm");
 		}
 
 		this.soLuongToiDa = soLuongToiDa;
@@ -64,9 +64,9 @@ public class KhuyenMai {
 		return hanSuDungKhuyenMai;
 	}
 
-	public void setHanSuDungKhuyenMai(LocalDateTime hanSuDungKhuyenMai) throws Exception {
+	public void setHanSuDungKhuyenMai(LocalDateTime hanSuDungKhuyenMai) {
 		if (!hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
-			throw new Exception("Hạn sử dụng khuyến mãi phải sau thời gian hiện tại");
+			throw new IllegalArgumentException("Hạn sử dụng khuyến mãi phải sau thời gian hiện tại");
 		}
 
 		this.hanSuDungKhuyenMai = hanSuDungKhuyenMai;
@@ -84,12 +84,12 @@ public class KhuyenMai {
 
 	}
 
-	public KhuyenMai(String maKhuyenMai) throws Exception {
+	public KhuyenMai(String maKhuyenMai) {
 		setMaKhuyenMai(maKhuyenMai);
 	}
 
 	public KhuyenMai(String maKhuyenMai, String tenKhuyenMai, String noiDungKhuyenMai, int soLuongToiDa,
-			LocalDateTime hanSuDungKhuyenMai, TinhTrangKhuyenMai tinhTrangKhuyenMai) throws Exception {
+			LocalDateTime hanSuDungKhuyenMai, TinhTrangKhuyenMai tinhTrangKhuyenMai) {
 		setMaKhuyenMai(maKhuyenMai);
 		setTenKhuyenMai(tenKhuyenMai);
 		setNoiDungKhuyenMai(noiDungKhuyenMai);

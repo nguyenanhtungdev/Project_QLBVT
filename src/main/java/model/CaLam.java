@@ -15,9 +15,9 @@ public class CaLam {
 		return maCa;
 	}
 
-	private void setMaCa(String maCa) throws Exception {
+	private void setMaCa(String maCa) {
 		if (!maCa.matches("^CA\\d{2}$")) {
-			throw new Exception("Mã ca phải bắt đầu bằng CA và theo sau là hai ký số ngẫu nhiên (CAXX)");
+			throw new IllegalArgumentException("Mã ca phải bắt đầu bằng CA và theo sau là hai ký số ngẫu nhiên (CAXX)");
 		}
 
 		this.maCa = maCa;
@@ -27,9 +27,9 @@ public class CaLam {
 		return tenCa;
 	}
 
-	public void setTenCa(String tenCa) throws Exception {
+	public void setTenCa(String tenCa) {
 		if (!tenCa.matches("^(?:SA|TR|TO|KH).+$")) {
-			throw new Exception(
+			throw new IllegalArgumentException(
 					"Tên ca phải bắt đầu bằng một trong các tiền tố “SA”, “TR”, “TO”, “KH”, theo sau đó là các ký tự chữ hoặc số bất kỳ");
 		}
 
@@ -40,9 +40,9 @@ public class CaLam {
 		return thoiGianBatDau;
 	}
 
-	public void setThoiGianBatDau(LocalTime thoiGianBatDau) throws Exception {
+	public void setThoiGianBatDau(LocalTime thoiGianBatDau) {
 		if (thoiGianBatDau.isAfter(thoiGianKetThuc)) {
-			throw new Exception("Thời gian bắt đầu phải trước thời gian kết thúc");
+			throw new IllegalArgumentException("Thời gian bắt đầu phải trước thời gian kết thúc");
 		}
 
 		this.thoiGianBatDau = thoiGianBatDau;
@@ -52,9 +52,9 @@ public class CaLam {
 		return thoiGianKetThuc;
 	}
 
-	public void setThoiGianKetThuc(LocalTime thoiGianKetThuc) throws Exception {
+	public void setThoiGianKetThuc(LocalTime thoiGianKetThuc) {
 		if (thoiGianKetThuc.isBefore(thoiGianBatDau)) {
-			throw new Exception("Thời gian kết thúc phải trước thời gian bắt đầu");
+			throw new IllegalArgumentException("Thời gian kết thúc phải trước thời gian bắt đầu");
 		}
 
 		this.thoiGianKetThuc = thoiGianKetThuc;
@@ -72,11 +72,11 @@ public class CaLam {
 
 	}
 
-	public CaLam(String maCa) throws Exception {
+	public CaLam(String maCa) {
 		setMaCa(maCa);
 	}
 
-	public CaLam(String maCa, String tenCa, LocalTime thoiGianBatDau, LocalTime thoiGianKetThuc, String ghiChu) throws Exception {
+	public CaLam(String maCa, String tenCa, LocalTime thoiGianBatDau, LocalTime thoiGianKetThuc, String ghiChu) {
 		setMaCa(maCa);
 		setTenCa(tenCa);
 		this.thoiGianBatDau = thoiGianBatDau;
@@ -104,5 +104,5 @@ public class CaLam {
 		return "CaLam {maCa: " + maCa + ", tenCa: " + tenCa + ", thoiGianBatDau: " + thoiGianBatDau
 				+ ", thoiGianKetThuc: " + thoiGianKetThuc + ", ghiChu: " + ghiChu + "}";
 	}
-	
+
 }

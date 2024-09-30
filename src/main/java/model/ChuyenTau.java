@@ -16,9 +16,10 @@ public class ChuyenTau {
 		return maChuyenTau;
 	}
 
-	private void setMaChuyenTau(String maChuyenTau) throws Exception {
+	private void setMaChuyenTau(String maChuyenTau) {
 		if (!maChuyenTau.matches("^CT\\d{4}$")) {
-			throw new Exception("Mã chuyến tàu bắt đầu bằng CT và theo sau là bốn ký số ngẫu nhiên (CTXXXX)");
+			throw new IllegalArgumentException(
+					"Mã chuyến tàu bắt đầu bằng CT và theo sau là bốn ký số ngẫu nhiên (CTXXXX)");
 		}
 
 		this.maChuyenTau = maChuyenTau;
@@ -28,9 +29,9 @@ public class ChuyenTau {
 		return gaKhoiHanh;
 	}
 
-	public void setGaKhoiHanh(String gaKhoiHanh) throws Exception {
+	public void setGaKhoiHanh(String gaKhoiHanh) {
 		if (gaKhoiHanh.isBlank()) {
-			throw new Exception("Ga khởi hành không được để trống");
+			throw new IllegalArgumentException("Ga khởi hành không được để trống");
 		}
 
 		this.gaKhoiHanh = gaKhoiHanh;
@@ -40,9 +41,9 @@ public class ChuyenTau {
 		return gaDen;
 	}
 
-	public void setGaDen(String gaDen) throws Exception {
+	public void setGaDen(String gaDen) {
 		if (gaDen.isBlank()) {
-			throw new Exception("Ga đến không được để trống");
+			throw new IllegalArgumentException("Ga đến không được để trống");
 		}
 
 		this.gaDen = gaDen;
@@ -52,9 +53,9 @@ public class ChuyenTau {
 		return thoiGianKhoiHanh;
 	}
 
-	public void setThoiGianKhoiHanh(LocalDateTime thoiGianKhoiHanh) throws Exception {
+	public void setThoiGianKhoiHanh(LocalDateTime thoiGianKhoiHanh) {
 		if (thoiGianKhoiHanh.isAfter(thoiGianDuKien)) {
-			throw new Exception("Thời gian khởi hành phải trước thời gian dự kiến");
+			throw new IllegalArgumentException("Thời gian khởi hành phải trước thời gian dự kiến");
 		}
 
 		this.thoiGianKhoiHanh = thoiGianKhoiHanh;
@@ -64,9 +65,9 @@ public class ChuyenTau {
 		return thoiGianDuKien;
 	}
 
-	public void setThoiGianDuKien(LocalDateTime thoiGianDuKien) throws Exception {
+	public void setThoiGianDuKien(LocalDateTime thoiGianDuKien) {
 		if (thoiGianDuKien.isAfter(thoiGianKhoiHanh)) {
-			throw new Exception("Thời gian dự kiến phải sau thời gian khởi hành");
+			throw new IllegalArgumentException("Thời gian dự kiến phải sau thời gian khởi hành");
 		}
 
 		this.thoiGianDuKien = thoiGianDuKien;
@@ -84,12 +85,12 @@ public class ChuyenTau {
 
 	}
 
-	public ChuyenTau(String maChuyenTau) throws Exception {
+	public ChuyenTau(String maChuyenTau) {
 		setMaChuyenTau(maChuyenTau);
 	}
 
 	public ChuyenTau(String maChuyenTau, String gaKhoiHanh, String gaDen, LocalDateTime thoiGianKhoiHanh,
-			LocalDateTime thoiGianDuKien, String ghiChu) throws Exception {
+			LocalDateTime thoiGianDuKien, String ghiChu) {
 		setMaChuyenTau(maChuyenTau);
 		setGaKhoiHanh(gaKhoiHanh);
 		setGaDen(gaDen);
