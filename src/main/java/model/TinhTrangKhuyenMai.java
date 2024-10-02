@@ -3,18 +3,24 @@ package model;
 public enum TinhTrangKhuyenMai {
 	CON(0), HET_SO_LUONG(1), HET_HAN_SU_DUNG(2);
 
-	private int tinhTrang;
+	private int value;
 
-	public int getTinhTrang() {
-		return tinhTrang;
+	public int getValue() {
+		return value;
 	}
 
-	public void setTinhTrang(int tinhTrang) {
-		this.tinhTrang = tinhTrang;
+	private TinhTrangKhuyenMai(int value) {
+		this.value = value;
 	}
 
-	private TinhTrangKhuyenMai(int tinhTrang) {
-		this.tinhTrang = tinhTrang;
+	public static TinhTrangKhuyenMai fromValue(int value) {
+		for (TinhTrangKhuyenMai status : TinhTrangKhuyenMai.values()) {
+			if (status.getValue() == value) {
+				return status;
+			}
+		}
+
+		throw new IllegalArgumentException("Sai giá trị enum TinhTrangKhuyenMai: " + value);
 	}
 
 }
