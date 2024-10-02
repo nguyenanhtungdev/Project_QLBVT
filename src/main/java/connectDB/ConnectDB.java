@@ -5,32 +5,37 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectDB {
-	public static Connection con = null;
-	public static ConnectDB connectDB = new ConnectDB();
-	
+
+	private final String url = "jdbc:sqlserver://localhost:1433;databaseName=QuanLyBanVeTau";
+	private final String user = "sa";
+	private String password;
+
+	public Connection connection;
+	public static ConnectDB connectDB;
+
 	public static ConnectDB getInstance() {
+		if (connectDB == null) {
+			connectDB = new ConnectDB();
+		}
+
 		return connectDB;
 	}
-	//Khoi tao ket noi
-	public void connect() throws SQLException {
-		String url = "jdbc:sqlserver://localhost:1433;databaseName=QuanLyBanVeTau";
-		String user = "sa";
-		String pass = "12345";
-		con = DriverManager.getConnection(url,user,pass);
+
+	public ConnectDB() {
+		password = System.getenv("MSSQL_PASSWORD");
 	}
-	//Goi ket noi
-	public static Connection getConnection() {
-		return con;
+
+	public Connection getConnection() throws SQLException {
+		if (connection == null || connection.isClosed()) {
+			connection = DriverManager.getConnection(url, user, password);
+		}
+
+		return connection;
 	}
-	//Ngat ket noi
-	public void disconnect() {
-		if(con != null) {
-			try {
-				con.close();
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+
+	public void disconnect() throws SQLException {
+		if (connection != null) {
+			connection.close();
 		}
 	}
 }
