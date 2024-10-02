@@ -1,7 +1,6 @@
 package model;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,18 +9,20 @@ import java.util.ArrayList;
 
 import connectDB.ConnectDB;
 
-
 public class KhachHang_DAO {
 
     public ArrayList<KhachHang> getalltbKH() {
         ArrayList<KhachHang> khachHangs = new ArrayList<>();
-		ConnectDB.getInstance();
-		Connection con =  ConnectDB.getConnection();
-        String sql = "SELECT * FROM KhachHang";
-        
-        try{
-             Statement statement = con.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql);
+        Connection con = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+
+        try {
+            ConnectDB.getInstance();
+            con = ConnectDB.getInstance().getConnection();
+            String sql = "SELECT * FROM KhachHang";
+            statement = con.createStatement();
+            resultSet = statement.executeQuery(sql);
             
             while (resultSet.next()) {
                 String maKhachHang = resultSet.getString(1);
@@ -33,7 +34,6 @@ public class KhachHang_DAO {
                 LocalDate ngaySinh = resultSet.getDate(7).toLocalDate();
                 String loaiKHStr = resultSet.getString(8);
                 
-                // Chuyển đổi chuỗi thành enum loaiKH
                 KhachHang.LoaiKhachHang loaiKH = KhachHang.LoaiKhachHang.valueOf(loaiKHStr);           
 
                 KhachHang khachHang = new KhachHang(maKhachHang, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKH);
@@ -42,8 +42,16 @@ public class KhachHang_DAO {
             
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (resultSet != null) resultSet.close();
+                if (statement != null) statement.close();
+                if (con != null) con.close();  // Đóng kết nối sau khi sử dụng
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
-		
+
         return khachHangs;
     }
 }

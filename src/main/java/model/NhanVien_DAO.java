@@ -12,13 +12,16 @@ import connectDB.ConnectDB;
 public class NhanVien_DAO {
     public ArrayList<NhanVien> getalltbNV() {
         ArrayList<NhanVien> nhanViens = new ArrayList<>();
-        ConnectDB.getInstance();
-		Connection con =  ConnectDB.getConnection();
-        String sql = "SELECT * FROM NhanVien";
+        Connection con = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
         
         try {
-             Statement statement = con.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql);
+        	 ConnectDB.getInstance();
+             con = ConnectDB.getInstance().getConnection();
+             String sql = "SELECT * FROM NhanVien";
+             statement = con.createStatement();
+             resultSet = statement.executeQuery(sql);
             
             while (resultSet.next()) {
                 String maNV = resultSet.getString(1);
