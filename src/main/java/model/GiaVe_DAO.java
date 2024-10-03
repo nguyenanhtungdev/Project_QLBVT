@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import connectDB.ConnectDB;
 
 public class GiaVe_DAO {
-	public ArrayList<GiaVe> getalltbKH() {
+	public ArrayList<GiaVe> getAllGiaVe() {
         ArrayList<GiaVe> dsGiaVe = new ArrayList<>();
         String sql = "SELECT * FROM GiaVe";
         

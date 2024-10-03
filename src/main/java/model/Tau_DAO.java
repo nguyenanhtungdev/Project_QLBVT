@@ -89,20 +89,20 @@ public class Tau_DAO {
     }
     
     //Cập nhập trạng thái tàu
-    public boolean capNhapTTTau(String maTau) throws SQLException {
+    public boolean capNhapTTTau(String maTau, TrangThaiChuyenTau trangThaiMoi) throws SQLException {
         String sql = "UPDATE Tau SET trangThai = ? WHERE maTau = ?";
 
         try (Connection conn = ConnectDB.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, TrangThaiChuyenTau.DUNG_HOAT_DONG.name());
+            stmt.setInt(1, trangThaiMoi.getTrangThai());
             stmt.setString(2, maTau);
 
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
-	        e.printStackTrace();
-	        return false;
-	    }
+            e.printStackTrace();
+            return false;
+        }
     }
 
     // Lấy thông tin tàu theo mã tàu
@@ -117,15 +117,15 @@ public class Tau_DAO {
             
             if (resultSet.next()) {
                 return new Tau(
-                    resultSet.getString("maTau"),
-                    resultSet.getString("tenTau"),
-                    resultSet.getInt("soToa"),
-                    resultSet.getDate("namSanXuat").toLocalDate(),
-                    resultSet.getString("nhaSanXuat"),
-                    resultSet.getFloat("tocDoTB"),
-                    resultSet.getFloat("tocDoToiDa"),
-                    TrangThaiChuyenTau.valueOf(resultSet.getString("trangThai")),
-                    resultSet.getString("ghiChu")
+                    resultSet.getString(1),
+                    resultSet.getString(2),
+                    resultSet.getInt(3),
+                    resultSet.getDate(4).toLocalDate(),
+                    resultSet.getString(5),
+                    resultSet.getFloat(6),
+                    resultSet.getFloat(7),
+                    TrangThaiChuyenTau.valueOf(resultSet.getString(8)),
+                    resultSet.getString(9)
                 );
             }
         }

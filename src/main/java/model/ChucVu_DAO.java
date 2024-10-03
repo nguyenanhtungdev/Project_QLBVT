@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import connectDB.ConnectDB;
 
 public class ChucVu_DAO {
-	public ArrayList<ChucVu> getalltbKH() {
+	public ArrayList<ChucVu> getAllChucVu() {
         ArrayList<ChucVu> dsChucVu = new ArrayList<>();
         String sql = "SELECT * FROM ChucVu";
         
