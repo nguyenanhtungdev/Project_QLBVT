@@ -46,6 +46,13 @@
 	    <artifactId>mssql-jdbc</artifactId>
 	    <version>9.2.1.jre8</version>
 	</dependency>
+	<!-- https://mvnrepository.com/artifact/com.formdev/flatlaf-fonts-inter -->
+	<dependency>
+	    <groupId>com.formdev</groupId>
+	    <artifactId>flatlaf-fonts-inter</artifactId>
+	    <version>4.0</version>
+	</dependency>
+
   </dependencies>
 
   <build>
