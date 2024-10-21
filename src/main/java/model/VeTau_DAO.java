@@ -12,9 +12,12 @@ public class VeTau_DAO {
 	public ArrayList<VeTau> getalltbVT() {
 		ArrayList<VeTau> veTaus = new ArrayList<>() ;
 		String sql = "Select * FROM VeTau" ; 
-		 try (Connection con = ConnectDB.getConnection();
-	             Statement statement = con.createStatement();
-	             ResultSet resultSet = statement.executeQuery(sql)) {
+		Connection con;
+		
+		 try {
+			 con = ConnectDB.getInstance().getConnection();
+	         Statement statement = con.createStatement();
+	         ResultSet resultSet = statement.executeQuery(sql);
 			 while(resultSet.next()) {
 				 String maVeTau = resultSet.getString(1) ;
 				 String maVach = resultSet.getString(2) ;

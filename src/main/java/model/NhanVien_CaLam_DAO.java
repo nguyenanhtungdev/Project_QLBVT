@@ -12,10 +12,14 @@ import connectDB.ConnectDB;
 public class NhanVien_CaLam_DAO {
 	public ArrayList<NhanVien_CaLam> getalltbNVCL() {
 		ArrayList<NhanVien_CaLam> nvcls = new ArrayList<>() ;
-		String sql = "Select * FROM NhanVien_CaLam" ; 
-		 try (Connection con = ConnectDB.getConnection();
-	             Statement statement = con.createStatement();
-	             ResultSet resultSet = statement.executeQuery(sql)) {
+		String sql = "Select * FROM NhanVien_CaLam" ;
+		Connection con;
+		
+		 try {
+			 con = ConnectDB.getInstance().getConnection();
+             Statement statement = con.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql);
+	             
 			 while(resultSet.next()) {
 				 LocalDateTime thoiGianNhanCa = resultSet.getTimestamp(1).toLocalDateTime() ;
 				 LocalDateTime thoiGianKetThucCa = resultSet.getTimestamp(2).toLocalDateTime() ;

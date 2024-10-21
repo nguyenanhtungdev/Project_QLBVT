@@ -9,26 +9,32 @@ public class TaiKhoan {
     private String matKhau;
     private boolean trangThai;
     private LocalDateTime ngayTaoTaiKhoan;
+    private NhanVien nhanVien;
 
     // Constructor không tham số
     public TaiKhoan() {
     }
 
     // Constructor với đầy đủ tham số
-    public TaiKhoan(String maTaiKhoan, String tenDangNhap, String matKhau, boolean trangThai, LocalDateTime ngayTaoTaiKhoan) {
-        this.maTaiKhoan = maTaiKhoan;
-        this.tenDangNhap = tenDangNhap;
-        this.matKhau = matKhau;
-        this.trangThai = trangThai;
-        this.ngayTaoTaiKhoan = ngayTaoTaiKhoan;
-    }
+    
 
     // Constructor với mã tài khoản
     public TaiKhoan(String maTaiKhoan) {
         this.maTaiKhoan = maTaiKhoan;
     }
 
-    // Getter và Setter cho các thuộc tính
+    public TaiKhoan(String maTaiKhoan, String tenDangNhap, String matKhau, boolean trangThai,
+			LocalDateTime ngayTaoTaiKhoan, NhanVien nhanVien) {
+		super();
+		this.setMaTaiKhoan(maTaiKhoan);
+		this.setTenDangNhap(tenDangNhap);
+		this.setMatKhau(matKhau);
+		this.setTrangThai(trangThai);
+		this.setNgayTaoTaiKhoan(ngayTaoTaiKhoan);
+		this.nhanVien = nhanVien;
+	}
+
+	// Getter và Setter cho các thuộc tính
     public String getMaTaiKhoan() {
         return maTaiKhoan;
     }
@@ -85,16 +91,13 @@ public class TaiKhoan {
         }
     }
 
+	@Override
+	public String toString() {
+		return "TaiKhoan [maTaiKhoan=" + maTaiKhoan + ", tenDangNhap=" + tenDangNhap + ", matKhau=" + matKhau
+				+ ", trangThai=" + trangThai + ", ngayTaoTaiKhoan=" + ngayTaoTaiKhoan + ", nhanVien=" + nhanVien + "]";
+	}
+
     // Phương thức toString
-    @Override
-    public String toString() {
-        return "TaiKhoan{" +
-                "maTaiKhoan='" + maTaiKhoan + '\'' +
-                ", tenDangNhap='" + tenDangNhap + '\'' +
-                ", matKhau='" + matKhau + '\'' +
-                ", trangThai=" + trangThai +
-                ", ngayTaoTaiKhoan=" + ngayTaoTaiKhoan +
-                '}';
-    }
+    
 }
 

@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -53,5 +54,44 @@ public class KhachHang_DAO {
         }
 
         return khachHangs;
+    }
+    
+    public boolean updateKhachHang(KhachHang khachHang) {
+        Connection con = null;
+        PreparedStatement preparedStatement = null;
+        String sql = "UPDATE KhachHang SET hoTen = ?, soDienThoai = ?, email = ?, gioiTinh = ?, CCCD = ?, ngaySinh = ?, loaiKhachHang = ? WHERE maKhachHang = ?";
+
+        try {
+            ConnectDB.getInstance();
+            con = ConnectDB.getInstance().getConnection();
+            preparedStatement = con.prepareStatement(sql);
+
+            // Thiết lập các giá trị cho câu lệnh SQL
+            preparedStatement.setString(1, khachHang.getHoTen());
+            preparedStatement.setString(2, khachHang.getSoDienThoai());
+            preparedStatement.setString(3, khachHang.getEmail());
+            preparedStatement.setBoolean(4, khachHang.isGioiTinh());
+            preparedStatement.setString(5, khachHang.getCCCD());
+            preparedStatement.setDate(6, java.sql.Date.valueOf(khachHang.getNgaySinh()));
+            preparedStatement.setString(7, khachHang.getLoaiKH().name());
+            preparedStatement.setString(8, khachHang.getMaKhachHang());
+
+            // Thực thi câu lệnh SQL
+            int rowsUpdated = preparedStatement.executeUpdate();
+
+            // Trả về true nếu có hàng được cập nhật
+            return rowsUpdated > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            try {
+                if (preparedStatement != null) preparedStatement.close();
+                if (con != null) con.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

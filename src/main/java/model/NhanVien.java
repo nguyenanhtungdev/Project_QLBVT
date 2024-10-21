@@ -16,10 +16,11 @@ public class NhanVien {
 	private String CCCD;
 	private float heSoLuong;
 	private boolean trangThai;
+	private ChucVu chucVu;
 //	private static Set<String> generatedCodes = new HashSet<>();
 	
 	public NhanVien(String maNV, String hoTenNV, LocalDate ngaySinh, String soDienThoai, String email, String diaChi,
-			boolean gioiTinh, String CCCD, float heSoLuong, boolean trangThai) {
+			boolean gioiTinh, String CCCD, float heSoLuong, boolean trangThai, ChucVu chucVu) {
 		this.setMaNV(maNV); 
 		this.setHoTenNV(hoTenNV);
 		this.setNgaySinh(ngaySinh);
@@ -30,6 +31,7 @@ public class NhanVien {
 		this.setCCCD(CCCD);
 		this.setHeSoLuong(heSoLuong);
 		this.setTrangThai(trangThai);
+		this.chucVu = chucVu;
 	}
 	
 	public NhanVien() {
@@ -44,6 +46,7 @@ public class NhanVien {
 	}
 
 	public void setMaNV(String maNV) {
+		maNV = maNV.trim(); // Nhớ là phải xóa đi cái khoảng trắng
 		if (maNV != null && maNV.matches("^NV\\d{5}$")) {
             this.maNV = maNV;
         } else {
@@ -151,11 +154,20 @@ public class NhanVien {
 	public void setTrangThai(boolean trangThai) {
 		this.trangThai = trangThai;
 	}
+	
+	public ChucVu getChucVu() {
+		return chucVu;
+	}
+
+	public void setChucVu(ChucVu chucVu) {
+		this.chucVu = chucVu;
+	}
 
 	@Override
 	public String toString() {
 		return "NhanVien [maNV=" + maNV + ", hoTenNV=" + hoTenNV + ", ngaySinh=" + ngaySinh + ", soDienThoai="
 				+ soDienThoai + ", email=" + email + ", diaChi=" + diaChi + ", gioiTinh=" + gioiTinh + ", CCCD=" + CCCD
-				+ ", heSoLuong=" + heSoLuong + ", trangThai=" + trangThai + "]";
+				+ ", heSoLuong=" + heSoLuong + ", trangThai=" + trangThai + ", chucVu=" + chucVu + "]";
 	}
+	
 }

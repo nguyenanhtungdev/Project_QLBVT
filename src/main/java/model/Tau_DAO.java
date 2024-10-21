@@ -17,10 +17,12 @@ public class Tau_DAO {
     public List<Tau> getAllTau() throws SQLException {
         List<Tau> dsTau = new ArrayList<>();
         String sql = "SELECT * FROM Tau";
+        Connection con;
         
-        try (Connection conn = ConnectDB.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet resultSet = stmt.executeQuery(sql)) {
+        try {
+        	con = ConnectDB.getInstance().getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet resultSet = stmt.executeQuery(sql);
             
             while (resultSet.next()) {
                 Tau tau = new Tau(
@@ -36,16 +38,19 @@ public class Tau_DAO {
                 );
                 dsTau.add(tau);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        return dsTau;
-    }
 	
+        return dsTau;
+}
 	// Thêm thông tin tàu
     public boolean themTau(Tau tau) throws SQLException {
         String sql = "INSERT INTO Tau (maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection con;
+        try {
+        	con = ConnectDB.getInstance().getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
             
             stmt.setString(1, tau.getMaTau());
             stmt.setString(2, tau.getTenTau());
@@ -67,9 +72,11 @@ public class Tau_DAO {
     // Cập nhật thông tin tàu
     public boolean capNhapTau(Tau tau) throws SQLException {
         String sql = "UPDATE Tau SET tenTau = ?, soToa = ?, namSanXuat = ?, nhaSanXuat = ?, tocDoTB = ?, tocDoToiDa = ?, trangThai = ?, ghiChu = ? WHERE maTau = ?";
+        Connection con;
         
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+        	con = ConnectDB.getInstance().getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
             
             stmt.setString(1, tau.getTenTau());
             stmt.setInt(2, tau.getSoToa());
@@ -91,9 +98,11 @@ public class Tau_DAO {
     //Cập nhập trạng thái tàu
     public boolean capNhapTTTau(String maTau, TrangThaiChuyenTau trangThaiMoi) throws SQLException {
         String sql = "UPDATE Tau SET trangThai = ? WHERE maTau = ?";
-
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        Connection con;
+        
+        try {
+        	con = ConnectDB.getInstance().getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
 
             stmt.setInt(1, trangThaiMoi.getTrangThai());
             stmt.setString(2, maTau);
@@ -108,9 +117,11 @@ public class Tau_DAO {
     // Lấy thông tin tàu theo mã tàu
     public Tau layTTTauTheoMa(String maTau) throws SQLException {
         String sql = "SELECT * FROM Tau WHERE maTau = ?";
+        Connection con;
         
-        try (Connection conn = ConnectDB.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try {
+        	con = ConnectDB.getInstance().getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
             
             stmt.setString(1, maTau);
             ResultSet resultSet = stmt.executeQuery();
@@ -128,9 +139,12 @@ public class Tau_DAO {
                     resultSet.getString(9)
                 );
             }
+            else {
+            	return null;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
         }
-        return null;
-    }
-
-    
+    }    
 }

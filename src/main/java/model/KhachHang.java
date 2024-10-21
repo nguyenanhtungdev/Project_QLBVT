@@ -125,12 +125,13 @@ public class KhachHang {
 	}
 
 	public void setNgaySinh(LocalDate ngaySinh) {
-		if (ngaySinh.isBefore(LocalDate.now())) {
-            this.ngaySinh = ngaySinh;
-        } else {
-            throw new IllegalArgumentException("Ngày sinh không hợp lệ. ");
-        }
+	    if (ngaySinh.isBefore(LocalDate.now()) && Period.between(ngaySinh, LocalDate.now()).getYears() >= 5) {
+	        this.ngaySinh = ngaySinh;
+	    } else {
+	        throw new IllegalArgumentException("Ngày sinh không hợp lệ!");
+	    }
 	}
+
 	
 
 	public LoaiKhachHang getLoaiKH() {

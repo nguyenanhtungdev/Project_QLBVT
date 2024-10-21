@@ -12,9 +12,12 @@ public class ToaTau_DAO {
 	public ArrayList<ToaTau> getalltbTT() {
 		ArrayList<ToaTau> toaTaus = new ArrayList<>() ;
 		String sql = "Select * FROM ToaTau" ; 
-		 try (Connection con = ConnectDB.getConnection();
-	             Statement statement = con.createStatement();
-	             ResultSet resultSet = statement.executeQuery(sql)) {
+		Connection con;
+		
+		 try {
+			 con = ConnectDB.getInstance().getConnection();
+             Statement statement = con.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql);
 			 while(resultSet.next()) {
 				 String maToaTau = resultSet.getString(1) ;
 				 String tenToaTau = resultSet.getString(2) ;

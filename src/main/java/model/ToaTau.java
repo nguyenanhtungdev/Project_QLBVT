@@ -84,7 +84,7 @@ public class ToaTau {
 		if(soLuongGhe > 0){
 			this.soLuongGhe = soLuongGhe;
 		}else {
-			throw new IllegalArgumentException("Số lượng ghế không hợp lệ ")
+			throw new IllegalArgumentException("Số lượng ghế không hợp lệ ");
 		}
 	}
 	

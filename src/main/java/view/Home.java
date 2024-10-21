@@ -11,8 +11,8 @@ import javax.swing.SwingConstants;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
 
-import orther.ColorConstants;
-import orther.TextFont;
+import other.ColorConstants;
+import other.TextFont;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;

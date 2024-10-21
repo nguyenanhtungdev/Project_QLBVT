@@ -3,7 +3,23 @@ package view;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.GridLayout;
-<<<<<<< HEAD
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.KeyStroke;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.border.EmptyBorder;
+
+import controller.BanVe_Controller;
+import controller.DangNhap_Controller;
+import other.ColorConstants;
+import other.RoundButton;
+import other.RoundField;
+import other.RoundPassField;
+import other.Shortcut;
+import other.TextFont;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,67 +28,50 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
-import controller.Menu_Controller;
-import orther.ColorConstants;
-import orther.RoundButton;
-import orther.RoundField;
-import orther.RoundPassField;
-import orther.TextFont;
+import other.ColorConstants;
+import other.RoundButton;
+import other.RoundField;
+import other.RoundPassField;
+import other.TextFont;
 
-=======
-
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.EmptyBorder;
-
-import orther.ColorConstants;
-import orther.RoundButton;
-import orther.RoundField;
-import orther.RoundPassField;
-import orther.TextFont;
-
->>>>>>> 507ce983e646719aee9e6fdc8d22dbc7436ca473
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
+import javax.swing.InputMap;
 
 public class DangNhap extends JFrame {
 
 	private static final long serialVersionUID = 1L;
     private JPanel contentPane;
-    private JTextField txt_passWord;
-    private RoundButton btn_DangNhap;
+    private RoundPassField txt_passWord;
     private JTextField txt_userName;
-    private JLabel lblMtKhu;
-    private JLabel lbl_DangNhap;
+    private RoundButton btn_DangNhap;
     private JLabel image;
-
+	private JCheckBox checkbox_hienMK;
+    
     /**
      * Launch the application.
      */
     public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-			DangNhap dn = new DangNhap();
-			dn.setVisible(true);
-		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
-<<<<<<< HEAD
-				| UnsupportedLookAndFeelException e) {  
-=======
-				| UnsupportedLookAndFeelException e) {
->>>>>>> 507ce983e646719aee9e6fdc8d22dbc7436ca473
+			DangNhap_Controller controller = new DangNhap_Controller();
+		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException| UnsupportedLookAndFeelException e) {  
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace();  
 		}
 	}
 
@@ -114,49 +113,18 @@ public class DangNhap extends JFrame {
         txt_passWord.setBorder(new EmptyBorder(0, 10, 0, 0));
         txt_passWord.setFont(TextFont.FONT_2);
         txt_passWord.setBounds(73, 301, 271, 37);
+        txt_passWord.setColumns(20); 
         panel_Right.add(txt_passWord);
-        txt_passWord.setColumns(20);
-
+        
         // Replace JButton with RoundButton
-        btn_DangNhap = new RoundButton("Đăng Nhập");
-        btn_DangNhap.addMouseListener(new MouseAdapter() {
-        	@Override
-        	public void mouseEntered(MouseEvent e) {
-<<<<<<< HEAD
-        		btn_DangNhap.setBackground(ColorConstants.HOVER_COLOR);
-=======
-        		btn_DangNhap.setBackground(ColorConstants.SECONDARY_COLOR);
->>>>>>> 507ce983e646719aee9e6fdc8d22dbc7436ca473
-        	}
-        	@Override
-        	public void mouseExited(MouseEvent e) {
-        		btn_DangNhap.setBackground(ColorConstants.PRIMARY_COLOR);
-        	}
-        });
-        btn_DangNhap.addActionListener(new ActionListener() {
-        	public void actionPerformed(ActionEvent e) {
-<<<<<<< HEAD
-                // Tạo model, view và controller
-                Home view = new Home();
-                Menu_Controller controller = new Menu_Controller(view);
-
-                // Hiển thị view
-                view.setVisible(true);
-=======
->>>>>>> 507ce983e646719aee9e6fdc8d22dbc7436ca473
-        	}
-        });
-        btn_DangNhap.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        btn_DangNhap.setBorder(null);
+        btn_DangNhap = new RoundButton("Đăng Nhập", ColorConstants.PRIMARY_COLOR, ColorConstants.HOVER_COLOR);
         btn_DangNhap.setBounds(73, 383, 271, 47);
+        
         panel_Right.add(btn_DangNhap);
 
         // Tạo custom JTextField với icon
-<<<<<<< HEAD
         txt_userName = new RoundField(15);
-=======
-        txt_userName =new RoundField(15);
->>>>>>> 507ce983e646719aee9e6fdc8d22dbc7436ca473
+
         txt_userName.setBorder(new EmptyBorder(0, 10, 0, 0));
         txt_userName.setFont(TextFont.FONT_2);
         txt_userName.setColumns(20);
@@ -169,26 +137,34 @@ public class DangNhap extends JFrame {
         lblNewLabel.setForeground(ColorConstants.PRIMARY_COLOR);
         panel_Right.add(lblNewLabel);
         
-        lblMtKhu = new JLabel("Mật khẩu");
+        JLabel lblMtKhu = new JLabel("Mật khẩu");
         lblMtKhu.setFont(TextFont.FONT_2BOLD);
         lblMtKhu.setBounds(73, 274, 119, 27);
         lblMtKhu.setForeground(ColorConstants.PRIMARY_COLOR);
         panel_Right.add(lblMtKhu);
         
-        lbl_DangNhap = new JLabel("ĐĂNG NHẬP");
+        JLabel lbl_DangNhap = new JLabel("ĐĂNG NHẬP");
         lbl_DangNhap.setHorizontalAlignment(SwingConstants.CENTER);
         lbl_DangNhap.setFont(TextFont.FONT_1);
         lbl_DangNhap.setBounds(113, 131, 188, 47);
         lbl_DangNhap.setForeground(ColorConstants.PRIMARY_COLOR);
         panel_Right.add(lbl_DangNhap);
         
-<<<<<<< HEAD
-        JCheckBox checkbox_hienMK = new JCheckBox("Hiện mật khẩu"); 
-=======
-        JCheckBox checkbox_hienMK = new JCheckBox("Hiện mật khẩu");
->>>>>>> 507ce983e646719aee9e6fdc8d22dbc7436ca473
+        checkbox_hienMK = new JCheckBox("Hiện mật khẩu"); 
+        checkbox_hienMK.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Nếu checkbox được chọn, hiển thị mật khẩu dưới dạng văn bản
+                if (checkbox_hienMK.isSelected()) {
+                    txt_passWord.setEchoChar((char) 0); 
+                } else {
+                    txt_passWord.setEchoChar('*'); 
+                }
+            }
+        });
+
         checkbox_hienMK.setHorizontalAlignment(SwingConstants.CENTER);
-        checkbox_hienMK.setBorder(null); // Xóa đường viền
+        checkbox_hienMK.setBorder(null); 
         checkbox_hienMK.setBackground(Color.WHITE);
         checkbox_hienMK.setFont(TextFont.FONT_3);
         checkbox_hienMK.setBounds(232, 349, 112, 23);
@@ -196,8 +172,22 @@ public class DangNhap extends JFrame {
         panel_Right.add(checkbox_hienMK);
         
 		enterJtextField();
+        // Gọi phương thức để thêm phím tắt
+        Shortcut.addShowPasswordShortcut(txt_passWord, checkbox_hienMK , "showPassword");
     }
     private void enterJtextField() {
     	txt_userName.addActionListener(e -> SwingUtilities.invokeLater(() -> txt_passWord.requestFocus()));
     }
+
+	public RoundPassField getTxt_passWord() {
+		return txt_passWord;
+	}
+
+	public JTextField getTxt_userName() {
+		return txt_userName;
+	}
+	public RoundButton getBtn_DangNhap() {
+		return btn_DangNhap;
+	}
+	
 }

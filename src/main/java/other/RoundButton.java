@@ -23,11 +23,10 @@ public class RoundButton extends JButton implements MouseListener{
     private Font font;
     private String url_Icon;
 
-    public RoundButton(String label, Color color_1, Color color_2 ,Font font, String url_Icon) {
+    public RoundButton(String label, Color color_1, Color color_2 , String url_Icon) {
         super(label);
         this.color_1 = color_1;
         this.color_2 = color_2;
-        this.font = font;
         this.url_Icon = url_Icon;
         
         init();
@@ -40,11 +39,10 @@ public class RoundButton extends JButton implements MouseListener{
     
     
 
-    public RoundButton(String label, Color color_1, Color color_2, Font font) {
+    public RoundButton(String label, Color color_1, Color color_2) {
         super(label);
 		this.color_1 = color_1;
 		this.color_2 = color_2;
-		this.font = font;
 		init();
 	}
 
@@ -56,6 +54,7 @@ public class RoundButton extends JButton implements MouseListener{
         khoangCachIcon = 15;
         iconWidth = 32;
         iconHeight = 32;
+        font = new Font("Arial", Font.BOLD, 16);
         
         setOpaque(false);
         setContentAreaFilled(false);
@@ -153,5 +152,21 @@ public class RoundButton extends JButton implements MouseListener{
 
 	public void setIconHeight(int iconHeight) {
 		this.iconHeight = iconHeight;
+	}
+
+	public Font getFont() {
+		return font;
+	}
+	
+	public void setFont(Font font) {
+		this.font = font;
+	}
+
+	public String getUrl_Icon() {
+		return url_Icon;
+	}
+	
+	public void setUrl_Icon(String url_Icon) {
+		this.url_Icon = url_Icon;
 	}
 }

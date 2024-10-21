@@ -38,7 +38,7 @@ public class QLHoaDon_view extends JFrame {
 
 		setContentPane(contentPane);
 		
-		lblNewLabel = new JLabel("Đây là trang quản lý hóa đơn");
+		lblNewLabel = new JLabel("Đây là trang quản lý hóa đơn"); 
 		lblNewLabel.setFont(new Font("Arial", Font.BOLD, 18));
 		contentPane.add(lblNewLabel);
 	}
