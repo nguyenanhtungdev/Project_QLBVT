@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-target/
-=======
 target/
 .settings/
 pom.xml.tag
@@ -19,7 +16,3 @@ buildNumber.properties
 .project
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
-<<<<<<< HEAD
->>>>>>> 581f398d01a9ded30179dd14c492abd88d16fdee
-=======
->>>>>>> 507ce983e646719aee9e6fdc8d22dbc7436ca473
