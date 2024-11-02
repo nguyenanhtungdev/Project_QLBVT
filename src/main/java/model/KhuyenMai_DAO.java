@@ -10,11 +10,22 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.naming.OperationNotSupportedException;
+
 import connectDB.ConnectDB;
 
-public class KhuyenMai_DAO {
+public class KhuyenMai_DAO implements DataAccessObject<KhuyenMai> {
 
-	public List<KhuyenMai> getAllKhuyenMai() throws SQLException {
+	private static KhuyenMai_DAO instance;
+
+	public static KhuyenMai_DAO getInstance() {
+		if (instance == null)
+			instance = new KhuyenMai_DAO();
+		return instance;
+	}
+
+	@Override
+	public List<KhuyenMai> findAll() throws SQLException {
 		String sql = "SELECT * FROM KhuyenMai";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -38,12 +49,13 @@ public class KhuyenMai_DAO {
 		return list;
 	}
 
-	public KhuyenMai getKhuyenMai(String maKhuyenMai) throws SQLException {
+	@Override
+	public KhuyenMai findById(String id) throws SQLException {
 		String sql = "SELECT * FROM KhuyenMai WHERE maKhuyenMai = ?";
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(0, maKhuyenMai);
+		statement.setString(0, id);
 		ResultSet resultSet = statement.executeQuery();
 
 		if (resultSet.next()) {
@@ -54,43 +66,50 @@ public class KhuyenMai_DAO {
 			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
 					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
 
-			return new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
+			return new KhuyenMai(id, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
 					tinhTrangKhuyenMai);
 		}
 
 		return null;
 	}
 
-	public boolean themKhuyenMai(KhuyenMai khuyenMai) throws SQLException {
+	@Override
+	public boolean save(KhuyenMai entity) throws SQLException {
 		String sql = "INSERT INTO KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai, tinhTrangKhuyenMai) VALUES(?, ?, ?, ?, ?, ?)";
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(0, khuyenMai.getMaKhuyenMai());
-		statement.setNString(1, khuyenMai.getTenKhuyenMai());
-		statement.setNString(2, khuyenMai.getNoiDungKhuyenMai());
-		statement.setInt(3, khuyenMai.getSoLuongToiDa());
-		statement.setTimestamp(4, Timestamp.valueOf(khuyenMai.getHanSuDungKhuyenMai()));
-		statement.setInt(5, khuyenMai.getTinhTrangKhuyenMai().getValue());
+		statement.setString(0, entity.getMaKhuyenMai());
+		statement.setNString(1, entity.getTenKhuyenMai());
+		statement.setNString(2, entity.getNoiDungKhuyenMai());
+		statement.setInt(3, entity.getSoLuongToiDa());
+		statement.setTimestamp(4, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
+		statement.setInt(5, entity.getTinhTrangKhuyenMai().getValue());
 		int count = statement.executeUpdate();
 
 		return count > 0;
 	}
 
-	public boolean capNhatKhuyenMai(String maKhuyenMai, KhuyenMai khuyenMai) throws SQLException {
+	@Override
+	public boolean update(KhuyenMai entity) throws SQLException {
 		String sql = "UPDATE KhuyenMai SET tenKhuyenMai = ?, noiDungKhuyenMai = ?, soLuongToiDa = ?, hanSuDungKhuyenMai = ?, tinhTrangKhuyenMai = ? WHERE maCa = ?";
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setNString(0, khuyenMai.getTenKhuyenMai());
-		statement.setNString(1, khuyenMai.getNoiDungKhuyenMai());
-		statement.setInt(2, khuyenMai.getSoLuongToiDa());
-		statement.setTimestamp(3, Timestamp.valueOf(khuyenMai.getHanSuDungKhuyenMai()));
-		statement.setInt(4, khuyenMai.getTinhTrangKhuyenMai().getValue());
-		statement.setString(5, maKhuyenMai);
+		statement.setNString(0, entity.getTenKhuyenMai());
+		statement.setNString(1, entity.getNoiDungKhuyenMai());
+		statement.setInt(2, entity.getSoLuongToiDa());
+		statement.setTimestamp(3, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
+		statement.setInt(4, entity.getTinhTrangKhuyenMai().getValue());
+		statement.setString(5, entity.getMaKhuyenMai());
 		int count = statement.executeUpdate();
 
 		return count == 0;
+	}
+
+	@Override
+	public boolean delete(KhuyenMai entity) throws OperationNotSupportedException {
+		throw new OperationNotSupportedException();
 	}
 
 }
