@@ -11,6 +11,8 @@ public class ChuyenTau {
 	private LocalDateTime thoiGianKhoiHanh;
 	private LocalDateTime thoiGianDuKien;
 	private String ghiChu;
+	private GiaVe giaVe;
+	private Tau tau;
 
 	public String getMaChuyenTau() {
 		return maChuyenTau;
@@ -81,6 +83,22 @@ public class ChuyenTau {
 		this.ghiChu = ghiChu;
 	}
 
+	public GiaVe getGiaVe() {
+		return giaVe;
+	}
+
+	public void setGiaVe(GiaVe giaVe) {
+		this.giaVe = giaVe;
+	}
+
+	public Tau getTau() {
+		return tau;
+	}
+
+	public void setTau(Tau tau) {
+		this.tau = tau;
+	}
+
 	public ChuyenTau() {
 
 	}
@@ -90,13 +108,15 @@ public class ChuyenTau {
 	}
 
 	public ChuyenTau(String maChuyenTau, String gaKhoiHanh, String gaDen, LocalDateTime thoiGianKhoiHanh,
-			LocalDateTime thoiGianDuKien, String ghiChu) {
+			LocalDateTime thoiGianDuKien, String ghiChu, GiaVe giaVe, Tau tau) {
 		setMaChuyenTau(maChuyenTau);
 		setGaKhoiHanh(gaKhoiHanh);
 		setGaDen(gaDen);
 		this.thoiGianKhoiHanh = thoiGianKhoiHanh;
 		setThoiGianDuKien(thoiGianDuKien);
 		setGhiChu(ghiChu);
+		this.giaVe = giaVe;
+		this.tau = tau;
 	}
 
 	@Override
@@ -118,7 +138,7 @@ public class ChuyenTau {
 	public String toString() {
 		return "ChuyenTau {maChuyenTau: " + maChuyenTau + ", gaKhoiHanh: " + gaKhoiHanh + ", gaDen: " + gaDen
 				+ ", thoiGianKhoiHanh: " + thoiGianKhoiHanh + ", thoiGianDuKien: " + thoiGianDuKien + ", ghiChu: "
-				+ ghiChu + "}";
+				+ ghiChu + ", giaVe: " + giaVe + ", tau: " + tau + "}";
 	}
 
 }
