@@ -3,98 +3,101 @@ package model;
 import java.time.LocalDateTime;
 
 public class TaiKhoan {
-    // Khai báo thuộc tính
-    private String maTaiKhoan;
-    private String tenDangNhap;
-    private String matKhau;
-    private boolean trangThai;
-    private LocalDateTime ngayTaoTaiKhoan;
+	// Khai báo thuộc tính
+	private String maTaiKhoan;
+	private String tenDangNhap;
+	private String matKhau;
+	private boolean trangThai;
+	private LocalDateTime ngayTaoTaiKhoan;
+	private NhanVien nhanVien;
 
-    // Constructor không tham số
-    public TaiKhoan() {
-    }
+	// Constructor không tham số
+	public TaiKhoan() {
+	}
 
-    // Constructor với đầy đủ tham số
-    public TaiKhoan(String maTaiKhoan, String tenDangNhap, String matKhau, boolean trangThai, LocalDateTime ngayTaoTaiKhoan) {
-        this.maTaiKhoan = maTaiKhoan;
-        this.tenDangNhap = tenDangNhap;
-        this.matKhau = matKhau;
-        this.trangThai = trangThai;
-        this.ngayTaoTaiKhoan = ngayTaoTaiKhoan;
-    }
+	// Constructor với đầy đủ tham số
 
-    // Constructor với mã tài khoản
-    public TaiKhoan(String maTaiKhoan) {
-        this.maTaiKhoan = maTaiKhoan;
-    }
+	// Constructor với mã tài khoản
+	public TaiKhoan(String maTaiKhoan) {
+		this.maTaiKhoan = maTaiKhoan;
+	}
 
-    // Getter và Setter cho các thuộc tính
-    public String getMaTaiKhoan() {
-        return maTaiKhoan;
-    }
+	public TaiKhoan(String maTaiKhoan, String tenDangNhap, String matKhau, boolean trangThai,
+			LocalDateTime ngayTaoTaiKhoan, NhanVien nhanVien) {
+		super();
+		this.setMaTaiKhoan(maTaiKhoan);
+		this.setTenDangNhap(tenDangNhap);
+		this.setMatKhau(matKhau);
+		this.setTrangThai(trangThai);
+		this.setNgayTaoTaiKhoan(ngayTaoTaiKhoan);
+		this.nhanVien = nhanVien;
+	}
 
-    public void setMaTaiKhoan(String maTaiKhoan) {
-        this.maTaiKhoan = maTaiKhoan;
-    }
+	// Getter và Setter cho các thuộc tính
+	public String getMaTaiKhoan() {
+		return maTaiKhoan;
+	}
 
-    public String getTenDangNhap() {
-        return tenDangNhap;
-    }
+	public void setMaTaiKhoan(String maTaiKhoan) {
+		this.maTaiKhoan = maTaiKhoan;
+	}
 
-    public void setTenDangNhap(String tenDangNhap) {
-        // Ràng buộc: phải là duy nhất, không được rỗng, và không chứa ký tự đặc biệt trừ "_" hoặc "."
-        if (tenDangNhap != null && !tenDangNhap.trim().isEmpty() && tenDangNhap.matches("^[a-zA-Z0-9._]+$")) {
-            this.tenDangNhap = tenDangNhap;
-        } else {
-            throw new IllegalArgumentException("Tên đăng nhập không hợp lệ!");
-        }
-    }
+	public String getTenDangNhap() {
+		return tenDangNhap;
+	}
 
-    public String getMatKhau() {
-        return matKhau;
-    }
+	public void setTenDangNhap(String tenDangNhap) {
+		// Ràng buộc: phải là duy nhất, không được rỗng, và không chứa ký tự đặc biệt
+		// trừ "_" hoặc "."
+		if (tenDangNhap != null && !tenDangNhap.trim().isEmpty() && tenDangNhap.matches("^[a-zA-Z0-9._]+$")) {
+			this.tenDangNhap = tenDangNhap;
+		} else {
+			throw new IllegalArgumentException("Tên đăng nhập không hợp lệ!");
+		}
+	}
 
-    public void setMatKhau(String matKhau) {
-        // Ràng buộc: tối thiểu 8 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt
-        if (matKhau != null && matKhau.length() >= 8 && 
-            matKhau.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$")) {
-            this.matKhau = matKhau;
-        } else {
-            throw new IllegalArgumentException("Mật khẩu không hợp lệ!");
-        }
-    }
+	public String getMatKhau() {
+		return matKhau;
+	}
 
-    public boolean isTrangThai() {
-        return trangThai;
-    }
+	public void setMatKhau(String matKhau) {
+		// Ràng buộc: tối thiểu 8 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số
+		// và 1 ký tự đặc biệt
+		if (matKhau != null && matKhau.length() >= 8
+				&& matKhau.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$")) {
+			this.matKhau = matKhau;
+		} else {
+			throw new IllegalArgumentException("Mật khẩu không hợp lệ!");
+		}
+	}
 
-    public void setTrangThai(boolean trangThai) {
-        this.trangThai = trangThai;
-    }
+	public boolean isTrangThai() {
+		return trangThai;
+	}
 
-    public LocalDateTime getNgayTaoTaiKhoan() {
-        return ngayTaoTaiKhoan;
-    }
+	public void setTrangThai(boolean trangThai) {
+		this.trangThai = trangThai;
+	}
 
-    public void setNgayTaoTaiKhoan(LocalDateTime ngayTaoTaiKhoan) {
-        // Ràng buộc: phải là ngày hiện tại hoặc trước đó, không được ở tương lai
-        if (ngayTaoTaiKhoan.isBefore(LocalDateTime.now()) || ngayTaoTaiKhoan.isEqual(LocalDateTime.now())) {
-            this.ngayTaoTaiKhoan = ngayTaoTaiKhoan;
-        } else {
-            throw new IllegalArgumentException("Ngày tạo tài khoản không hợp lệ!");
-        }
-    }
+	public LocalDateTime getNgayTaoTaiKhoan() {
+		return ngayTaoTaiKhoan;
+	}
 
-    // Phương thức toString
-    @Override
-    public String toString() {
-        return "TaiKhoan{" +
-                "maTaiKhoan='" + maTaiKhoan + '\'' +
-                ", tenDangNhap='" + tenDangNhap + '\'' +
-                ", matKhau='" + matKhau + '\'' +
-                ", trangThai=" + trangThai +
-                ", ngayTaoTaiKhoan=" + ngayTaoTaiKhoan +
-                '}';
-    }
+	public void setNgayTaoTaiKhoan(LocalDateTime ngayTaoTaiKhoan) {
+		// Ràng buộc: phải là ngày hiện tại hoặc trước đó, không được ở tương lai
+		if (ngayTaoTaiKhoan.isBefore(LocalDateTime.now()) || ngayTaoTaiKhoan.isEqual(LocalDateTime.now())) {
+			this.ngayTaoTaiKhoan = ngayTaoTaiKhoan;
+		} else {
+			throw new IllegalArgumentException("Ngày tạo tài khoản không hợp lệ!");
+		}
+	}
+
+	@Override
+	public String toString() {
+		return "TaiKhoan [maTaiKhoan=" + maTaiKhoan + ", tenDangNhap=" + tenDangNhap + ", matKhau=" + matKhau
+				+ ", trangThai=" + trangThai + ", ngayTaoTaiKhoan=" + ngayTaoTaiKhoan + ", nhanVien=" + nhanVien + "]";
+	}
+
+	// Phương thức toString
+
 }
-
