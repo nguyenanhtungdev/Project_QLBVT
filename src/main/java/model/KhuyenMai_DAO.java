@@ -36,9 +36,12 @@ public class KhuyenMai_DAO implements DataAccessObject<KhuyenMai> {
 		while (resultSet.next()) {
 			String maKhuyenMai = resultSet.getString("maKhuyenMai");
 			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
-			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai").isBlank() ? "NULL"
+					: resultSet.getNString("noiDungKhuyenMai");
 			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") == null
+					? LocalDateTime.of(2100, 12, 31, 23, 59)
+					: resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
 			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
 					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
 
