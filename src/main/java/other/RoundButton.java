@@ -13,97 +13,92 @@ import java.awt.event.MouseListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-public class RoundButton extends JButton implements MouseListener{
-    
-    private static final long serialVersionUID = 1L;
-    private Color color_1, color_2;
-    private int heSoBoGoc;
-    private int khoangCachIcon;
-    private int iconWidth, iconHeight;
-    private Font font;
-    private String url_Icon;
+public class RoundButton extends JButton implements MouseListener {
 
-    public RoundButton(String label, Color color_1, Color color_2 , String url_Icon) {
-        super(label);
-        this.color_1 = color_1;
-        this.color_2 = color_2;
-        this.url_Icon = url_Icon;
-        
-        init();
-        
-        ImageIcon icon = new ImageIcon(getClass().getResource(url_Icon));
-        Image scaledImage = icon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
-        setIcon(new ImageIcon(scaledImage)); 
-        setIconTextGap(khoangCachIcon);
-    }
-    
-    
+	private static final long serialVersionUID = 1L;
+	private Color color_1, color_2;
+	private int heSoBoGoc;
+	private int khoangCachIcon;
+	private int iconWidth, iconHeight;
+	private Font font;
+	private String url_Icon;
 
-    public RoundButton(String label, Color color_1, Color color_2) {
-        super(label);
-		this.color_1 = color_1;
-		this.color_2 = color_2;
+	public RoundButton(String label, String url_Icon) {
+		super(label);
+		this.url_Icon = url_Icon;
+		init();
+
+		ImageIcon icon = new ImageIcon(getClass().getResource(url_Icon));
+		Image scaledImage = icon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
+		setIcon(new ImageIcon(scaledImage));
+		setIconTextGap(khoangCachIcon);
+	}
+
+	public RoundButton(String label) {
+		super(label);
 		init();
 	}
 
-
-
 	public void init() {
-    	//Khởi tạo
-        heSoBoGoc = 20;
-        khoangCachIcon = 15;
-        iconWidth = 32;
-        iconHeight = 32;
-        font = new Font("Arial", Font.BOLD, 16);
-        
-        setOpaque(false);
-        setContentAreaFilled(false);
-        setFocusPainted(false);
-        setFont(font);
-        setForeground(Color.WHITE);
-        setBackground(this.color_1);
-        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        setBorder(null);
-        addMouseListener(this);
-    }
-    
-    @Override
-    protected void paintComponent(Graphics g) {
-        Graphics2D g2 = (Graphics2D) g.create();
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setColor(getBackground());
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), heSoBoGoc, heSoBoGoc); 
-        super.paintComponent(g);
-    }
+		// Khởi tạo
+		heSoBoGoc = 20;
+		khoangCachIcon = 15;
+		iconWidth = 32;
+		iconHeight = 32;
+		font = new Font("Arial", Font.BOLD, 18);
+		color_1 = ColorConstants.PRIMARY_COLOR;
+		color_2 = ColorConstants.HOVER_COLOR;
+
+		setOpaque(false);
+		setContentAreaFilled(false);
+		setFocusPainted(false);
+		setFont(font);
+		setForeground(Color.WHITE);
+		setBackground(this.color_1);
+		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		setBorder(null);
+		addMouseListener(this);
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(getBackground());
+		g2.fillRoundRect(0, 0, getWidth(), getHeight(), heSoBoGoc, heSoBoGoc);
+		super.paintComponent(g);
+	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setBackground(color_2);
+		repaint();
 	}
 
 	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		setBackground(color_1);
+		repaint();
 	}
 
 	public Color getColor_1() {
@@ -112,6 +107,8 @@ public class RoundButton extends JButton implements MouseListener{
 
 	public void setColor_1(Color color_1) {
 		this.color_1 = color_1;
+		setBackground(this.color_1);
+		repaint();
 	}
 
 	public Color getColor_2() {
@@ -120,6 +117,7 @@ public class RoundButton extends JButton implements MouseListener{
 
 	public void setColor_2(Color color_2) {
 		this.color_2 = color_2;
+		repaint();
 	}
 
 	public int getHeSoBoGoc() {
@@ -135,29 +133,25 @@ public class RoundButton extends JButton implements MouseListener{
 	}
 
 	public void setKhoangCachIcon(int khoangCachIcon) {
-		this.khoangCachIcon = khoangCachIcon;
+		setIconTextGap(khoangCachIcon);
 	}
 
-	public int getIconWidth() {
-		return iconWidth;
-	}
+	public void setIconSize(int width, int height) {
+		this.iconWidth = width;
+		this.iconHeight = height;
 
-	public void setIconWidth(int iconWidth) {
-		this.iconWidth = iconWidth;
-	}
-
-	public int getIconHeight() {
-		return iconHeight;
-	}
-
-	public void setIconHeight(int iconHeight) {
-		this.iconHeight = iconHeight;
+		// Load lại icon với kích thước mới
+		if (url_Icon != null) {
+			ImageIcon icon = new ImageIcon(getClass().getResource(url_Icon));
+			Image scaledImage = icon.getImage().getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
+			setIcon(new ImageIcon(scaledImage));
+		}
 	}
 
 	public Font getFont() {
 		return font;
 	}
-	
+
 	public void setFont(Font font) {
 		this.font = font;
 	}
@@ -165,7 +159,7 @@ public class RoundButton extends JButton implements MouseListener{
 	public String getUrl_Icon() {
 		return url_Icon;
 	}
-	
+
 	public void setUrl_Icon(String url_Icon) {
 		this.url_Icon = url_Icon;
 	}
