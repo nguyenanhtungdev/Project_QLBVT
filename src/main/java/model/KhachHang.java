@@ -12,30 +12,26 @@ public class KhachHang {
 	private String CCCD;
 	private LocalDate ngaySinh;
 	public LoaiKhachHang loaiKH;
-	
-    public enum LoaiKhachHang {
-        TRE_EM(1.0),          
-        SINH_VIEN(0.05),    
-        HOC_SINH(0.1),      
-        NGUOI_GIA(0.15),    
-        NGUOI_KHUYET_TAT(0.2); 
-        
-        private final double discount;
 
-        // Constructor cho enum
-        LoaiKhachHang(double discount) {
-            this.discount = discount;
-        }
+	public enum LoaiKhachHang {
+		TRE_EM(1.0), SINH_VIEN(0.05), HOC_SINH(0.1), NGUOI_GIA(0.15), NGUOI_KHUYET_TAT(0.2), KHACH_THUONG(0);
 
-        public double getDiscount() {
-            return discount;
-        }
-    }
-	
+		private final double discount;
+
+		// Constructor cho enum
+		LoaiKhachHang(double discount) {
+			this.discount = discount;
+		}
+
+		public double getDiscount() {
+			return discount;
+		}
+	}
+
 	public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String email, boolean gioiTinh, String CCCD,
 			LocalDate ngaySinh, LoaiKhachHang loaiKH) {
 		this.setMaKhachHang(maKhachHang);
-		this.setHoTen(hoTen); 
+		this.setHoTen(hoTen);
 		this.setSoDienThoai(soDienThoai);
 		this.setEmail(email);
 		this.setGioiTinh(gioiTinh);
@@ -51,16 +47,23 @@ public class KhachHang {
 		this.maKhachHang = maKhachHang;
 	}
 
+	public KhachHang(String maKhachHang, String hoTen, String soDienThoai) {
+		super();
+		this.maKhachHang = maKhachHang;
+		this.hoTen = hoTen;
+		this.soDienThoai = soDienThoai;
+	}
+
 	public String getMaKhachHang() {
 		return maKhachHang;
 	}
 
 	public void setMaKhachHang(String maKhachHang) {
 		if (maKhachHang != null && maKhachHang.matches("^KH\\d{7}$")) {
-            this.maKhachHang = maKhachHang;
-        } else {
-            throw new IllegalArgumentException("Mã khách hàng phải có dạng 'NVxxxxxxx', với 'xxxxxxx' là các chữ số.");
-        }
+			this.maKhachHang = maKhachHang;
+		} else {
+			throw new IllegalArgumentException("Mã khách hàng phải có dạng 'NVxxxxxxx', với 'xxxxxxx' là các chữ số.");
+		}
 	}
 
 	public String getHoTen() {
@@ -69,11 +72,11 @@ public class KhachHang {
 
 	public void setHoTen(String hoTen) {
 		if (hoTen != null && hoTen.matches("^[a-zA-Z\\p{L} ]+$")) {
-            this.hoTen = hoTen;
-        } else {
-            throw new IllegalArgumentException("Họ tên khách hàng chỉ được chứa các chữ cái và khoảng trắng.");
-        }
-  
+			this.hoTen = hoTen;
+		} else {
+			throw new IllegalArgumentException("Họ tên khách hàng chỉ được chứa các chữ cái và khoảng trắng.");
+		}
+
 	}
 
 	public String getSoDienThoai() {
@@ -82,10 +85,10 @@ public class KhachHang {
 
 	public void setSoDienThoai(String soDienThoai) {
 		if (soDienThoai != null && soDienThoai.matches("^\\d{10}$")) {
-            this.soDienThoai = soDienThoai;
-        } else {
-            throw new IllegalArgumentException("Độ dài chuỗi phải tuân thủ là 10 ký tự. ");
-        }
+			this.soDienThoai = soDienThoai;
+		} else {
+			throw new IllegalArgumentException("Độ dài chuỗi phải tuân thủ là 10 ký tự. ");
+		}
 	}
 
 	public String getEmail() {
@@ -94,10 +97,10 @@ public class KhachHang {
 
 	public void setEmail(String email) {
 		if (email != null && email.matches("^[a-zA-Z0-9._-]+@gmail.com$")) {
-            this.email = email;
-        } else {
-            throw new IllegalArgumentException("Định dạng email không hợp lệ! ");
-        }
+			this.email = email;
+		} else {
+			throw new IllegalArgumentException("Định dạng email không hợp lệ! ");
+		}
 	}
 
 	public boolean isGioiTinh() {
@@ -114,10 +117,10 @@ public class KhachHang {
 
 	public void setCCCD(String CCCD) {
 		if (CCCD != null && CCCD.matches("^\\d{12}$")) {
-            this.CCCD = CCCD;
-        } else {
-            throw new IllegalArgumentException("Định dạng CCCD không hợp lệ! ");
-        }
+			this.CCCD = CCCD;
+		} else {
+			throw new IllegalArgumentException("Định dạng CCCD không hợp lệ! ");
+		}
 	}
 
 	public LocalDate getNgaySinh() {
@@ -125,14 +128,12 @@ public class KhachHang {
 	}
 
 	public void setNgaySinh(LocalDate ngaySinh) {
-	    if (ngaySinh.isBefore(LocalDate.now()) && Period.between(ngaySinh, LocalDate.now()).getYears() >= 5) {
-	        this.ngaySinh = ngaySinh;
-	    } else {
-	        throw new IllegalArgumentException("Ngày sinh không hợp lệ!");
-	    }
+		if (ngaySinh.isBefore(LocalDate.now()) && Period.between(ngaySinh, LocalDate.now()).getYears() >= 5) {
+			this.ngaySinh = ngaySinh;
+		} else {
+			throw new IllegalArgumentException("Ngày sinh không hợp lệ!");
+		}
 	}
-
-	
 
 	public LoaiKhachHang getLoaiKH() {
 		return loaiKH;
