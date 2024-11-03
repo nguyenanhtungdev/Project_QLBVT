@@ -68,7 +68,7 @@ public class ChuyenTau {
 	}
 
 	public void setThoiGianDuKien(LocalDateTime thoiGianDuKien) {
-		if (thoiGianDuKien.isAfter(thoiGianKhoiHanh)) {
+		if (thoiGianDuKien.isBefore(thoiGianKhoiHanh)) {
 			throw new IllegalArgumentException("Thời gian dự kiến phải sau thời gian khởi hành");
 		}
 

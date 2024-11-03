@@ -1,53 +1,67 @@
 package model;
 
-import java.util.ArrayList;
-
 public class ChiTiet_HoaDon {
-    // Khai báo thuộc tính
-    private int soLuong;
-    private ArrayList<ChiTiet_HoaDon> dsChiTietHD;
 
-    // Constructor không tham số
-    public ChiTiet_HoaDon() {
-        dsChiTietHD = new ArrayList<>();
-    }
+	private int soLuong;
+	private HoaDon hoaDon;
+	private KhuyenMai khuyenMai;
+	private VeTau veTau;
 
-    // Constructor với tham số soLuong
-    public ChiTiet_HoaDon(int soLuong) {
-        setSoLuong(soLuong);
-        dsChiTietHD = new ArrayList<>();
-    }
+	public ChiTiet_HoaDon() {
 
-    // Getter và Setter
-    public int getSoLuong() {
-        return soLuong;
-    }
+	}
 
-    public void setSoLuong(int soLuong) {
-        // Ràng buộc: phải là số nguyên dương lớn hơn 0
-        if (soLuong > 0) {
-            this.soLuong = soLuong;
-        } else {
-            throw new IllegalArgumentException("Số lượng phải là số nguyên dương lớn hơn 0.");
-        }
-    }
+	public ChiTiet_HoaDon(int soLuong, HoaDon hoaDon, KhuyenMai khuyenMai, VeTau veTau) {
+		setSoLuong(soLuong);
+		this.hoaDon = hoaDon;
+		this.khuyenMai = khuyenMai;
+		this.veTau = veTau;
+	}
 
-    public ArrayList<ChiTiet_HoaDon> getDsChiTietHD() {
-        return dsChiTietHD;
-    }
+	public int getSoLuong() {
+		return soLuong;
+	}
 
-    // Phương thức tính thành tiền
-    public float tinhThanhTien(float giaVeHienTai, float tiLeGiamGia) {
-        return giaVeHienTai - giaVeHienTai * (tiLeGiamGia / 100);
-    }
+	public void setSoLuong(int soLuong) {
+		if (soLuong > 0) {
+			this.soLuong = soLuong;
+		} else {
+			throw new IllegalArgumentException("Số lượng phải là số nguyên dương lớn hơn 0.");
+		}
+	}
 
-    // Phương thức toString
-    @Override
-    public String toString() {
-        return "ChiTiet_HoaDon{" +
-                "soLuong=" + soLuong +
-                ", dsChiTietHD=" + dsChiTietHD +
-                '}';
-    }
+	public HoaDon getHoaDon() {
+		return hoaDon;
+	}
+
+	public void setHoaDon(HoaDon hoaDon) {
+		this.hoaDon = hoaDon;
+	}
+
+	public VeTau getVeTau() {
+		return veTau;
+	}
+
+	public void setVeTau(VeTau veTau) {
+		this.veTau = veTau;
+	}
+
+	public KhuyenMai getKhuyenMai() {
+		return khuyenMai;
+	}
+
+	public void setKhuyenMai(KhuyenMai khuyenMai) {
+		this.khuyenMai = khuyenMai;
+	}
+
+	public float tinhThanhTien(float giaVeHienTai, float tiLeGiamGia) {
+		return giaVeHienTai - giaVeHienTai * (tiLeGiamGia / 100);
+	}
+
+	@Override
+	public String toString() {
+		return "ChiTiet_HoaDon {soLuong: " + soLuong + ", hoaDon: " + hoaDon + ", veTau: " + veTau + ", khuyenMai: "
+				+ khuyenMai + "}";
+	}
+
 }
-
