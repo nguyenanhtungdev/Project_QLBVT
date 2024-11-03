@@ -58,7 +58,7 @@ public class KhuyenMai_DAO implements DataAccessObject<KhuyenMai> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(0, id);
+		statement.setString(1, id);
 		ResultSet resultSet = statement.executeQuery();
 
 		if (resultSet.next()) {
@@ -82,12 +82,12 @@ public class KhuyenMai_DAO implements DataAccessObject<KhuyenMai> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(0, entity.getMaKhuyenMai());
-		statement.setNString(1, entity.getTenKhuyenMai());
-		statement.setNString(2, entity.getNoiDungKhuyenMai());
-		statement.setInt(3, entity.getSoLuongToiDa());
-		statement.setTimestamp(4, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
-		statement.setInt(5, entity.getTinhTrangKhuyenMai().getValue());
+		statement.setString(1, entity.getMaKhuyenMai());
+		statement.setNString(2, entity.getTenKhuyenMai());
+		statement.setNString(3, entity.getNoiDungKhuyenMai());
+		statement.setInt(4, entity.getSoLuongToiDa());
+		statement.setTimestamp(5, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
+		statement.setInt(6, entity.getTinhTrangKhuyenMai().getValue());
 		int count = statement.executeUpdate();
 
 		return count > 0;
@@ -99,12 +99,12 @@ public class KhuyenMai_DAO implements DataAccessObject<KhuyenMai> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setNString(0, entity.getTenKhuyenMai());
-		statement.setNString(1, entity.getNoiDungKhuyenMai());
-		statement.setInt(2, entity.getSoLuongToiDa());
-		statement.setTimestamp(3, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
-		statement.setInt(4, entity.getTinhTrangKhuyenMai().getValue());
-		statement.setString(5, entity.getMaKhuyenMai());
+		statement.setNString(1, entity.getTenKhuyenMai());
+		statement.setNString(2, entity.getNoiDungKhuyenMai());
+		statement.setInt(3, entity.getSoLuongToiDa());
+		statement.setTimestamp(4, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
+		statement.setInt(5, entity.getTinhTrangKhuyenMai().getValue());
+		statement.setString(6, entity.getMaKhuyenMai());
 		int count = statement.executeUpdate();
 
 		return count == 0;
