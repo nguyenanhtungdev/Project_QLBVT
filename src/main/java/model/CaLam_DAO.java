@@ -50,7 +50,7 @@ public class CaLam_DAO implements DataAccessObject<CaLam> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(0, id);
+		statement.setString(1, id);
 		ResultSet resultSet = statement.executeQuery();
 
 		if (resultSet.next()) {
@@ -70,11 +70,11 @@ public class CaLam_DAO implements DataAccessObject<CaLam> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(0, entity.getMaCa());
-		statement.setNString(1, entity.getTenCa());
-		statement.setTime(2, Time.valueOf(entity.getThoiGianBatDau()));
-		statement.setTime(3, Time.valueOf(entity.getThoiGianKetThuc()));
-		statement.setNString(4, entity.getGhiChu());
+		statement.setString(1, entity.getMaCa());
+		statement.setNString(2, entity.getTenCa());
+		statement.setTime(3, Time.valueOf(entity.getThoiGianBatDau()));
+		statement.setTime(4, Time.valueOf(entity.getThoiGianKetThuc()));
+		statement.setNString(5, entity.getGhiChu());
 		int count = statement.executeUpdate();
 
 		return count > 0;
@@ -86,11 +86,11 @@ public class CaLam_DAO implements DataAccessObject<CaLam> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setNString(0, entity.getTenCa());
-		statement.setTime(1, Time.valueOf(entity.getThoiGianBatDau()));
-		statement.setTime(2, Time.valueOf(entity.getThoiGianKetThuc()));
-		statement.setNString(3, entity.getGhiChu());
-		statement.setString(4, entity.getMaCa());
+		statement.setNString(1, entity.getTenCa());
+		statement.setTime(2, Time.valueOf(entity.getThoiGianBatDau()));
+		statement.setTime(3, Time.valueOf(entity.getThoiGianKetThuc()));
+		statement.setNString(4, entity.getGhiChu());
+		statement.setString(5, entity.getMaCa());
 		int count = statement.executeUpdate();
 
 		return count == 0;

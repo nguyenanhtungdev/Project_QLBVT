@@ -56,7 +56,7 @@ public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(0, id);
+		statement.setString(1, id);
 		ResultSet resultSet = statement.executeQuery();
 
 		if (resultSet.next()) {
@@ -80,14 +80,14 @@ public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(0, entity.getMaChuyenTau());
-		statement.setNString(1, entity.getGaKhoiHanh());
-		statement.setNString(2, entity.getGaDen());
-		statement.setTimestamp(3, Timestamp.valueOf(entity.getThoiGianKhoiHanh()));
-		statement.setTimestamp(4, Timestamp.valueOf(entity.getThoiGianDuKien()));
-		statement.setNString(5, entity.getGhiChu());
-		statement.setString(6, entity.getGiaVe().getMaGiaVe());
-		statement.setString(7, entity.getTau().getMaTau());
+		statement.setString(1, entity.getMaChuyenTau());
+		statement.setNString(2, entity.getGaKhoiHanh());
+		statement.setNString(3, entity.getGaDen());
+		statement.setTimestamp(4, Timestamp.valueOf(entity.getThoiGianKhoiHanh()));
+		statement.setTimestamp(5, Timestamp.valueOf(entity.getThoiGianDuKien()));
+		statement.setNString(6, entity.getGhiChu());
+		statement.setString(7, entity.getGiaVe().getMaGiaVe());
+		statement.setString(8, entity.getTau().getMaTau());
 		int count = statement.executeUpdate();
 
 		return count > 0;
@@ -99,14 +99,14 @@ public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setNString(0, entity.getGaKhoiHanh());
-		statement.setNString(1, entity.getGaDen());
-		statement.setTimestamp(2, Timestamp.valueOf(entity.getThoiGianKhoiHanh()));
-		statement.setTimestamp(3, Timestamp.valueOf(entity.getThoiGianDuKien()));
-		statement.setNString(4, entity.getGhiChu());
-		statement.setNString(5, entity.getGiaVe().getMaGiaVe());
-		statement.setNString(6, entity.getTau().getMaTau());
-		statement.setString(7, entity.getMaChuyenTau());
+		statement.setNString(1, entity.getGaKhoiHanh());
+		statement.setNString(2, entity.getGaDen());
+		statement.setTimestamp(3, Timestamp.valueOf(entity.getThoiGianKhoiHanh()));
+		statement.setTimestamp(4, Timestamp.valueOf(entity.getThoiGianDuKien()));
+		statement.setNString(5, entity.getGhiChu());
+		statement.setNString(6, entity.getGiaVe().getMaGiaVe());
+		statement.setNString(7, entity.getTau().getMaTau());
+		statement.setString(8, entity.getMaChuyenTau());
 		int count = statement.executeUpdate();
 
 		return count == 0;
