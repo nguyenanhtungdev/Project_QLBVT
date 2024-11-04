@@ -11,7 +11,6 @@ import view.Page;
 import view.QLHoaDon_view;
 import view.QLKhuyenMai_View;
 import view.QLTau_View;
-import view.QLToaTau_View;
 import view.TimKiem_View;
 import view.VeTau_View;
 

@@ -294,11 +294,7 @@ public class HoaDon_DAO {
 			con = ConnectDB.getInstance().getConnection();
 
 			// Truy vấn SQL để lấy thông tin trạm
-<<<<<<< Updated upstream
-			String sql = "SELECT * FROM Tram WHERE maNhaGa = ?";
-=======
 			String sql = "SELECT * FROM ThongTinTram WHERE maNhaGa = ?";
->>>>>>> Stashed changes
 			preparedStatement = con.prepareStatement(sql);
 			preparedStatement.setString(1, maNhaGa);
 			resultSet = preparedStatement.executeQuery();
@@ -344,20 +340,11 @@ public class HoaDon_DAO {
 			ConnectDB.getInstance();
 			con = ConnectDB.getInstance().getConnection();
 
-<<<<<<< Updated upstream
-			// Truy vấn SQL để lấy thông tin khách hàng
-			String sql = "SELECT * FROM KhachHang WHERE maKhachHang = ?";
-=======
 			String sql = "SELECT * FROM KhachHang WHERE maKH = ?";
->>>>>>> Stashed changes
 			preparedStatement = con.prepareStatement(sql);
 			preparedStatement.setString(1, maKH);
 			resultSet = preparedStatement.executeQuery();
 
-<<<<<<< Updated upstream
-			// Nếu tìm thấy kết quả, tạo đối tượng KhachHang
-=======
->>>>>>> Stashed changes
 			if (resultSet.next()) {
 				String hoTen = resultSet.getString("hoTen");
 				String soDienThoai = resultSet.getString("soDienThoai");
@@ -365,16 +352,7 @@ public class HoaDon_DAO {
 				boolean gioiTinh = resultSet.getBoolean("gioiTinh");
 				String CCCD = resultSet.getString("CCCD");
 				LocalDate ngaySinh = resultSet.getDate("ngaySinh").toLocalDate();
-<<<<<<< Updated upstream
-				LoaiKhachHang loaiKH = LoaiKhachHang.valueOf(resultSet.getString("loaiKH").toUpperCase()); // Chuyển đổi
-																											// từ String
-																											// thành
-																											// enum
-
-				// Tạo đối tượng KhachHang
-=======
 				LoaiKhachHang loaiKH = LoaiKhachHang.valueOf(resultSet.getString("loaiKH").toUpperCase());
->>>>>>> Stashed changes
 				khachHang = new KhachHang(maKH, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKH);
 			}
 		} catch (SQLException e) {

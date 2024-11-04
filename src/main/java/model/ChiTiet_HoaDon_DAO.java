@@ -81,11 +81,7 @@ public class ChiTiet_HoaDon_DAO implements DataAccessObject<ChiTiet_HoaDon> {
 		try {
 			ConnectDB.getInstance();
 			con = ConnectDB.getInstance().getConnection();
-<<<<<<< Updated upstream
-			String sql = "SELECT * FROM ChiTiet_HoaDon WHERE maHD = ?";
-=======
 			String sql = "SELECT * FROM ChiTiet_HoaDon WHERE maHoaDon = ?";
->>>>>>> Stashed changes
 			preparedStatement = con.prepareStatement(sql);
 			preparedStatement.setString(1, maHD);
 			resultSet = preparedStatement.executeQuery();
