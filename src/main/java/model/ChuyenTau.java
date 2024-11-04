@@ -108,6 +108,18 @@ public class ChuyenTau {
 	}
 
 	public ChuyenTau(String maChuyenTau, String gaKhoiHanh, String gaDen, LocalDateTime thoiGianKhoiHanh,
+			LocalDateTime thoiGianDuKien, String ghiChu, GiaVe giaVe) {
+		super();
+		this.maChuyenTau = maChuyenTau;
+		this.gaKhoiHanh = gaKhoiHanh;
+		this.gaDen = gaDen;
+		this.thoiGianKhoiHanh = thoiGianKhoiHanh;
+		this.thoiGianDuKien = thoiGianDuKien;
+		this.ghiChu = ghiChu;
+		this.giaVe = giaVe;
+	}
+
+	public ChuyenTau(String maChuyenTau, String gaKhoiHanh, String gaDen, LocalDateTime thoiGianKhoiHanh,
 			LocalDateTime thoiGianDuKien, String ghiChu, GiaVe giaVe, Tau tau) {
 		setMaChuyenTau(maChuyenTau);
 		setGaKhoiHanh(gaKhoiHanh);
