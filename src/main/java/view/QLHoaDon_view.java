@@ -144,8 +144,291 @@ public class QLHoaDon_view extends JFrame {
 		});
 	}
 
+<<<<<<< Updated upstream
 	public void addButtonReloadListener(ActionListener listener) {
 		btnReset.addActionListener(listener);
+=======
+		setContentPane(contentPane);
+		contentPane.setLayout(new BorderLayout());
+
+		lblQLHD = new JLabel("Quản Lý Hoá Đơn");
+		lblQLHD.setHorizontalAlignment(SwingConstants.CENTER);
+		lblQLHD.setFont(new Font("Arial", Font.BOLD, 20));
+
+		JPanel headerPanel = new JPanel(new BorderLayout());
+		headerPanel.setBackground(new Color(255, 255, 255));
+		headerPanel.add(lblQLHD, BorderLayout.NORTH);
+
+		JPanel panel = new JPanel();
+		panel.setBackground(new Color(255, 255, 255));
+		panel.setBorder(new EmptyBorder(15, 0, 3, 0));
+		headerPanel.add(panel, BorderLayout.CENTER);
+		panel.setLayout(new BorderLayout(0, 0));
+		contentPane.add(headerPanel, BorderLayout.NORTH);
+
+		JPanel searchPanel = new JPanel();
+		searchPanel.setBackground(new Color(255, 255, 255));
+		panel.add(searchPanel, BorderLayout.CENTER);
+		searchPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 8, 3));
+
+		panel_maHD = new JPanel();
+		panel_maHD.setBackground(Color.WHITE);
+		panel_maHD.setBorder(new EmptyBorder(0, 0, 0, 5));
+		searchPanel.add(panel_maHD);
+		panel_maHD.setLayout(new BoxLayout(panel_maHD, BoxLayout.Y_AXIS));
+
+		panel_lblMaHD = new JPanel();
+		panel_lblMaHD.setBorder(new EmptyBorder(0, 0, 5, 5));
+		panel_lblMaHD.setBackground(Color.WHITE);
+		panel_lblMaHD.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		panel_maHD.add(panel_lblMaHD);
+
+		lblMaHD = new JLabel("Mã hoá đơn");
+		lblMaHD.setForeground(new Color(70, 130, 169));
+		lblMaHD.setFont(new Font("Arial", Font.BOLD, 19));
+		panel_lblMaHD.add(lblMaHD);
+
+		panelMaHD = new JPanel();
+		panelMaHD.setBorder(new EmptyBorder(0, 5, 0, 0));
+		panelMaHD.setBackground(Color.WHITE);
+		panel_maHD.add(panelMaHD);
+		panelMaHD.setLayout(new BoxLayout(panelMaHD, BoxLayout.X_AXIS));
+
+		comboBoxMaHD = timKiemMaHD();
+		comboBoxMaHD.setPreferredSize(new Dimension(130, 30));
+		comboBoxMaHD.setFont(new Font("Arial", Font.PLAIN, 14));
+		panelMaHD.add(comboBoxMaHD);
+
+		panelDate = new JPanel();
+		panelDate.setBackground(Color.WHITE);
+		searchPanel.add(panelDate);
+		panelDate.setLayout(new BoxLayout(panelDate, BoxLayout.Y_AXIS));
+
+		panel_lblDate = new JPanel();
+		panel_lblDate.setBorder(new EmptyBorder(0, 0, 5, 5));
+		FlowLayout fl_panel_lblDate = (FlowLayout) panel_lblDate.getLayout();
+		fl_panel_lblDate.setAlignment(FlowLayout.LEFT);
+		panel_lblDate.setBackground(Color.WHITE);
+		panelDate.add(panel_lblDate);
+
+		lblNgyLpHo = new JLabel("Ngày lập hoá đơn");
+		lblNgyLpHo.setForeground(new Color(70, 130, 169));
+		lblNgyLpHo.setFont(new Font("Arial", Font.BOLD, 19));
+		panel_lblDate.add(lblNgyLpHo);
+
+		panel_ngayLap = new JPanel();
+		panel_ngayLap.setBackground(new Color(255, 255, 255));
+		panel_ngayLap.setBorder(new EmptyBorder(0, 5, 0, 0));
+		panelDate.add(panel_ngayLap);
+
+		dateBD = new JDateChooser();
+		dateBD.setBackground(new Color(255, 255, 255));
+		dateBD.getCalendarButton().setBackground(new Color(235, 235, 235));
+		dateBD.getCalendarButton().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+		dateBD.setBorder(null);
+		dateBD.setPreferredSize(new Dimension(150, 30));
+		dateBD.getCalendarButton().setFont(new Font("Arial", Font.PLAIN, 12));
+		dateBD.setFont(new Font("Arial", Font.PLAIN, 16));
+		dateBD.setDateFormatString("dd-MM-yyyy");
+		iconlich = new ImageIcon(getClass().getResource("/Image/icon_lich.png"));
+		panel_ngayLap.setLayout(new BoxLayout(panel_ngayLap, BoxLayout.X_AXIS));
+		dateBD.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
+		String placeholder = "Tạo từ ngày";
+		dateBD.setDate(null);
+		JTextField dateField = (JTextField) dateBD.getDateEditor().getUiComponent();
+		dateField.setText(placeholder);
+		dateField.setForeground(Color.GRAY);
+		dateField.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				if (dateField.getText().equals(placeholder)) {
+					dateField.setText("");
+					dateField.setForeground(Color.BLACK);
+				}
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (dateField.getText().isEmpty()) {
+					dateField.setText(placeholder);
+					dateField.setForeground(Color.GRAY);
+				}
+			}
+		});
+		panel_ngayLap.add(dateBD);
+
+		dateKT = new JDateChooser();
+		dateKT.setBorder(new EmptyBorder(0, 0, 0, 0));
+		dateKT.getCalendarButton().setBorder(null);
+		dateKT.getCalendarButton().setBackground(new Color(235, 235, 235));
+		dateKT.getCalendarButton().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+		dateKT.setBorder(null);
+		dateKT.getCalendarButton().setFont(new Font("Arial", Font.PLAIN, 12));
+		dateKT.setPreferredSize(new Dimension(150, 30));
+		dateKT.setFont(new Font("Arial", Font.PLAIN, 16));
+		dateKT.setDateFormatString("dd-MM-yyyy");
+		dateKT.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
+		panel_ngayLap.add(dateKT);
+		String placeholder1 = "Đến ngày";
+		dateKT.setDate(null);
+		JTextField dateField1 = (JTextField) dateKT.getDateEditor().getUiComponent();
+		dateField1.setText(placeholder1);
+		dateField1.setForeground(Color.GRAY);
+		dateField1.addFocusListener(new FocusAdapter() {
+			@Override
+			public void focusGained(FocusEvent e) {
+				if (dateField1.getText().equals(placeholder1)) {
+					dateField1.setText("");
+					dateField1.setForeground(Color.BLACK);
+				}
+			}
+
+			@Override
+			public void focusLost(FocusEvent e) {
+				if (dateField1.getText().isEmpty()) {
+					dateField1.setText(placeholder1);
+					dateField1.setForeground(Color.GRAY);
+				}
+			}
+		});
+
+		panel_SDT = new JPanel();
+		panel_SDT.setBorder(new EmptyBorder(0, 0, 0, 0));
+		panel_SDT.setBackground(Color.WHITE);
+		searchPanel.add(panel_SDT);
+		panel_SDT.setLayout(new BoxLayout(panel_SDT, BoxLayout.Y_AXIS));
+
+		panel_lblSDT = new JPanel();
+		panel_lblSDT.setBorder(new EmptyBorder(0, 0, 5, 5));
+		FlowLayout flowLayout = (FlowLayout) panel_lblSDT.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		panel_lblSDT.setBackground(Color.WHITE);
+		panel_SDT.add(panel_lblSDT);
+
+		lblSinThoi = new JLabel("Số điện thoại");
+		lblSinThoi.setForeground(new Color(70, 130, 169));
+		lblSinThoi.setFont(new Font("Arial", Font.BOLD, 19));
+		panel_lblSDT.add(lblSinThoi);
+
+		panelSDT = new JPanel();
+		panelSDT.setBorder(new EmptyBorder(0, 5, 0, 0));
+		panelSDT.setBackground(Color.WHITE);
+		panel_SDT.add(panelSDT);
+		panelSDT.setLayout(new BoxLayout(panelSDT, BoxLayout.X_AXIS));
+
+		comboBoxSDT = timKiemSDT();
+		comboBoxSDT.setPreferredSize(new Dimension(130, 30));
+		comboBoxSDT.setFont(new Font("Arial", Font.PLAIN, 14));
+		comboBoxSDT.setEditable(true);
+		panelSDT.add(comboBoxSDT);
+
+		panelReload = new JPanel();
+		panelReload.setBackground(Color.WHITE);
+		searchPanel.add(panelReload);
+		panelReload.setLayout(new BorderLayout(0, 0));
+
+		panellblreload = new JPanel();
+		panellblreload.setBorder(new EmptyBorder(0, 0, 25, 0));
+		panellblreload.setBackground(Color.WHITE);
+		panelReload.add(panellblreload, BorderLayout.NORTH);
+		btnReset = new JButton();
+		btnReset.setIcon(new ImageIcon(getClass().getResource("/Image/reload.png")));
+		btnReset.setBorderPainted(false);
+		btnReset.setFocusPainted(false);
+		btnReset.setVerticalTextPosition(SwingConstants.CENTER);
+		btnReset.setHorizontalTextPosition(SwingConstants.CENTER);
+		panelReload.add(btnReset);
+
+		panelLoc = new JPanel();
+		panelLoc.setBackground(Color.WHITE);
+		searchPanel.add(panelLoc);
+		panelLoc.setLayout(new BorderLayout(0, 0));
+
+		panel_lblloc = new JPanel();
+		panel_lblloc.setBackground(Color.WHITE);
+		panel_lblloc.setBorder(new EmptyBorder(0, 0, 25, 0));
+		panelLoc.add(panel_lblloc, BorderLayout.NORTH);
+		btnSearch = new RoundButton("Lọc", "/Image/search.png");
+		btnSearch.setPreferredSize(new Dimension(130, 30));
+		btnSearch.setKhoangCachIcon(5);
+		btnSearch.setHeSoBoGoc(10);
+		btnSearch.setFont(new Font("Arial", Font.BOLD, 18));
+		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
+		panelLoc.add(btnSearch);
+		filterMenu = new JPopupMenu();
+		maHDItem = new JMenuItem("Lọc theo mã hóa đơn");
+		dateItem = new JMenuItem("Lọc theo ngày");
+		sdtItem = new JMenuItem("Lọc theo số điện thoại");
+
+		filterMenu.add(maHDItem);
+		filterMenu.add(dateItem);
+		filterMenu.add(sdtItem);
+
+		btnSearch.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				filterMenu.show(btnSearch, 0, btnSearch.getHeight());
+			}
+		});
+
+		JPanel panel_1 = new JPanel();
+		panel_1.setBackground(new Color(255, 255, 255));
+		panel.add(panel_1, BorderLayout.WEST);
+		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
+
+		CustomTitleLable lblDS = new CustomTitleLable("Danh sách hoá đơn");
+		lblDS.setAlignmentY(1.0f);
+		panel_1.add(lblDS);
+
+		contentPane.add(headerPanel, BorderLayout.NORTH);
+
+		String[] header = { "STT", "Mã hoá đơn", "Loại hoá đơn", "Tên khách hàng", "Số điện thoại", "Ngày lập",
+				"Thuế VAT", "Tổng tiền" };
+		Font headerFont = new Font("Arial", Font.BOLD, 18);
+		modelTableHD = new DefaultTableModel(header, 0);
+
+		tableHD = new JTable(modelTableHD);
+		tableHD.setShowGrid(true);
+		tableHD.setGridColor(new Color(225, 225, 225));
+		tableHD.getTableHeader().setFont(headerFont);
+		tableHD.setFont(new Font("Arial", Font.PLAIN, 16));
+		tablePanel = new JScrollPane(tableHD);
+		tableHD.getColumnModel().getColumn(0).setPreferredWidth(5);
+		centerTableCells(tableHD);
+		tableHD.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		tableHD.setRowHeight(30);
+		contentPane.add(new JScrollPane(tableHD), BorderLayout.CENTER);
+		DocDuLieuVaoTableHoaDon();
+
+		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		buttonPanel.setBackground(Color.WHITE);
+
+		panelXemCT = new JPanel();
+		panelXemCT.setBorder(new EmptyBorder(0, 0, 0, 20));
+		panelXemCT.setBackground(Color.WHITE);
+		buttonPanel.add(panelXemCT);
+		panelXemCT.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
+		btnXemCT = new RoundButton("Xem chi tiết", "/Image/eye.png");
+		btnXemCT.setVerticalTextPosition(SwingConstants.CENTER);
+		btnXemCT.setKhoangCachIcon(5);
+		btnXemCT.setHorizontalTextPosition(SwingConstants.RIGHT);
+		btnXemCT.setHeSoBoGoc(10);
+		btnXemCT.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnXemCT.setBorder(new EmptyBorder(4, 10, 4, 10));
+		panelXemCT.add(btnXemCT);
+
+		btnInDS = new RoundButton("In danh sách hoá đơn", "/Image/print.png");
+		btnInDS.setBorder(new EmptyBorder(4, 10, 4, 10));
+		btnInDS.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnInDS.setHeSoBoGoc(10);
+		btnInDS.setKhoangCachIcon(5);
+		btnInDS.setIconSize(26, 26);
+		btnInDS.setHorizontalTextPosition(SwingConstants.RIGHT);
+		btnInDS.setVerticalTextPosition(SwingConstants.CENTER);
+		buttonPanel.add(btnInDS);
+		contentPane.add(buttonPanel, BorderLayout.SOUTH);
+>>>>>>> Stashed changes
 	}
 
 	public void addButtonXemHDCT(ActionListener listener) {

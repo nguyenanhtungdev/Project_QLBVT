@@ -40,7 +40,6 @@ public class HienThi_Controller {
 		danhSachQuanLy.add(new Page("Khách hàng", "/Image/tabler-icon-file-settings.png"));
 		danhSachQuanLy.add(new Page("Khuyến mãi", "/Image/tabler-icon-file-settings.png"));
 		danhSachQuanLy.add(new Page("Tàu", "/Image/tabler-icon-file-settings.png"));
-//        danhSachQuanLy.add(new Page("Toa Tàu", "/Image/tabler-icon-file-settings.png"));
 		danhSachQuanLy.add(new Page("Chuyến tàu", "/Image/tabler-icon-file-settings.png"));
 
 		// Thêm các panel vào view
