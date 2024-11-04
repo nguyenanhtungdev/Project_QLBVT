@@ -8,7 +8,7 @@ public class GiaVe {
 	private float tiLeTangGia;
 	private LocalDateTime ngayCapNhap;
 	private String ghiChu;
-	
+
 	public GiaVe() {
 		// TODO Auto-generated constructor stub
 	}
@@ -32,6 +32,9 @@ public class GiaVe {
 	}
 
 	public void setMaGiaVe(String maGiaVe) {
+		if (!maGiaVe.matches("^GV\\d{4}$")) {
+			throw new IllegalArgumentException("Mã GiaVe phải có định dạng GVXXXX, trong đó XXXX là 4 chữ số.");
+		}
 		this.maGiaVe = maGiaVe;
 	}
 
@@ -40,6 +43,9 @@ public class GiaVe {
 	}
 
 	public void setGiaVe(double giaVe) {
+		if (giaVe <= 0) {
+			throw new IllegalArgumentException("GiaVe phải lớn hơn 0.");
+		}
 		this.giaVe = giaVe;
 	}
 
@@ -48,6 +54,9 @@ public class GiaVe {
 	}
 
 	public void setTiLeTangGia(float tiLeTangGia) {
+		if (tiLeTangGia < 0 || tiLeTangGia > 100) {
+			throw new IllegalArgumentException("TiLeTangGia phải nằm trong khoảng từ 0 đến 100.");
+		}
 		this.tiLeTangGia = tiLeTangGia;
 	}
 
@@ -55,7 +64,10 @@ public class GiaVe {
 		return ngayCapNhap;
 	}
 
-	public void setNgayCapNhap(LocalDateTime ngayCapNhap) {
+	public void setNgayCapNhat(LocalDateTime ngayCapNhap) {
+		if (ngayCapNhap.isAfter(LocalDateTime.now())) {
+			throw new IllegalArgumentException("NgayCapNhat phải trước ngày hiện tại.");
+		}
 		this.ngayCapNhap = ngayCapNhap;
 	}
 
@@ -72,6 +84,8 @@ public class GiaVe {
 		return "GiaVe [maGiaVe=" + maGiaVe + ", giaVe=" + giaVe + ", tiLeTangGia=" + tiLeTangGia + ", ngayCapNhap="
 				+ ngayCapNhap + ", ghiChu=" + ghiChu + "]";
 	}
-	
-	
+
+	public double tinhGiaVeHienTai() {
+		return giaVe * (1 + (tiLeTangGia / 100));
+	}
 }
