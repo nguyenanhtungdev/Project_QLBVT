@@ -333,6 +333,11 @@ public class QLTau_View extends JFrame {
         String[] header = {"STT","Mã tàu","Tên tàu","Số toa","Năm sản xuất","Nhà sản xuất","Tốc độ trung bình","Tốc độ tối đa","Trạng thái", "Ghi chú"};
         modelTableTau = new DefaultTableModel(header, 0);
         tableTau = new JTable(modelTableTau);
+<<<<<<< Updated upstream
+=======
+        tableTau.setShowGrid(true);
+        tableTau.setGridColor(new Color(225, 225, 225));
+>>>>>>> Stashed changes
      // Thiết lập chiều rộng cột cụ thể
         centerTableCells(tableTau);
         tableTau.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);  
@@ -360,6 +365,11 @@ public class QLTau_View extends JFrame {
         String[] headerTT = {"STT","Mã toa","Tên toa","Số thu tự toa","Loại toa","Số lượng ghế","Trạng thái"};
         modelTableTTau = new DefaultTableModel(headerTT, 0);
         tableTTau = new JTable(modelTableTTau);
+<<<<<<< Updated upstream
+=======
+        tableTTau.setShowGrid(true);
+        tableTTau.setGridColor(new Color(225, 225, 225));
+>>>>>>> Stashed changes
         tableTau.getColumnModel().getColumn(0).setPreferredWidth(20); // STT
         tablePanelTTau = new JScrollPane(tableTTau);
         tableTTau.setRowHeight(30);
@@ -482,6 +492,11 @@ public class QLTau_View extends JFrame {
         modelTableGhe = new DefaultTableModel(headerGhe, 0);
         panel_TableGhe.setLayout(new BoxLayout(panel_TableGhe, BoxLayout.X_AXIS));
         tableTGhe = new JTable(modelTableGhe);
+<<<<<<< Updated upstream
+=======
+		tableTGhe.setShowGrid(true);
+		tableTGhe.setGridColor(new Color(225, 225, 225));
+>>>>>>> Stashed changes
         tableTGhe.getColumnModel().getColumn(0).setPreferredWidth(20); // STT
         tablePanelGhe = new JScrollPane(tableTGhe);
         tableTGhe.setRowHeight(30);
