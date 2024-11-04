@@ -76,6 +76,29 @@ public class KhuyenMai_DAO implements DataAccessObject<KhuyenMai> {
 		return null;
 	}
 
+	public KhuyenMai getKhuyenMai(String maKhuyenMai) throws SQLException {
+		String sql = "SELECT * FROM KhuyenMai WHERE maKhuyenMai = ?";
+
+		Connection con = ConnectDB.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, maKhuyenMai);
+		ResultSet resultSet = statement.executeQuery();
+
+		if (resultSet.next()) {
+			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
+			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
+			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
+
+			return new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
+					tinhTrangKhuyenMai);
+		}
+
+		return null;
+	}
+
 	@Override
 	public boolean save(KhuyenMai entity) throws SQLException {
 		String sql = "INSERT INTO KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai, tinhTrangKhuyenMai) VALUES(?, ?, ?, ?, ?, ?)";
@@ -108,6 +131,122 @@ public class KhuyenMai_DAO implements DataAccessObject<KhuyenMai> {
 		int count = statement.executeUpdate();
 
 		return count == 0;
+	}
+
+	public List<KhuyenMai> getAllKhuyenMai1() throws SQLException {
+		String sql = "SELECT * FROM KhuyenMai";
+
+		Connection con = ConnectDB.getInstance().getConnection();
+		Statement statement = con.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
+
+		List<KhuyenMai> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maKhuyenMai = resultSet.getString("maKhuyenMai");
+			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
+			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
+					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
+					: null;
+
+			// Kiểm tra hạn sử dụng khuyến mãi
+			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
+				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
+
+				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
+						tinhTrangKhuyenMai));
+			}
+		}
+
+		return list;
+	}
+
+	public List<KhuyenMai> getKhuyenMaiTheoTrangThai(TinhTrangKhuyenMai tinhTrang) throws SQLException {
+		String sql = "SELECT * FROM KhuyenMai WHERE tinhTrangKhuyenMai = ?";
+
+		Connection con = ConnectDB.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setInt(1, tinhTrang.getValue()); // Sử dụng phương thức lấy giá trị int của trạng thái nếu có
+
+		ResultSet resultSet = statement.executeQuery();
+
+		List<KhuyenMai> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maKhuyenMai = resultSet.getString("maKhuyenMai");
+			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
+			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
+					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
+					: null;
+
+			// Kiểm tra hạn sử dụng khuyến mãi
+			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
+				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
+
+				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
+						tinhTrangKhuyenMai));
+			}
+		}
+
+		return list;
+	}
+
+	public KhuyenMai getKhuyenMai1(String maKhuyenMai) throws SQLException {
+		String sql = "SELECT * FROM KhuyenMai WHERE maKhuyenMai = ?";
+
+		Connection con = ConnectDB.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, maKhuyenMai);
+		ResultSet resultSet = statement.executeQuery();
+
+		if (resultSet.next()) {
+			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
+			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
+			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
+
+			return new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
+					tinhTrangKhuyenMai);
+		}
+
+		return null;
+	}
+
+	public String getMaxMaKhuyenMai() throws SQLException {
+		String sql = "SELECT MAX(maKhuyenMai) AS maxMaKhuyenMai FROM KhuyenMai";
+
+		Connection con = ConnectDB.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		ResultSet resultSet = statement.executeQuery();
+
+		if (resultSet.next()) {
+			return resultSet.getString("maxMaKhuyenMai");
+		}
+
+		return null;
+	}
+
+	public boolean themKhuyenMai1(KhuyenMai khuyenMai) throws SQLException {
+		String sql = "INSERT INTO KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai, tinhTrangKhuyenMai) VALUES(?, ?, ?, ?, ?, ?)";
+
+		Connection con = ConnectDB.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, khuyenMai.getMaKhuyenMai());
+		statement.setNString(2, khuyenMai.getTenKhuyenMai());
+		statement.setNString(3, khuyenMai.getNoiDungKhuyenMai());
+		statement.setInt(4, khuyenMai.getSoLuongToiDa());
+		statement.setTimestamp(5, Timestamp.valueOf(khuyenMai.getHanSuDungKhuyenMai()));
+		statement.setInt(6, khuyenMai.getTinhTrangKhuyenMai().getValue());
+
+		int count = statement.executeUpdate();
+
+		return count > 0;
 	}
 
 	@Override
