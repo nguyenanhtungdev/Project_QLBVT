@@ -1,5 +1,6 @@
 package other;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -17,23 +18,6 @@ public class SecondaryButton extends RoundedButton {
 	private static final long serialVersionUID = -6386152828233821838L;
 
 	private int borderThickness;
-	private int iconWidth, iconHeight;
-
-	public int getIconWidth() {
-		return iconWidth;
-	}
-
-	public void setIconWidth(int iconWidth) {
-		this.iconWidth = iconWidth;
-	}
-
-	public int getIconHeight() {
-		return iconHeight;
-	}
-
-	public void setIconHeight(int iconHeight) {
-		this.iconHeight = iconHeight;
-	}
 
 	public int getBorderThickness() {
 		return borderThickness;
@@ -43,63 +27,27 @@ public class SecondaryButton extends RoundedButton {
 		this.borderThickness = borderThickness;
 	}
 
-	public SecondaryButton(ImageIcon icon) {
-		this(null, icon);
-	}
-
 	public SecondaryButton(String label) {
-		this(label, null);
+		super(label, ColorConstants.PRIMARY_COLOR);
 	}
 
-	public SecondaryButton(String label, ImageIcon icon) {
-		super(label);
+	public SecondaryButton(ImageIcon icon) {
+		super(icon, ColorConstants.PRIMARY_COLOR);
+	}
+
+	public SecondaryButton(String label, String iconPath) {
+		super(label, iconPath, ColorConstants.DANGER_COLOR);
 
 		this.borderThickness = 2;
+		this.setForeground(ColorConstants.PRIMARY_COLOR);
 
-		setForeground(normalColor);
+		BufferedImage bufferedIcon = ColorUtilities.convertImageIconToBufferedImage(icon);
+		BufferedImage changedColorBufferedIcon = ColorUtilities.changeColorToColor(bufferedIcon, Color.WHITE,
+				getForeground());
 
-		if (icon != null) {
-			borderRadius = 50;
-			this.insetTop = 8;
-			this.insetRight = 8;
-			this.insetBottom = 8;
-			this.insetLeft = 8;
-
-			if (label == null || label.isBlank()) {
-				this.iconWidth = 16;
-				this.iconHeight = 16;
-			} else {
-				this.iconWidth = 32;
-				this.iconWidth = 32;
-			}
-
-			BufferedImage originalImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(),
-					BufferedImage.TYPE_INT_ARGB);
-			Graphics2D g2d = originalImage.createGraphics();
-			g2d.drawImage(icon.getImage(), 0, 0, null);
-			g2d.dispose();
-
-			BufferedImage tintedImage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(),
-					BufferedImage.TYPE_INT_ARGB);
-
-			for (int y = 0; y < originalImage.getHeight(); y++) {
-				for (int x = 0; x < originalImage.getWidth(); x++) {
-					int pixel = originalImage.getRGB(x, y);
-
-					if ((pixel & 0x00FFFFFF) == 0xFFFFFF) {
-						int alpha = (pixel >> 24) & 0xFF; // Giữ alpha
-						int targetPixel = (alpha << 24) | (getForeground().getRGB());
-						tintedImage.setRGB(x, y, targetPixel);
-					} else {
-						tintedImage.setRGB(x, y, pixel);
-					}
-				}
-			}
-
-			Image scaledIcon = tintedImage.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
-			setIcon(new ImageIcon(scaledIcon));
-			setIconTextGap(8);
-		}
+		Image scaledIcon = changedColorBufferedIcon.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
+		setIcon(new ImageIcon(scaledIcon));
+		setIconTextGap(8);
 
 	}
 

@@ -13,6 +13,15 @@ import connectDB.ConnectDB;
 import model.Tau.TrangThaiTau;
 
 public class Tau_DAO {
+
+	private static Tau_DAO instance;
+
+	public static Tau_DAO getInstance() {
+		if (instance == null)
+			instance = new Tau_DAO();
+		return instance;
+	}
+
 	// Lấy danh sách tất cả các tàu
 	public ArrayList<Tau> getAllTau() throws SQLException {
 		ArrayList<Tau> dsTau = new ArrayList<>();

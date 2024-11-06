@@ -14,7 +14,7 @@ import javax.naming.OperationNotSupportedException;
 
 import connectDB.ConnectDB;
 
-public class ChiTiet_HoaDon_DAO implements DataAccessObject<ChiTiet_HoaDon> {
+public class ChiTiet_HoaDon_DAO {
 
 	private static ChiTiet_HoaDon_DAO instance;
 
@@ -24,7 +24,7 @@ public class ChiTiet_HoaDon_DAO implements DataAccessObject<ChiTiet_HoaDon> {
 		return instance;
 	}
 
-	public List<ChiTiet_HoaDon> findAll() throws SQLException {
+	public List<ChiTiet_HoaDon> getAll() throws SQLException {
 		String sql = "SELECT * FROM ChiTiet_HoaDon";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -44,11 +44,7 @@ public class ChiTiet_HoaDon_DAO implements DataAccessObject<ChiTiet_HoaDon> {
 		return list;
 	}
 
-	public ChiTiet_HoaDon findById(String id) throws OperationNotSupportedException {
-		throw new OperationNotSupportedException();
-	}
-
-	public boolean save(ChiTiet_HoaDon entity) throws SQLException {
+	public boolean them(ChiTiet_HoaDon entity) throws SQLException {
 		String sql = "INSERT INTO ChiTiet_HoaDon(soLuong, maHoaDon, maKhuyenMai, maVeTau) VALUES(?, ?, ?, ?)";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -60,16 +56,6 @@ public class ChiTiet_HoaDon_DAO implements DataAccessObject<ChiTiet_HoaDon> {
 		int count = statement.executeUpdate();
 
 		return count > 0;
-	}
-
-	@Override
-	public boolean update(ChiTiet_HoaDon entity) throws OperationNotSupportedException {
-		throw new OperationNotSupportedException();
-	}
-
-	@Override
-	public boolean delete(ChiTiet_HoaDon entity) throws OperationNotSupportedException {
-		throw new OperationNotSupportedException();
 	}
 
 	public ArrayList<ChiTiet_HoaDon> layChiTietHDTheoMaHD(String maHD) {
@@ -250,8 +236,3 @@ public class ChiTiet_HoaDon_DAO implements DataAccessObject<ChiTiet_HoaDon> {
 		return giaVe;
 	}
 }
-// import java.sql.Timestamp;
-// import java.time.LocalDateTime;
-// import java.util.ArrayList;
-
-// import connectDB.ConnectDB;

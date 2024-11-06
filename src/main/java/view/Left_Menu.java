@@ -11,11 +11,14 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Left_Menu extends JFrame {
-	private JPanel contentPane;
-	private ArrayList<Page> danhSachPage;
-	private Home home;
 
-	public Left_Menu(ArrayList<Page> danhSachPage, Home home) {
+	private static final long serialVersionUID = 6285786604097345096L;
+
+	private JPanel contentPane;
+	private ArrayList<View> danhSachPage;
+	private HomeView home;
+
+	public Left_Menu(ArrayList<View> danhSachPage, HomeView home) {
 		this.danhSachPage = danhSachPage;
 		this.home = home;
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -32,7 +35,7 @@ public class Left_Menu extends JFrame {
 
 	// Phương thức tạo menu từ danh sách Page
 	private void taoMenuTuDanhSach() {
-		for (Page page : danhSachPage) {
+		for (View page : danhSachPage) {
 			JLabel label = taoLabelChoPage(page);
 			contentPane.add(label);
 
@@ -40,17 +43,7 @@ public class Left_Menu extends JFrame {
 			label.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
-					if (page.getName().equals("Tìm kiếm")) {
-						home.showPanel("Tìm kiếm");
-					} else if (page.getName().equals("Vé tàu")) {
-						home.showPanel("Vé tàu");
-					} else if (page.getName().equals("Hóa đơn")) {
-						home.showPanel("Quản lý hóa đơn");
-					} else if (page.getName().equals("Tàu")) {
-						home.showPanel("Quản lý Tàu");
-					} else if (page.getName().equals("Khuyến mãi")) {
-						home.showPanel("Quản lý Khuyến Mãi");
-					}
+					home.showView(page.getName());
 				}
 
 				@Override
@@ -67,7 +60,7 @@ public class Left_Menu extends JFrame {
 	}
 
 	// Phương thức tạo JLabel cho từng Page
-	private JLabel taoLabelChoPage(Page page) {
+	private JLabel taoLabelChoPage(View page) {
 		JLabel label = new JLabel(page.getName());
 		label.setForeground(Color.WHITE);
 		ImageIcon icon = new ImageIcon(getClass().getResource(page.getImagePath()));

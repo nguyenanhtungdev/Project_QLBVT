@@ -2,25 +2,20 @@ package other;
 
 import javax.swing.ImageIcon;
 
-public class DangerPrimaryButton extends PrimaryButton {
+public class DangerPrimaryButton extends RoundedButton {
 
 	private static final long serialVersionUID = 7549327916357325624L;
 
-	public DangerPrimaryButton(ImageIcon icon) {
-		this(null, icon);
-	}
-
 	public DangerPrimaryButton(String label) {
-		this(label, null);
+		super(label, ColorConstants.DANGER_COLOR);
 	}
 
-	public DangerPrimaryButton(String label, ImageIcon icon) {
-		super(label, icon);
+	public DangerPrimaryButton(ImageIcon icon) {
+		super(icon, ColorConstants.DANGER_COLOR);
+	}
 
-		this.normalColor = ColorConstants.DANGER;
-		this.hoveredColor = ColorUtilities.darken(ColorConstants.DANGER);
-		this.pressedColor = ColorUtilities.brighten(ColorConstants.DANGER);
-		setBackground(normalColor);
+	public DangerPrimaryButton(String label, String iconPath) {
+		super(label, iconPath, ColorConstants.DANGER_COLOR);
 	}
 
 }

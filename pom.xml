@@ -58,11 +58,11 @@
 			<artifactId>flatlaf</artifactId>
 			<version>3.5.2</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.jgoodies/forms -->
+		<!-- https://mvnrepository.com/artifact/com.jgoodies/jgoodies-forms -->
 		<dependency>
 			<groupId>com.jgoodies</groupId>
-			<artifactId>forms</artifactId>
-			<version>1.2.1</version>
+			<artifactId>jgoodies-forms</artifactId>
+			<version>1.9.0</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.toedter/jcalendar -->
 		<dependency>
@@ -70,7 +70,6 @@
 			<artifactId>jcalendar</artifactId>
 			<version>1.4</version>
 		</dependency>
-
 		<!-- https://mvnrepository.com/artifact/org.jdatepicker/jdatepicker -->
 		<dependency>
 			<groupId>org.jdatepicker</groupId>

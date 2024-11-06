@@ -2,90 +2,75 @@ package controller;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.SQLException;
 import java.util.ArrayList;
 
-import view.Home;
+import javax.swing.JPanel;
+
+import view.HomeView;
 import view.Left_Menu;
-import view.Page;
-import view.QLHoaDon_view;
-import view.QLKhuyenMai_View;
-import view.QLTau_View;
-import view.TimKiem_View;
-import view.VeTau_View;
+import view.View;
 
 public class HienThi_Controller {
-	private Home view;
-	private TimKiem_View timKiem_View = new TimKiem_View();
-	private VeTau_View veTau_View = new VeTau_View();
 
-	private QLHoaDon_view qlHoaDon_view = new QLHoaDon_view();
-	private QLTau_View qlTau_view = new QLTau_View();
-//	private QLToaTau_View qlToaTau_view = new QLToaTau_View();
-	private QLKhuyenMai_View qlKhuyenMai_view = new QLKhuyenMai_View();
+	private static HienThi_Controller instance;
 
-	private ArrayList<Page> danhSachBanVe = new ArrayList<>();
-	private ArrayList<Page> danhSachQuanLy = new ArrayList<>();
+	public static HienThi_Controller getInstance() {
+		if (instance == null)
+			instance = new HienThi_Controller();
+		return instance;
+	}
 
-	public HienThi_Controller(Home view) {
-		this.view = view;
+	private HomeView view = new HomeView();
 
-		// Khởi tạo danh sách các trang cho Bán vé
-		danhSachBanVe.add(new Page("Tìm kiếm", "/Image/search.png"));
-		danhSachBanVe.add(new Page("Vé tàu", "/Image/tabler-icon-ticket.png"));
+	public HienThi_Controller() {
+		ArrayList<View> dsViewBanVe = BanVeTau_Controller.getInstance().getViewList();
 
-		// Khởi tạo danh sách các trang cho Quản lý
-		danhSachQuanLy.add(new Page("Hóa đơn", "/Image/tabler-icon-file-settings.png"));
-		danhSachQuanLy.add(new Page("Khách hàng", "/Image/tabler-icon-file-settings.png"));
-		danhSachQuanLy.add(new Page("Khuyến mãi", "/Image/tabler-icon-file-settings.png"));
-		danhSachQuanLy.add(new Page("Tàu", "/Image/tabler-icon-file-settings.png"));
-		danhSachQuanLy.add(new Page("Chuyến tàu", "/Image/tabler-icon-file-settings.png"));
+		ArrayList<View> dsViewQuanLy = QuanLy_Controller.getInstance().getViewList();
+		ArrayList<View> dsViewThongKe = ThongKe_Controller.getInstance().getViewList();
 
-		// Thêm các panel vào view
-		view.addPanel("Tìm kiếm", timKiem_View.getTimKiem_View());
-		view.addPanel("Vé tàu", veTau_View.getVeTau_View());
-		view.addPanel("Quản lý hóa đơn", qlHoaDon_view.getQLHoaDon_View());
-		view.addPanel("Quản lý Tàu", qlTau_view.getQLTau_View());
-//        view.addPanel("Quản lý Toa Tàu", qlToaTau_view.getQLToaTau_View());
-		view.addPanel("Quản lý Khuyến Mãi", qlKhuyenMai_view.getQLKhuyenMai_View());
+		for (View page : dsViewBanVe)
+			view.addView(page.getName(), (JPanel) page.getContentPane());
+		for (View page : dsViewQuanLy)
+			view.addView(page.getName(), (JPanel) page.getContentPane());
+		for (View page : dsViewThongKe)
+			view.addView(page.getName(), (JPanel) page.getContentPane());
 
 		// Tạo Left_Menu và truyền vào Home
-		Left_Menu left_Menu_BanVe = new Left_Menu(danhSachBanVe, view);
-		Left_Menu left_Menu_QuanLy = new Left_Menu(danhSachQuanLy, view);
+		Left_Menu left_Menu_BanVe = new Left_Menu(dsViewBanVe, view);
+		Left_Menu left_Menu_QuanLy = new Left_Menu(dsViewQuanLy, view);
+		Left_Menu left_Menu_ThongKe = new Left_Menu(dsViewThongKe, view);
 
 		// Thêm Left_Menu vào view
-		view.addLeft_Menu("LeftMenu_BanVe", left_Menu_BanVe.getLeft_Menu());
-		view.addLeft_Menu("LeftMenu_QuanLy", left_Menu_QuanLy.getLeft_Menu());
+		view.addLeft_Menu("BanVe", left_Menu_BanVe.getLeft_Menu());
+		view.addLeft_Menu("QuanLy", left_Menu_QuanLy.getLeft_Menu());
+		view.addLeft_Menu("ThongKe", left_Menu_ThongKe.getLeft_Menu());
 
 		// Thêm listener cho menu
 		view.addCustomerMenuListener(new MouseAdapter() {
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				Object obj = e.getSource();
 
 				if (obj == view.getLbl_BanVe()) {
-					view.showPanel("Tìm kiếm");
-					view.showLeft_Menu("LeftMenu_BanVe");
+					view.showView(dsViewBanVe.get(0).getName());
+					view.showLeft_Menu("BanVe");
 				} else if (obj == view.getLbl_QuanLy()) {
-					view.showPanel("Quản lý hóa đơn");
-					view.showLeft_Menu("LeftMenu_QuanLy");
+					view.showView(dsViewQuanLy.get(0).getName());
+					view.showLeft_Menu("QuanLy");
+				} else if (obj == view.getLbl_ThongKe()) {
+					view.showView(dsViewThongKe.get(0).getName());
+					view.showLeft_Menu("ThongKe");
+					ThongKe_Controller.getInstance().loadThongKe();
 				}
 			}
 		});
 
-		// Hiển thị trang Home mặc định
-		view.showPanel("Home");
-		khoiTaoDsController();
+		view.showView("Home");
 	}
 
-	public void khoiTaoDsController() {
-		try {
-			QuanLy_Controller qlHoaDon_Controller = new QuanLy_Controller(qlHoaDon_view);
-			QuanLy_Controller qlTau_Controller = new QuanLy_Controller(qlTau_view);
-			QuanLy_Controller qlKhuyenMai_Controller = new QuanLy_Controller(qlKhuyenMai_view);
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+	public void showView() {
+		view.setVisible(true);
 	}
+
 }

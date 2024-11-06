@@ -22,96 +22,70 @@ import model.ThongKeTuan;
 import model.TrangThaiVeTau;
 import model.VeTau;
 import model.VeTau_DAO;
-import other.PrinterUltilities;
-import view.KetQuaThongKePage;
-import view.Page;
-import view.TaoMoiPage;
-import view.ThongKeView;
-import view.TongQuanPage;
+import other.PrinterUtilities;
+import view.KetQuaThongKe_View;
+import view.View;
+import view.TaoMoi_View;
+import view.TongQuan_View;
 
-public class ThongKeController {
+public class ThongKe_Controller {
 
-	private static ThongKeController instance;
+	private static ThongKe_Controller instance;
 
-	public static ThongKeController getInstance() {
+	public static ThongKe_Controller getInstance() {
 		if (instance == null)
-			instance = new ThongKeController();
+			instance = new ThongKe_Controller();
 		return instance;
 	}
 
-	private ThongKeView view;
-	private ArrayList<Page> pageList;
-	private TongQuanPage tongQuanPage;
-	private TaoMoiPage taoMoiPage;
-	private KetQuaThongKePage ketQuaThongKePage;
+	private ArrayList<View> pageList;
+	private TongQuan_View tongQuanPage;
+	private TaoMoi_View taoMoiPage;
+	private KetQuaThongKe_View ketQuaThongKePage;
 
-	public ThongKeView getView() {
-		return view;
-	}
-
-	public ArrayList<Page> getPages() {
+	public ArrayList<View> getViewList() {
 		return pageList;
 	}
 
-	public ThongKeController() {
-		tongQuanPage = new TongQuanPage("Tổng quan", "/Image/tabler-icon-report-analytics.png");
-		taoMoiPage = new TaoMoiPage("Tạo mới", "/Image/tabler-icon-report-medical.png");
-//		ketQuaThongKePage = new KetQuaThongKePage("Kết quả", "/Image/tabler-icon-report-medical.png");
+	public ThongKe_Controller() {
+		pageList = new ArrayList<>();
+		pageList.add(tongQuanPage = new TongQuan_View("Tổng quan", "/Image/tabler-icon-report-analytics.png"));
+		pageList.add(taoMoiPage = new TaoMoi_View("Tạo mới", "/Image/tabler-icon-report-medical.png"));
+//		pageList.add(ketQuaThongKePage = new KetQuaThongKePage("Kết quả", "/Image/tabler-icon-report-medical.png"));
 
 		tongQuanPage.addInActionListener(this::inTongQuan);
-
-		pageList = new ArrayList<>();
-		pageList.add(tongQuanPage);
-		pageList.add(taoMoiPage);
-//		pageList.add(ketQuaThongKePage);
-
-		view = new ThongKeView("Thống kê", "/Image/tabler-icon-report-analytics.png");
-		view.addPages(pageList);
 	}
 
-	public void setVisiblePage(String name) {
-		view.setVisiblePage(name);
-		for (Page page : pageList) {
-			if (name.equals(page.getName())) {
-				if (page instanceof TongQuanPage tongQuanPage) {
-					tongQuanPage.loadThongKe(taoThongKeNgay(LocalDate.of(2024, 10, 20)),
-							taoThongKeTuan(LocalDate.of(2024, 10, 19), 7));
-				}
-			}
-		}
-	}
-
-	public void setVisiblePage(int index) {
-		setVisiblePage(pageList.get(index).getName());
+	public void loadThongKe() {
+		tongQuanPage.loadThongKe(taoThongKeNgay(LocalDate.of(2024, 10, 20)),
+				taoThongKeTuan(LocalDate.of(2024, 10, 19), 7));
 	}
 
 	private ThongKeNgay taoThongKeNgay(LocalDate date) {
 		try {
-			HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
-			List<HoaDon> hoaDons = hoaDonDAO.getalltbHD().stream()
+			List<HoaDon> hoaDons = HoaDon_DAO.getInstance().getalltbHD().stream()
 					.filter(p -> LocalDate.from(p.getNgayLapHoaDon()).isEqual(date)).toList();
 
-			List<ChiTiet_HoaDon> chiTietHoaDons = ChiTiet_HoaDon_DAO.getInstance().findAll().stream()
+			List<ChiTiet_HoaDon> chiTietHoaDons = ChiTiet_HoaDon_DAO.getInstance().getAll().stream()
 					.filter(p -> hoaDons.stream().anyMatch(p1 -> p1.getMaHoaDon().equals(p.getHoaDon().getMaHoaDon())))
 					.toList();
 
-			VeTau_DAO veTauDAO = new VeTau_DAO();
-			List<VeTau> veTaus = veTauDAO.getalltbVT().stream().filter(
+			List<VeTau> veTaus = VeTau_DAO.getInstance().getalltbVT().stream().filter(
 					p -> chiTietHoaDons.stream().anyMatch(p1 -> p1.getVeTau().getMaVeTau().equals(p.getMaVeTau())))
 					.toList();
 
-			ChuyenTau_DAO chuyenTauDao = new ChuyenTau_DAO();
-			List<ChuyenTau> chuyenTaus = chuyenTauDao.findAll().stream().filter(
+			List<ChuyenTau> chuyenTaus = ChuyenTau_DAO.getInstance().getAll().stream().filter(
 					p -> veTaus.stream().anyMatch(p1 -> p1.getChuyenTau().getMaChuyenTau().equals(p.getMaChuyenTau())))
 					.toList();
 
-			GiaVe_DAO giaVeDao = new GiaVe_DAO();
-			List<GiaVe> giaVes = giaVeDao.getAllGiaVe().stream()
+			List<GiaVe> giaVes = GiaVe_DAO.getInstance().getAllGiaVe().stream()
 					.filter(p -> chuyenTaus.stream().anyMatch(p1 -> p1.getGiaVe().getMaGiaVe().equals(p.getMaGiaVe())))
 					.toList();
 
-			List<KhuyenMai> khuyenMais = KhuyenMai_DAO.getInstance().findAll().stream().filter(p -> chiTietHoaDons
-					.stream().anyMatch(p1 -> p1.getKhuyenMai().getMaKhuyenMai().equals(p.getMaKhuyenMai()))).toList();
+			List<KhuyenMai> khuyenMais = KhuyenMai_DAO.getInstance().getAll().stream()
+					.filter(p -> chiTietHoaDons.stream()
+							.anyMatch(p1 -> p1.getKhuyenMai().getMaKhuyenMai().equals(p.getMaKhuyenMai())))
+					.toList();
 
 			double doanhThu = giaVes.stream().map(m -> m.getGiaVe()).reduce(0D, (acc, curr) -> acc + curr);
 			int soLuongHoaDon = (int) hoaDons.size();
@@ -143,7 +117,7 @@ public class ThongKeController {
 	}
 
 	private void inTongQuan(ActionEvent e) {
-		PrinterUltilities.getInstance().print(tongQuanPage, null);
+		PrinterUtilities.getInstance().print(tongQuanPage, null);
 	}
 
 }

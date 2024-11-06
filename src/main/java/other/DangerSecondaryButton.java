@@ -6,23 +6,19 @@ public class DangerSecondaryButton extends SecondaryButton {
 
 	private static final long serialVersionUID = 2901534715784654811L;
 
-	public DangerSecondaryButton(ImageIcon icon) {
-		this(null, icon);
-	}
-
 	public DangerSecondaryButton(String label) {
-		this(label, null);
+		super(label);
+		setForeground(ColorConstants.DANGER_COLOR);
 	}
 
-	public DangerSecondaryButton(String label, ImageIcon icon) {
-		super(label, icon);
+	public DangerSecondaryButton(ImageIcon icon) {
+		super(icon);
+		setForeground(ColorConstants.DANGER_COLOR);
+	}
 
-		this.normalColor = ColorConstants.DANGER;
-		this.hoveredColor = ColorUtilities.darken(ColorConstants.DANGER);
-		this.pressedColor = ColorUtilities.brighten(ColorConstants.DANGER);
-
-		setForeground(normalColor);
-		setBackground(normalColor);
+	public DangerSecondaryButton(String label, String iconPath) {
+		super(label, iconPath);
+		setForeground(ColorConstants.DANGER_COLOR);
 	}
 
 }

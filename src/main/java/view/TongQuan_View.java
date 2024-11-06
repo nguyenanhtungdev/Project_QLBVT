@@ -23,12 +23,13 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import model.ThongKeNgay;
 import model.ThongKeTuan;
 import other.BieuDo;
+import other.ColorConstants;
 import other.PrimaryButton;
 import other.RoundedButton;
 import other.TheThongKe;
 import other.TieuDe;
 
-public class TongQuanPage extends Page implements Printable {
+public class TongQuan_View extends View implements Printable {
 	private static final long serialVersionUID = 4640477356217922276L;
 
 	private TieuDe tieuDeNgay;
@@ -49,9 +50,17 @@ public class TongQuanPage extends Page implements Printable {
 	private final DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	private final NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
 
-	public TongQuanPage(String name, String imagePath) {
+	public TongQuan_View(String name, String imagePath) {
 		super(name, imagePath);
 
+		
+		setContentPane(new JPanel() {
+			@Override
+			public Insets getInsets() {
+				return new Insets(16, 16, 16, 16);
+			}
+		});
+		getContentPane().setBackground(ColorConstants.BACKGROUND_COLOR);
 		setLayout(new BorderLayout());
 
 		// NORTH
@@ -77,7 +86,7 @@ public class TongQuanPage extends Page implements Printable {
 
 		// CENTER
 		pCenter = Box.createVerticalBox();
-		pCenter.add(tieuDeTuan = new TieuDe("Tổng quan doanh thu trong 7 ngày (dd/MM/yyyy - dd/MM/yyyy)", TieuDe.H3));
+		pCenter.add(tieuDeTuan = new TieuDe("Tổng quan doanh thu trong 7 ngày (dd/MM/yyyy - dd/MM/yyyy)", TieuDe.H2));
 		pCenter.add(chart = BieuDo.taoBieuDoDuong(doanhThuDataset, "", "Ngày", "Doanh thu (VNĐ)"));
 		add(pCenter, BorderLayout.CENTER);
 

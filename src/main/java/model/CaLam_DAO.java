@@ -14,7 +14,7 @@ import javax.naming.OperationNotSupportedException;
 
 import connectDB.ConnectDB;
 
-public class CaLam_DAO implements DataAccessObject<CaLam> {
+public class CaLam_DAO {
 
 	private static CaLam_DAO instance;
 
@@ -24,7 +24,7 @@ public class CaLam_DAO implements DataAccessObject<CaLam> {
 		return instance;
 	}
 
-	public List<CaLam> findAll() throws SQLException {
+	public List<CaLam> getAll() throws SQLException {
 		String sql = "SELECT * FROM CaLam";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -45,7 +45,7 @@ public class CaLam_DAO implements DataAccessObject<CaLam> {
 		return list;
 	}
 
-	public CaLam findById(String id) throws SQLException {
+	public CaLam getById(String id) throws SQLException {
 		String sql = "SELECT * FROM CaLam WHERE maCa = ?";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -65,7 +65,7 @@ public class CaLam_DAO implements DataAccessObject<CaLam> {
 		return null;
 	}
 
-	public boolean save(CaLam entity) throws SQLException {
+	public boolean them(CaLam entity) throws SQLException {
 		String sql = "INSERT INTO CaLam(maCa, tenCa, thoiGianBatDau, thoiGianKetThuc, ghiChu) VALUES(?, ?, ?, ?, ?)";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -80,8 +80,7 @@ public class CaLam_DAO implements DataAccessObject<CaLam> {
 		return count > 0;
 	}
 
-	@Override
-	public boolean update(CaLam entity) throws SQLException {
+	public boolean capNhat(CaLam entity) throws SQLException {
 		String sql = "UPDATE CaLam SET tenCa = ?, thoiGianBatDau = ?, thoiGianKetThuc = ?, ghiChu = ? WHERE maCa = ?";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -94,11 +93,6 @@ public class CaLam_DAO implements DataAccessObject<CaLam> {
 		int count = statement.executeUpdate();
 
 		return count == 0;
-	}
-
-	@Override
-	public boolean delete(CaLam entity) throws OperationNotSupportedException {
-		throw new OperationNotSupportedException();
 	}
 
 }

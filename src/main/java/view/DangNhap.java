@@ -12,10 +12,13 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
-import controller.BanVe_Controller;
+import controller.HienThi_Controller;
 import controller.DangNhap_Controller;
 import other.ColorConstants;
-import other.RoundButton;
+import other.DangerPrimaryButton;
+import other.PrimaryButton;
+import other.RoundedButton;
+import other.SecondaryButton;
 import other.RoundField;
 import other.RoundPassField;
 import other.Shortcut;
@@ -29,7 +32,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import other.ColorConstants;
-import other.RoundButton;
+import other.RoundedButton;
 import other.RoundField;
 import other.RoundPassField;
 import other.TextFont;
@@ -58,7 +61,7 @@ public class DangNhap extends JFrame {
 	private JPanel contentPane;
 	private RoundPassField txt_passWord;
 	private JTextField txt_userName;
-	private RoundButton btn_DangNhap;
+	private RoundedButton btn_DangNhap;
 	private JLabel image;
 	private JCheckBox checkbox_hienMK;
 
@@ -118,7 +121,8 @@ public class DangNhap extends JFrame {
 		panel_Right.add(txt_passWord);
 
 		// Replace JButton with RoundButton
-		btn_DangNhap = new RoundButton("Đăng Nhập");
+		btn_DangNhap = new PrimaryButton("Đăng Nhập");
+		btn_DangNhap.setBorderRadius(20);
 		btn_DangNhap.setBounds(73, 383, 271, 47);
 
 		panel_Right.add(btn_DangNhap);
@@ -189,7 +193,7 @@ public class DangNhap extends JFrame {
 		return txt_userName;
 	}
 
-	public RoundButton getBtn_DangNhap() {
+	public RoundedButton getBtn_DangNhap() {
 		return btn_DangNhap;
 	}
 

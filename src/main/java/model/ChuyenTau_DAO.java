@@ -10,11 +10,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.OperationNotSupportedException;
-
 import connectDB.ConnectDB;
 
-public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
+public class ChuyenTau_DAO {
 
 	private static ChuyenTau_DAO instance;
 
@@ -24,8 +22,7 @@ public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
 		return instance;
 	}
 
-	@Override
-	public List<ChuyenTau> findAll() throws SQLException {
+	public List<ChuyenTau> getAll() throws SQLException {
 		String sql = "SELECT * FROM ChuyenTau";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -50,8 +47,7 @@ public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
 		return list;
 	}
 
-	@Override
-	public ChuyenTau findById(String id) throws SQLException {
+	public ChuyenTau getById(String id) throws SQLException {
 		String sql = "SELECT * FROM ChuyenTau WHERE maChuyenTau = ?";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -74,8 +70,7 @@ public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
 		return null;
 	}
 
-	@Override
-	public boolean save(ChuyenTau entity) throws SQLException {
+	public boolean them(ChuyenTau entity) throws SQLException {
 		String sql = "INSERT INTO ChuyenTau(maChuyenTau, gaKhoiHanh, gaDen, thoiGianKhoiHanh, thoiGianDuKien, ghiChu, maGiaVe, maTau) VALUES(?, ?, ?, ?, ?, ?, ?, ?)";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -93,8 +88,7 @@ public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
 		return count > 0;
 	}
 
-	@Override
-	public boolean update(ChuyenTau entity) throws SQLException {
+	public boolean capNhat(ChuyenTau entity) throws SQLException {
 		String sql = "UPDATE ChuyenTau SET gaKhoiHanh = ?, gaDen = ?, thoiGianKhoiHanh = ?, thoiGianDuKien = ?, ghiChu = ?, maGiaVe = ?, maTau = ? WHERE maChuyenTau = ?";
 
 		Connection con = ConnectDB.getInstance().getConnection();
@@ -112,9 +106,34 @@ public class ChuyenTau_DAO implements DataAccessObject<ChuyenTau> {
 		return count == 0;
 	}
 
-	@Override
-	public boolean delete(ChuyenTau entity) throws OperationNotSupportedException {
-		throw new OperationNotSupportedException();
+	public ArrayList<ChuyenTau> timKiemChuyenTau(String gaDi, String gaDen, String ngayDi) throws SQLException {
+		String sql = "SELECT * FROM ChuyenTau WHERE gaKhoiHanh = ? AND gaDen = ? AND CONVERT(date, thoiGianKhoiHanh) = ?";
+
+		Connection con = ConnectDB.getInstance().getConnection();
+		PreparedStatement preparedStatement = con.prepareStatement(sql);
+		preparedStatement.setString(1, gaDi);
+		preparedStatement.setString(2, gaDen);
+		preparedStatement.setString(3, ngayDi);
+
+		ResultSet resultSet = preparedStatement.executeQuery();
+
+		ArrayList<ChuyenTau> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maChuyenTau = resultSet.getString("maChuyenTau");
+			String gaKhoiHanh = resultSet.getNString("gaKhoiHanh");
+			String gaDenResult = resultSet.getNString("gaDen");
+			LocalDateTime thoiGianKhoiHanh = resultSet.getTimestamp("thoiGianKhoiHanh").toLocalDateTime();
+			LocalDateTime thoiGianDuKien = resultSet.getTimestamp("thoiGianDuKien").toLocalDateTime();
+			String ghiChu = resultSet.getNString("ghiChu");
+			String maTau = resultSet.getString("maTau");
+			String maGiaVe = resultSet.getString("maGiaVe");
+			Tau tau = new Tau(maTau);
+			GiaVe giaVe = new GiaVe(maGiaVe);
+
+			list.add(new ChuyenTau(maChuyenTau, gaKhoiHanh, gaDenResult, thoiGianKhoiHanh, thoiGianDuKien, ghiChu,
+					giaVe, tau));
+		}
+		return list;
 	}
 
 }

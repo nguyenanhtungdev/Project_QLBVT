@@ -15,6 +15,71 @@ import connectDB.ConnectDB;
 import model.KhachHang.LoaiKhachHang;
 
 public class HoaDon_DAO {
+
+	private static HoaDon_DAO instance;
+
+	public static HoaDon_DAO getInstance() {
+		if (instance == null)
+			instance = new HoaDon_DAO();
+		return instance;
+	}
+
+	// Lấy hóa đơn theo số điện thoại hoặc CCCD
+	public ArrayList<HoaDon> getHoaDonBySoDienThoaiOrCCCD(String soDienThoaiOrCCCD) {
+		ArrayList<HoaDon> hoaDons = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+
+		try {
+			con = ConnectDB.getInstance().getConnection();
+			String sql = "SELECT hd.*, kh.hoTen, kh.soDienThoai " + "FROM HoaDon hd "
+					+ "JOIN KhachHang kh ON hd.maKH = kh.maKH " + "WHERE kh.soDienThoai = ? OR kh.CCCD = ?";
+			ps = con.prepareStatement(sql);
+			ps.setString(1, soDienThoaiOrCCCD);
+			ps.setString(2, soDienThoaiOrCCCD);
+			rs = ps.executeQuery();
+
+			while (rs.next()) {
+				String maHoaDon = rs.getString("maHoaDon");
+				String hoTen = rs.getString("hoTen");
+				float thueVAT = rs.getFloat("thueVAT");
+
+				// Định dạng ngày lập hóa đơn
+				Timestamp timestamp = rs.getTimestamp("ngayLapHoaDon");
+				LocalDateTime ngayLapHoaDon = timestamp.toLocalDateTime();
+
+				// Tạo đối tượng HoaDon
+				HoaDon hoaDon = new HoaDon();
+				hoaDon.setMaHoaDon(maHoaDon);
+				hoaDon.setNgayLapHoaDon(ngayLapHoaDon);
+				hoaDon.setThueVAT(thueVAT);
+
+				// Thêm thông tin khách hàng
+				KhachHang khachHang = new KhachHang();
+				khachHang.setHoTen(hoTen);
+				hoaDon.setKhachHang(khachHang);
+
+				hoaDons.add(hoaDon);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (ps != null)
+					ps.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return hoaDons;
+	}
+
 	public ArrayList<HoaDon> getalltbHD() {
 		ArrayList<HoaDon> hoaDons = new ArrayList<>();
 		Connection con = null;

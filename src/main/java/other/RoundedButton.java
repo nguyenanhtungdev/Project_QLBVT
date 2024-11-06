@@ -4,49 +4,44 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
-public abstract class RoundedButton extends JButton implements MouseListener {
+public class RoundedButton extends JButton implements MouseListener {
 
 	private static final long serialVersionUID = 8730610760264205199L;
 	protected int borderRadius;
-	protected int insetTop, insetRight, insetBottom, insetLeft;
 	protected Color normalColor, hoveredColor, pressedColor;
+	protected Insets insets;
+	protected int iconWidth, iconHeight;
+	protected ImageIcon icon;
 
-	public int getInsetTop() {
-		return insetTop;
+	public int getIconWidth() {
+		return iconWidth;
 	}
 
-	public void setInsetTop(int insetTop) {
-		this.insetTop = insetTop;
+	public int getIconHeight() {
+		return iconHeight;
 	}
 
-	public int getInsetRight() {
-		return insetRight;
+	public void setIconSize(int width, int height) {
+		this.iconWidth = width;
+		this.iconHeight = height;
+
+		Image scaledIcon = icon.getImage().getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		setIcon(new ImageIcon(scaledIcon));
 	}
 
-	public void setInsetRight(int insetRight) {
-		this.insetRight = insetRight;
-	}
-
-	public int getInsetBottom() {
-		return insetBottom;
-	}
-
-	public void setInsetBottom(int insetBottom) {
-		this.insetBottom = insetBottom;
-	}
-
-	public int getInsetLeft() {
-		return insetLeft;
-	}
-
-	public void setInsetLeft(int insetLeft) {
-		this.insetLeft = insetLeft;
+	public void setInsets(Insets insets) {
+		this.insets = insets;
 	}
 
 	public int getBorderRadius() {
@@ -65,56 +60,95 @@ public abstract class RoundedButton extends JButton implements MouseListener {
 		this.normalColor = normalColor;
 	}
 
-	public Color getHoveredColor() {
-		return hoveredColor;
-	}
-
-	public void setHoveredColor(Color hoveredColor) {
-		this.hoveredColor = hoveredColor;
-	}
-
-	public Color getPressedColor() {
-		return pressedColor;
-	}
-
-	public void setPressedColor(Color pressedColor) {
-		this.pressedColor = pressedColor;
-	}
-
-	public RoundedButton(String label) {
+	public RoundedButton(String label, Color normalColor) {
 		this.borderRadius = 8;
-		this.insetTop = 8;
-		this.insetRight = 16;
-		this.insetBottom = 8;
-		this.insetLeft = 16;
-		this.normalColor = ColorConstants.PRIMARY_COLOR;
-		this.hoveredColor = ColorConstants.HOVER_COLOR;
-		this.pressedColor = ColorConstants.PRESSED_COLOR;
+		this.insets = new Insets(8, 16, 8, 16);
+		this.normalColor = normalColor;
+		this.hoveredColor = ColorUtilities.darken(normalColor);
+		this.pressedColor = ColorUtilities.brighten(normalColor);
 
 		setContentAreaFilled(false);
 		setFocusPainted(false);
+		setBackground(normalColor);
 
 		setFont(new Font("Arial", Font.BOLD, 16));
 		setForeground(ColorConstants.TEXT_COLOR);
-		setBackground(normalColor);
 		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-		setMinimumSize(new Dimension(200, 44));
-
-		if (label != null) {
-			setText(label);
-		}
+//		setMinimumSize(new Dimension(200, 44));
+		setText(label);
 
 		addMouseListener(this);
+	}
 
+	public RoundedButton(ImageIcon icon, Color normalColor) {
+		this.borderRadius = 50;
+		this.insets = new Insets(8, 8, 8, 8);
+		this.normalColor = normalColor;
+		this.hoveredColor = ColorUtilities.darken(normalColor);
+		this.pressedColor = ColorUtilities.brighten(normalColor);
+		this.icon = icon;
+		this.iconWidth = icon.getIconWidth();
+		this.iconHeight = icon.getIconHeight();
+
+		setContentAreaFilled(false);
+		setFocusPainted(false);
+		setBackground(normalColor);
+
+		setFont(new Font("Arial", Font.BOLD, 16));
+		setForeground(ColorConstants.TEXT_COLOR);
+		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//		setMinimumSize(new Dimension(200, 44));
+
+		setIcon(icon);
+		setIconTextGap(8);
+
+		addMouseListener(this);
+	}
+
+	public RoundedButton(String label, String iconPath, Color normalColor) {
+		this.borderRadius = 8;
+		this.insets = new Insets(8, 16, 8, 16);
+		this.normalColor = normalColor;
+		this.hoveredColor = ColorUtilities.darken(normalColor);
+		this.pressedColor = ColorUtilities.brighten(normalColor);
+		this.icon = new ImageIcon(getClass().getResource(iconPath));
+		this.iconWidth = icon.getIconWidth();
+		this.iconHeight = icon.getIconHeight();
+
+		setContentAreaFilled(false);
+		setFocusPainted(false);
+		setBackground(normalColor);
+
+		setFont(new Font("Arial", Font.BOLD, 16));
+		setForeground(ColorConstants.TEXT_COLOR);
+		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//		setMinimumSize(new Dimension(200, 44));
+		setText(label);
+
+		setIcon(icon);
+		setIconTextGap(8);
+
+		addMouseListener(this);
 	}
 
 	@Override
 	public Insets getInsets() {
-		return new Insets(insetTop, insetRight, insetBottom, insetLeft);
+		return insets;
+	}
+
+	@Override
+	protected void paintComponent(Graphics g) {
+		Graphics2D g2 = (Graphics2D) g.create();
+		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.setColor(getBackground());
+		g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, borderRadius, borderRadius);
+
+		super.paintComponent(g);
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
+
 	}
 
 	@Override

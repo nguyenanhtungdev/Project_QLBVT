@@ -5,12 +5,12 @@ import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
 import javax.swing.JOptionPane;
 
-public class PrinterUltilities {
-	private static PrinterUltilities instance;
+public class PrinterUtilities {
+	private static PrinterUtilities instance;
 
-	public static PrinterUltilities getInstance() {
+	public static PrinterUtilities getInstance() {
 		if (instance == null)
-			instance = new PrinterUltilities();
+			instance = new PrinterUtilities();
 		return instance;
 	}
 

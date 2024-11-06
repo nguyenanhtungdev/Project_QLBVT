@@ -3,7 +3,6 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
@@ -39,29 +38,28 @@ import com.toedter.calendar.JDateChooser;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
-import model.HoaDon;
 import model.KhuyenMai;
 import model.KhuyenMai_DAO;
-import other.ColorConstants;
 import other.CustomTitleLable;
-import other.RoundButton;
+import other.DangerPrimaryButton;
+import other.PrimaryButton;
 
 import java.awt.FlowLayout;
 
-public class QLKhuyenMai_View extends JFrame {
+public class QuanLyKhuyenMai_View extends View {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JDateChooser dateKTKM;
-	private RoundButton btnThem;
-	private RoundButton btnHuy;
+	private PrimaryButton btnThem;
+	private DangerPrimaryButton btnHuy;
 	private DefaultTableModel modelTableKM;
 	private JTable tableKM;
 	private JPanel panelSearch1;
 	private JComboBox<String> comboBoxMaKM;
 	private JComboBox comboBoxTrangThai;
 	private JButton btnReset;
-	private RoundButton btnSearch;
+	private PrimaryButton btnSearch;
 	private static KhuyenMai_DAO km_dao;
 	private JTextField txtMakm;
 	private ImageIcon iconlich;
@@ -71,25 +69,6 @@ public class QLKhuyenMai_View extends JFrame {
 	private JTextField txtSLKM;
 	private JTextArea txtNDKM;
 
-	/**
-	 * Launch the application.
-	 */
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					QLKhuyenMai_View frame = new QLKhuyenMai_View();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
-	/**
-	 * Create the frame.
-	 */
 	public void addButtonReloadListener(ActionListener listener) {
 		btnReset.addActionListener(listener);
 	}
@@ -112,7 +91,7 @@ public class QLKhuyenMai_View extends JFrame {
 		EventList<String> maKMList = new BasicEventList<>();
 		List<KhuyenMai> danhSachKM;
 		try {
-			danhSachKM = km_dao.getAllKhuyenMai1();
+			danhSachKM = km_dao.getAll();
 			for (KhuyenMai km : danhSachKM) {
 				String maKM = km.getMaKhuyenMai();
 				maKMList.add(maKM);
@@ -125,8 +104,9 @@ public class QLKhuyenMai_View extends JFrame {
 
 		return comboBox;
 	}
-	
-	public QLKhuyenMai_View() {
+
+	public QuanLyKhuyenMai_View(String name, String imagePath) {
+		super(name, imagePath);
 		FlatLightLaf.setup();
 		km_dao = new KhuyenMai_DAO();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -285,18 +265,20 @@ public class QLKhuyenMai_View extends JFrame {
 		panelNut.setBorder(
 				new CompoundBorder(new LineBorder(new Color(192, 192, 192), 1, true), new EmptyBorder(0, 10, 0, 10)));
 
-		btnThem = new RoundButton("Thêm khuyến mãi    ", "/Image/plus.png");
-		btnThem.setColor_1(new Color(149, 149, 255));
-		btnThem.setColor_2(ColorConstants.HOVER_COLOR);
-		btnThem.setHeSoBoGoc(15);
-		btnThem.setFont(new Font("Arial", Font.BOLD, 16));
+		btnThem = new PrimaryButton("Thêm khuyến mãi    ", "/Image/plus.png");
+//		btnThem.setColor_1(new Color(149, 149, 255));
+//		btnThem.setColor_2(ColorConstants.HOVER_COLOR);
+//		btnThem.setHeSoBoGoc(15);
+		btnThem.setBorderRadius(15);
+//		btnThem.setFont(new Font("Arial", Font.BOLD, 16));
 		btnThem.setIconSize(32, 32);
 
-		btnHuy = new RoundButton("Huỷ bỏ     ", "/Image/cancel.png");
-		btnHuy.setColor_1(new Color(255, 128, 0));
-		btnHuy.setColor_2(new Color(240, 128, 0));
-		btnHuy.setHeSoBoGoc(15); // Độ bo góc
-		btnHuy.setFont(new Font("Arial", Font.BOLD, 16));
+		btnHuy = new DangerPrimaryButton("Huỷ bỏ     ", "/Image/cancel.png");
+//		btnHuy.setColor_1(new Color(255, 128, 0));
+//		btnHuy.setColor_2(new Color(240, 128, 0));
+//		btnHuy.setHeSoBoGoc(15); // Độ bo góc
+		btnHuy.setBorderRadius(15); // Độ bo góc
+//		btnHuy.setFont(new Font("Arial", Font.BOLD, 16));
 		btnHuy.setIconSize(32, 32);
 
 		panelNut.add(Box.createVerticalGlue());
@@ -391,11 +373,14 @@ public class QLKhuyenMai_View extends JFrame {
 		btnReset.setHorizontalTextPosition(SwingConstants.CENTER);
 		paelSearch2.add(btnReset);
 
-		btnSearch = new RoundButton("Tìm kiếm", "/Image/search.png");
-		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
+		btnSearch = new PrimaryButton("Tìm kiếm", "/Image/search.png");
+//		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
+		btnSearch.setInsets(new Insets(4, 10, 4, 10));
 		btnSearch.setFont(new Font("Tahoma", Font.BOLD, 18));
-		btnSearch.setHeSoBoGoc(10);
-		btnSearch.setKhoangCachIcon(5);
+//		btnSearch.setHeSoBoGoc(10);
+		btnSearch.setBorderRadius(10);
+//		btnSearch.setKhoangCachIcon(5);
+		btnSearch.setIconTextGap(5);
 		btnSearch.setIconSize(26, 26);
 		btnSearch.setVerticalTextPosition(SwingConstants.CENTER);
 		btnSearch.setVerticalAlignment(SwingConstants.TOP);
@@ -452,7 +437,7 @@ public class QLKhuyenMai_View extends JFrame {
 	public void DocDuLieuVaoTableHoaDon() {
 		List<KhuyenMai> list;
 		try {
-			list = km_dao.getAllKhuyenMai1();
+			list = km_dao.getAll();
 			for (KhuyenMai km : list) {
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 				String ngayKetThucDoFormatted;

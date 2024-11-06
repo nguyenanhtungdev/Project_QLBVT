@@ -19,7 +19,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 import java.awt.Color;
-import java.awt.Container;
 import java.awt.Dimension;
 import javax.swing.JComboBox;
 import javax.swing.DefaultComboBoxModel;
@@ -31,7 +30,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.SystemColor;
 import javax.swing.border.LineBorder;
 
-public class QLNV extends JFrame {
+public class QuanLyKhachHang_View extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -41,26 +40,19 @@ public class QLNV extends JFrame {
 	private JTextField tffSdt;
 	private JTextField tffCCCD;
 	private JTextField tfHoten;
+	private JTextField tfCCCD;
+	private JTextField tfSDT;
 	private JComboBox cbGioiTinh;
 	private JComboBox cbLoaikh;
 	private JTable customerTable;
 	private DefaultTableModel tableModel;
 	private JScrollPane scrollPane;
-	private Container pNgaysinh;
-	private JTextField tfHsl;
-	private JComboBox cbCalam;
-	private JTextField tfSdt;
-	private JTextField textField_1;
-	private JTextField textField;
-	private JTextField textField_2;
-	private JTextField tfDiaChi;
-	private JTextField tfCCCD;
 	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					QLNV frame = new QLNV();
+					QuanLyKhachHang_View frame = new QuanLyKhachHang_View();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -69,7 +61,7 @@ public class QLNV extends JFrame {
 		});
 	}
 	
-	public QLNV() {
+	public QuanLyKhachHang_View() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 1250, 800);
 		contentPane = new JPanel();
@@ -80,8 +72,8 @@ public class QLNV extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel pthemkh = new JPanel();
-		pthemkh.setBounds(10, 11, 1218, 229);
-		pthemkh.setBorder(new TitledBorder(new LineBorder(new Color(130, 135, 144)),"Thêm nhân viên", TitledBorder.LEADING, TitledBorder.TOP,new Font("Arial", Font.BOLD, 13), Color.decode("#4682A9")));
+		pthemkh.setBounds(10, 11, 1218, 228);
+		pthemkh.setBorder(new TitledBorder(new LineBorder(new Color(130, 135, 144)),"Thêm khách hàng", TitledBorder.LEADING, TitledBorder.TOP,new Font("Arial", Font.BOLD, 13), Color.decode("#4682A9")));
 		contentPane.add(pthemkh);
 		JPanel pr = new JPanel() ; 
 		pr.setBorder(new TitledBorder(null, "", TitledBorder.LEADING, TitledBorder.TOP, null, new Color(0, 255, 255)));
@@ -140,73 +132,55 @@ public class QLNV extends JFrame {
 		lblHoten.setFont(new Font("Arial", Font.BOLD, 17));
 		lblHoten.setForeground(Color.decode("#625A5A"));
 		
-		JPanel pNgaysinh = new JPanel();
-		pNgaysinh.setLayout(null);
-		lthem.add(pNgaysinh);
+		JPanel pCCCD = new JPanel() ; 
+		pCCCD.setLayout(null);
+		tfCCCD = new JTextField();
+		tfCCCD.setBounds(135, 5, 362, 40);
+		tfCCCD.setPreferredSize(new java.awt.Dimension(548, 43));
+		pCCCD.add(tfCCCD) ; 
+		lthem.add(pCCCD);
 		
-		JLabel lblNgaysinh = new JLabel("Ngày sinh");
-		lblNgaysinh.setForeground(Color.decode("#625A5A"));
-		lblNgaysinh.setFont(new Font("Arial", Font.BOLD, 17));
-		lblNgaysinh.setBounds(10, 8, 100, 29);
-		pNgaysinh.add(lblNgaysinh);
+		JLabel lblCCCD = new JLabel("CCCD");
+		lblCCCD.setForeground(Color.decode("#625A5A"));
+		lblCCCD.setFont(new Font("Arial", Font.BOLD, 17));
+		lblCCCD.setBounds(10, 9, 100, 29);
+		pCCCD.add(lblCCCD);
 		
-		tfNgaySinh = new JTextField();
-		tfNgaySinh.setPreferredSize(new Dimension(300, 43));
-		tfNgaySinh.setBounds(135, 8, 361, 40);
-		pNgaysinh.add(tfNgaySinh);
 		
-		JPanel pSdt = new JPanel() ; 
-		pSdt.setLayout(null);
-		lthem.add(pSdt);
+		JPanel pSDT = new JPanel() ; 
+		pSDT.setLayout(null);
+		tfSDT = new JTextField();
+		tfSDT.setBounds(134, 5, 362, 40);
+		tfSDT.setPreferredSize(new java.awt.Dimension(548, 43));
+		pSDT.add(tfSDT) ; 
+		lthem.add(pSDT);
 		
 		JLabel lblSDT = new JLabel("Số điện thoại");
+		lblSDT.setBounds(10, 9, 114, 29);
+		pSDT.add(lblSDT);
 		lblSDT.setForeground(Color.decode("#625A5A"));
 		lblSDT.setFont(new Font("Arial", Font.BOLD, 17));
-		lblSDT.setBounds(10, 9, 115, 29);
-		pSdt.add(lblSDT);
-		
-		tfSdt = new JTextField();
-		tfSdt.setPreferredSize(new Dimension(300, 43));
-		tfSdt.setBounds(135, 5, 361, 40);
-		pSdt.add(tfSdt);
-		
-		
-		JPanel pEmail = new JPanel() ; 
-		pEmail.setLayout(null);
-		lthem.add(pEmail);
-		
-		JLabel lblEmail = new JLabel("Email");
-		lblEmail.setBounds(10, 9, 114, 29);
-		pEmail.add(lblEmail);
-		lblEmail.setForeground(Color.decode("#625A5A"));
-		lblEmail.setFont(new Font("Arial", Font.BOLD, 17));
-		
-		tfEmail = new JTextField();
-		tfEmail.setPreferredSize(new Dimension(300, 43));
-		tfEmail.setBounds(135, 4, 361, 40);
-		pEmail.add(tfEmail);
 		
 		JPanel rthem = new JPanel() ; 
-		rthem.setSize(506, 350);
 		rthem.setLayout(new BoxLayout(rthem, BoxLayout.Y_AXIS));
 		
 		pl.add(lthem) ;
 		pl.add(rthem) ; 
 		
-		JPanel pDiachi = new JPanel();
-		pDiachi.setLayout(null);
-		rthem.add(pDiachi);
+		JPanel pEmail = new JPanel();
+		pEmail.setLayout(null);
+		rthem.add(pEmail);
 		
-		JLabel lblDiachi = new JLabel("Địa chỉ");
-		lblDiachi.setForeground(Color.decode("#625A5A"));
-		lblDiachi.setFont(new Font("Arial", Font.BOLD, 17));
-		lblDiachi.setBounds(10, 8, 100, 29);
-		pDiachi.add(lblDiachi);
+		tfEmail = new JTextField();
+		tfEmail.setPreferredSize(new Dimension(300, 43));
+		tfEmail.setBounds(149, 4, 347, 40);
+		pEmail.add(tfEmail);
 		
-		tfDiaChi = new JTextField();
-		tfDiaChi.setPreferredSize(new Dimension(300, 43));
-		tfDiaChi.setBounds(149, 4, 347, 35);
-		pDiachi.add(tfDiaChi);
+		JLabel lblEmail = new JLabel("Email");
+		lblEmail.setForeground(Color.decode("#625A5A"));
+		lblEmail.setFont(new Font("Arial", Font.BOLD, 17));
+		lblEmail.setBounds(10, 8, 100, 29);
+		pEmail.add(lblEmail);
 		
 		JPanel pGioitinh = new JPanel();
 		pGioitinh.setLayout(null);
@@ -220,56 +194,41 @@ public class QLNV extends JFrame {
 		
 		cbGioiTinh = new JComboBox();
 		cbGioiTinh.setModel(new DefaultComboBoxModel(new String[] {"Nam", "Nữ"}));
-		cbGioiTinh.setBounds(149, 4, 347, 35);
+		cbGioiTinh.setBounds(149, 4, 347, 43);
 		pGioitinh.add(cbGioiTinh);
 		
-		JPanel pCCCD = new JPanel();
-		pCCCD.setLayout(null);
-		rthem.add(pCCCD);
+		JPanel pLoaikh = new JPanel();
+		pLoaikh.setLayout(null);
+		rthem.add(pLoaikh);
 		
-		JLabel lblCCCD = new JLabel("CCCD");
-		lblCCCD.setForeground(Color.decode("#625A5A"));
-		lblCCCD.setFont(new Font("Arial", Font.BOLD, 17));
-		lblCCCD.setBounds(10, 9, 143, 29);
-		pCCCD.add(lblCCCD);
+		JLabel lblLoaikh = new JLabel("Loại khách hàng");
+		lblLoaikh.setForeground(Color.decode("#625A5A"));
+		lblLoaikh.setFont(new Font("Arial", Font.BOLD, 17));
+		lblLoaikh.setBounds(10, 9, 143, 29);
+		pLoaikh.add(lblLoaikh);
 		
-		tfCCCD = new JTextField();
-		tfCCCD.setPreferredSize(new Dimension(300, 43));
-		tfCCCD.setBounds(149, 4, 347, 35);
-		pCCCD.add(tfCCCD);
+		cbLoaikh = new JComboBox();
+		cbLoaikh.setModel(new DefaultComboBoxModel(new String[] {"Trẻ em ", "Sinh viên ", "Học sinh ", "Người già", "Người khuyết tật ", "Khách thường"}));
+		cbLoaikh.setBounds(150, 4, 347, 43);
+		pLoaikh.add(cbLoaikh);
 		
-		JPanel pHsl = new JPanel();
-		pHsl.setLayout(null);
-		rthem.add(pHsl);
+		JPanel pNgaysinh = new JPanel();
+		pNgaysinh.setLayout(null);
+		rthem.add(pNgaysinh);
 		
-		JLabel lblHsl = new JLabel("Hệ số lương");
-		lblHsl.setForeground(Color.decode("#625A5A"));
-		lblHsl.setFont(new Font("Arial", Font.BOLD, 17));
-		lblHsl.setBounds(10, 8, 132, 29);
-		pHsl.add(lblHsl);
+		JLabel lblNgaysinh = new JLabel("Ngày sinh");
+		lblNgaysinh.setForeground(Color.decode("#625A5A"));
+		lblNgaysinh.setFont(new Font("Arial", Font.BOLD, 17));
+		lblNgaysinh.setBounds(10, 8, 100, 29);
+		pNgaysinh.add(lblNgaysinh);
 		
-		tfHsl = new JTextField();
-		tfHsl.setPreferredSize(new Dimension(300, 43));
-		tfHsl.setBounds(149, 4, 347, 35);
-		pHsl.add(tfHsl);
-		
-		JPanel pCalam = new JPanel();
-		pCalam.setLayout(null);
-		rthem.add(pCalam);
-		//???????????????????????????
-		JLabel lblCalam = new JLabel("Ca làm");
-		lblCalam.setForeground(Color.decode("#625A5A"));
-		lblCalam.setFont(new Font("Arial", Font.BOLD, 17));
-		lblCalam.setBounds(10, 9, 143, 29);
-		pCalam.add(lblCalam);
-		
-		cbCalam = new JComboBox();
-		cbCalam.setBounds(149, 4, 347, 35);
-		pCalam.add(cbCalam);
-		cbCalam.setModel(new DefaultComboBoxModel(new String[] {""}));
+		tfNgaySinh = new JTextField();
+		tfNgaySinh.setPreferredSize(new Dimension(300, 43));
+		tfNgaySinh.setBounds(149, 8, 347, 40);
+		pNgaysinh.add(tfNgaySinh);
 		
 		JPanel panel = new JPanel();
-		panel.setBounds(20, 238, 1218, 62);
+		panel.setBounds(10, 239, 1218, 72);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
@@ -302,11 +261,11 @@ public class QLNV extends JFrame {
 		
 		JLabel lblfCCCD = new JLabel("CCCD");
 		lblfCCCD.setFont(new Font("Arial", Font.BOLD, 13));
-		lblGioitinh.setForeground(Color.decode("#625A5A"));
+		lblfCCCD.setForeground(Color.decode("#625A5A"));
 		lblfCCCD.setBounds(835, 11, 108, 14);
 		panel.add(lblfCCCD);
 		
-		JLabel lblfTen = new JLabel("Tên nhân viên");
+		JLabel lblfTen = new JLabel("Tên khách hàng");
 		lblfTen.setFont(new Font("Arial", Font.BOLD, 13));
 		lblfTen.setForeground(Color.decode("#625A5A"));
 		lblfTen.setBounds(696, 11, 108, 14);
@@ -319,11 +278,11 @@ public class QLNV extends JFrame {
 		panel.add(lblSdt);
 		
 		JPanel pDanhSach = new JPanel();
-		pDanhSach.setBorder(new TitledBorder(new LineBorder(new Color(130, 135, 144)), "Danh sách nhân viên", TitledBorder.LEADING, TitledBorder.TOP,new Font("Arial", Font.BOLD, 13), Color.decode("#4682A9")));
-		pDanhSach.setBounds(10, 304, 1218, 450);
+		pDanhSach.setBorder(new TitledBorder(new LineBorder(new Color(130, 135, 144)), "Danh sách khách hàng", TitledBorder.LEADING, TitledBorder.TOP,new Font("Arial", Font.BOLD, 13), Color.decode("#4682A9")));
+		pDanhSach.setBounds(10, 311, 1218, 410);
 		contentPane.add(pDanhSach);
 		
-		String[] columnNames = {"STT", "Mã nhân viên", "Tên nhân viên", "Số điện thoại", "Email", "Giới tính", "Trạng thái", "Chi tiết"};
+		String[] columnNames = {"STT", "Mã khách hàng", "Tên khách hàng", "CCCD", "Số điện thoại", "Email", "Giới tính", "Ngày sinh", "Loại khách hàng"};
         tableModel = new DefaultTableModel(columnNames, 0);
         pDanhSach.setLayout(new BorderLayout(0, 0));
         customerTable = new JTable(tableModel);
@@ -332,53 +291,63 @@ public class QLNV extends JFrame {
         scrollPane = new JScrollPane(customerTable);
         pDanhSach.add(scrollPane);
 	}
-	public JPanel getQLNV_View() {
+	public JPanel getQLKH_View() {
 		return contentPane;
 	}
 	private void btnXacNhan() {
-    // Lấy thông tin từ các trường đầu vào
-    String hoTen = tfHoten.getText().trim();
-    String ngaySinh = tfNgaySinh.getText().trim();
-    String sdt = tfSdt.getText().trim();
-    String email = tfEmail.getText().trim();
-    String diaChi = tfDiaChi.getText().trim();
-    String cccd = tfCCCD.getText().trim();
-    String gioiTinh = cbGioiTinh.getSelectedItem().toString();
-    String heSoLuong = tfHsl.getText().trim();
-    String caLam = cbCalam.getSelectedItem().toString();
-    
-    Object[] rowData = {
-        tableModel.getRowCount() + 1,
-        "?",hoTen,sdt,email,gioiTinh,"Hoạt động","Xem chi tiết"
-    };
-    tableModel.addRow(rowData);
-    
-    JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+	    String hoTen = tfHoten.getText();
+	    String cccd = tfCCCD.getText();
+	    String sdt = tfSDT.getText();
+	    String email = tfEmail.getText();
+	    String ngaySinh = tfNgaySinh.getText();
+	    String gioiTinh = (String) cbGioiTinh.getSelectedItem();
+	    String loaiKhachHang = (String) cbLoaikh.getSelectedItem();
 
-    tfHoten.setText("");
-    tfNgaySinh.setText("");
-    tfSdt.setText("");
-    tfEmail.setText("");
-    tfDiaChi.setText("");
-    tfCCCD.setText("");
-    tfHsl.setText("");
-    cbGioiTinh.setSelectedIndex(0);
-    cbCalam.setSelectedIndex(0);
-}
+	    DefaultTableModel model = (DefaultTableModel) customerTable.getModel();
+	    int stt = model.getRowCount() + 1;
+	    model.addRow(new Object[]{stt, "?", hoTen, cccd, sdt, email, gioiTinh, ngaySinh, loaiKhachHang});
 
+	    JOptionPane.showMessageDialog(this, "Thêm khách hàng thành công!", "Thông báo", JOptionPane.INFORMATION_MESSAGE);
+
+	    tfHoten.setText("");
+	    tfCCCD.setText("");
+	    tfSDT.setText("");
+	    tfEmail.setText("");
+	    tfNgaySinh.setText("");
+	}
 	private void btnHuyBo() {
 		tfHoten.setText("");
-	    tfNgaySinh.setText("");
-	    tfSdt.setText("");
-	    tfEmail.setText("");
-	    tfDiaChi.setText("");
 	    tfCCCD.setText("");
-	    tfHsl.setText("");
+	    tfSDT.setText("");
+	    tfEmail.setText("");
 	    cbGioiTinh.setSelectedIndex(0);
-	    cbCalam.setSelectedIndex(0);
+	    cbLoaikh.setSelectedIndex(0);
+	    tfNgaySinh.setText("");
 	}
 	private void btnTimKiem() { // LỖI
+	    String ten = tffTen.getText().toLowerCase(); // Lấy giá trị từ tffTen
+	    String cccd = tffCCCD.getText().toLowerCase(); // Lấy giá trị từ tffCCCD
+	    String sdt = tffSdt.getText().toLowerCase(); // Lấy giá trị từ tffSdt
 
+	    // Duyệt qua tất cả các hàng trong bảng
+	    DefaultTableModel model = (DefaultTableModel) customerTable.getModel();
+	    for (int i = 0; i < model.getRowCount(); i++) {
+	        boolean matches = false;
+
+	        // Kiểm tra từng ô trong hàng
+	        if (model.getValueAt(i, 2).toString().toLowerCase().contains(ten) || // Tên khách hàng
+	            model.getValueAt(i, 3).toString().toLowerCase().contains(cccd) || // CCCD
+	            model.getValueAt(i, 4).toString().toLowerCase().contains(sdt)) { // Số điện thoại
+	            matches = true;
+	        }
+
+	        // Tô màu hàng nếu tìm thấy
+	        if (matches) {
+	            customerTable.setRowSelectionInterval(i, i); // Chọn hàng
+	            customerTable.setSelectionBackground(Color.YELLOW); // Màu nền khi chọn
+	        }
+	    }
 	}
+
 }
 

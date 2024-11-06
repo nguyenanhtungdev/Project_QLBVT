@@ -10,6 +10,14 @@ import connectDB.ConnectDB;
 
 public class VeTau_DAO {
 
+	private static VeTau_DAO instance;
+
+	public static VeTau_DAO getInstance() {
+		if (instance == null)
+			instance = new VeTau_DAO();
+		return instance;
+	}
+
 	public ArrayList<VeTau> getalltbVT() {
 		ArrayList<VeTau> veTaus = new ArrayList<>();
 		String sql = "Select * FROM VeTau";
@@ -33,5 +41,23 @@ public class VeTau_DAO {
 			e.printStackTrace();
 		}
 		return veTaus;
+	}
+
+	public String getVeTauMax() {
+		ArrayList<VeTau> veTaus = new ArrayList<>();
+		String sql = "SELECT MAX(maVeTau) FROM VeTau";
+		Connection con;
+		String maVeTau = null;
+		try {
+			con = ConnectDB.getInstance().getConnection();
+			Statement statement = con.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				maVeTau = resultSet.getString(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return maVeTau;
 	}
 }

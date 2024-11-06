@@ -10,6 +10,15 @@ import java.util.ArrayList;
 import connectDB.ConnectDB;
 
 public class ToaTau_DAO {
+
+	private static ToaTau_DAO instance;
+
+	public static ToaTau_DAO getInstance() {
+		if (instance == null)
+			instance = new ToaTau_DAO();
+		return instance;
+	}
+
 	public ArrayList<ToaTau> getalltbTT() {
 		ArrayList<ToaTau> toaTaus = new ArrayList<>();
 		String sql = "Select * FROM ToaTau";
@@ -29,6 +38,36 @@ public class ToaTau_DAO {
 				String maTau = resultSet.getString(7);
 
 				Tau tau = new Tau(maTau);
+				ToaTau toatau = new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau);
+				toaTaus.add(toatau);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return toaTaus;
+	}
+
+	public ArrayList<ToaTau> getDsToaTau(String maTau) {
+		ArrayList<ToaTau> toaTaus = new ArrayList<>();
+		String sql = "SELECT * FROM ToaTau TT JOIN Tau T ON TT.maTau = T.maTau WHERE TT.maTau = ?";
+		Connection con;
+
+		try {
+			con = ConnectDB.getInstance().getConnection();
+			PreparedStatement statement = con.prepareStatement(sql);
+			statement.setString(1, maTau);
+
+			ResultSet resultSet = statement.executeQuery();
+			while (resultSet.next()) {
+				String maToaTau = resultSet.getString(1);
+				String tenToaTau = resultSet.getString(2);
+				int soThuTuToa = resultSet.getInt(3);
+				String loaiToa = resultSet.getString(4);
+				int soLuongGhe = resultSet.getInt(5);
+				boolean trangThai = resultSet.getBoolean(6);
+				String maTauSQL = resultSet.getString(7);
+
+				Tau tau = new Tau(maTauSQL);
 				ToaTau toatau = new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau);
 				toaTaus.add(toatau);
 			}
@@ -68,5 +107,4 @@ public class ToaTau_DAO {
 
 		return toaTaus;
 	}
-
 }

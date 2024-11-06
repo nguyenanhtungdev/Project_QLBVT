@@ -1,8 +1,10 @@
 package view;
 
-import javax.swing.JPanel;
+import javax.swing.JFrame;
 
-public abstract class View extends JPanel {
+import other.ColorConstants;
+
+public class View extends JFrame {
 
 	private static final long serialVersionUID = 1674811842027823122L;
 
@@ -19,6 +21,8 @@ public abstract class View extends JPanel {
 	public View(String name, String imagePath) {
 		this.setName(name);
 		this.imagePath = imagePath;
+
+		getContentPane().setBackground(ColorConstants.BACKGROUND_COLOR);
 	}
 
 }
