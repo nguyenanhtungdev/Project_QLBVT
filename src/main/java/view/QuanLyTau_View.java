@@ -8,7 +8,6 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.ImageIcon;
@@ -22,7 +21,6 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import com.formdev.flatlaf.FlatLightLaf;
@@ -55,7 +53,6 @@ public class QuanLyTau_View extends View {
 	public JPanel trainContainer;
 	private JLabel lblSoTau;
 	private static Tau_DAO t_dao;
-	private int STT = 1;
 	private JPanel panelDS;
 	private DefaultTableModel modelTableTTau;
 	private JScrollPane tablePanelTTau;
@@ -90,7 +87,7 @@ public class QuanLyTau_View extends View {
 	private JLabel lblBaotri;
 	private JButton btnReset;
 	private JComboBox<String> comboBoxMaTau;
-	private JComboBox comboBoxTrangThai;
+	private JComboBox<String> comboBoxTrangThai;
 
 	public static JComboBox<String> timKiemMaTau() {
 		JComboBox<String> comboBox = new JComboBox<>();
@@ -98,7 +95,6 @@ public class QuanLyTau_View extends View {
 		List<Tau> danhSachTau;
 		try {
 			danhSachTau = t_dao.getAllTau();
-			// Thêm các mã tàu vào EventList
 			for (Tau tau : danhSachTau) {
 				String maTau = tau.getMaTau();
 				maTauList.add(maTau);
@@ -273,9 +269,8 @@ public class QuanLyTau_View extends View {
 		btnSearch = new PrimaryButton("Tìm kiếm", "/Image/search.png");
 		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
 		btnSearch.setFont(new Font("Tahoma", Font.BOLD, 18));
-//        btnSearch.setHeSoBoGoc(10);
-//        btnSearch.setKhoangCachIcon(5);
-//        btnSearch.setIconSize(26, 26);
+		btnSearch.setBorderRadius(10);
+		btnSearch.setIconSize(26, 26);
 		btnSearch.setVerticalTextPosition(SwingConstants.CENTER);
 		btnSearch.setVerticalAlignment(SwingConstants.TOP);
 		btnSearch.setHorizontalTextPosition(SwingConstants.RIGHT);
@@ -297,24 +292,20 @@ public class QuanLyTau_View extends View {
 		tableTau = new JTable(modelTableTau);
 		tableTau.setShowGrid(true);
 		tableTau.setGridColor(new Color(225, 225, 225));
-		// Thiết lập chiều rộng cột cụ thể
-		centerTableCells(tableTau);
 		tableTau.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-		tableTau.getColumnModel().getColumn(0).setPreferredWidth(20); // STT
-		tableTau.getColumnModel().getColumn(1).setPreferredWidth(50); // Mã tàu
-		tableTau.getColumnModel().getColumn(2).setPreferredWidth(200); // Tên tàu
-		tableTau.getColumnModel().getColumn(3).setPreferredWidth(20); // Số toa
-		tableTau.getColumnModel().getColumn(4).setPreferredWidth(70); // Năm sản xuất
-		tableTau.getColumnModel().getColumn(5).setPreferredWidth(150); // Nhà sản xuất
-		tableTau.getColumnModel().getColumn(6).setPreferredWidth(80); // Tốc độ trung bình
-		tableTau.getColumnModel().getColumn(7).setPreferredWidth(70); // Tốc độ tối đa
-		tableTau.getColumnModel().getColumn(8).setPreferredWidth(90); // Trạng thái
+		tableTau.getColumnModel().getColumn(0).setPreferredWidth(20);
+		tableTau.getColumnModel().getColumn(1).setPreferredWidth(50);
+		tableTau.getColumnModel().getColumn(2).setPreferredWidth(200);
+		tableTau.getColumnModel().getColumn(3).setPreferredWidth(20);
+		tableTau.getColumnModel().getColumn(4).setPreferredWidth(70);
+		tableTau.getColumnModel().getColumn(5).setPreferredWidth(150);
+		tableTau.getColumnModel().getColumn(6).setPreferredWidth(80);
+		tableTau.getColumnModel().getColumn(7).setPreferredWidth(70);
+		tableTau.getColumnModel().getColumn(8).setPreferredWidth(90);
 		tableTau.getColumnModel().getColumn(9).setPreferredWidth(200);
 		tablePanelTau = new JScrollPane(tableTau);
 		tableTau.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableTau.setRowHeight(30);
-		DocDuLieuVaoTableTau();
-
 		panel_TableTau.add(tablePanelTau);
 
 		// ds Toa Tau
@@ -622,43 +613,5 @@ public class QuanLyTau_View extends View {
 
 	public JTable getTableGheTau() {
 		return tableTGhe;
-	}
-
-	public void DocDuLieuVaoTableTau() {
-		getModelTau().setRowCount(0);
-
-		ArrayList<Tau> dsTau;
-		try {
-			dsTau = t_dao.getAllTau();
-			for (Tau t : dsTau) {
-				String trangThaiHienThi;
-				switch (t.getTrangThai()) {
-				case HOAT_DONG:
-					trangThaiHienThi = "Hoạt động";
-					break;
-				case BAO_TRI:
-					trangThaiHienThi = "Bảo trì";
-					break;
-				case DUNG_HOAT_DONG:
-					trangThaiHienThi = "Dừng hoạt động";
-					break;
-				default:
-					trangThaiHienThi = "Không xác định";
-					break;
-				}
-				getModelTau().addRow(new Object[] { STT++, t.getMaTau(), t.getTenTau(), t.getSoToa(), t.getNamSanXuat(),
-						t.getNhaSanXuat(), t.getTocDoTB(), t.getTocDoToiDa(), trangThaiHienThi, t.getGhiChu() });
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private static void centerTableCells(JTable table) {
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER);
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-		}
 	}
 }

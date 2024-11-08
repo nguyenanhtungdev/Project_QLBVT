@@ -3,6 +3,7 @@ package view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.EventQueue;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
@@ -24,7 +25,6 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.swing.border.CompoundBorder;
@@ -45,6 +45,7 @@ import other.DangerPrimaryButton;
 import other.PrimaryButton;
 
 import java.awt.FlowLayout;
+import java.awt.Component;
 
 public class QuanLyKhuyenMai_View extends View {
 
@@ -57,17 +58,29 @@ public class QuanLyKhuyenMai_View extends View {
 	private JTable tableKM;
 	private JPanel panelSearch1;
 	private JComboBox<String> comboBoxMaKM;
-	private JComboBox comboBoxTrangThai;
+	private JComboBox<String> comboBoxTrangThai;
 	private JButton btnReset;
 	private PrimaryButton btnSearch;
 	private static KhuyenMai_DAO km_dao;
-	private JTextField txtMakm;
 	private ImageIcon iconlich;
-	private int STT = 1;
-	private JScrollPane tablePanel;
 	private JTextField txtTenKM;
 	private JTextField txtSLKM;
 	private JTextArea txtNDKM;
+	private JTextField txtGiamGia;
+
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					QuanLyKhuyenMai_View frame = new QuanLyKhuyenMai_View("Khuyến mãi",
+							"/Image/tabler-icon-file-settings.png");
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
 
 	public void addButtonReloadListener(ActionListener listener) {
 		btnReset.addActionListener(listener);
@@ -105,6 +118,7 @@ public class QuanLyKhuyenMai_View extends View {
 		return comboBox;
 	}
 
+	@SuppressWarnings("unused")
 	public QuanLyKhuyenMai_View(String name, String imagePath) {
 		super(name, imagePath);
 		FlatLightLaf.setup();
@@ -151,13 +165,13 @@ public class QuanLyKhuyenMai_View extends View {
 
 		JPanel panelNhap2 = new JPanel();
 		panelNhap2.setBackground(Color.WHITE);
-		panelNhap2.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panelNhap2.setBorder(new EmptyBorder(5, 5, 0, 5));
 		panelNhap1.add(panelNhap2, BorderLayout.NORTH);
-		panelNhap2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+		panelNhap2.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
 		JPanel panelTenKM = new JPanel();
 		panelTenKM.setBackground(Color.WHITE);
-		panelTenKM.setBorder(new EmptyBorder(0, 0, 0, 73));
+		panelTenKM.setBorder(new EmptyBorder(0, 0, 0, 68));
 		panelNhap2.add(panelTenKM);
 
 		JLabel lblTenKM = new JLabel("Tên khuyến mãi");
@@ -175,6 +189,7 @@ public class QuanLyKhuyenMai_View extends View {
 		txtTenKM.setFont(new Font("Arial", Font.PLAIN, 16));
 
 		JPanel panelSL = new JPanel();
+		panelSL.setBorder(new EmptyBorder(0, 3, 0, 0));
 		panelSL.setBackground(Color.WHITE);
 		panelNhap2.add(panelSL);
 
@@ -196,13 +211,13 @@ public class QuanLyKhuyenMai_View extends View {
 
 		JPanel panelNhap3 = new JPanel();
 		panelNhap3.setBackground(Color.WHITE);
-		panelNhap3.setBorder(new EmptyBorder(5, 5, 0, 5));
+		panelNhap3.setBorder(new EmptyBorder(0, 5, 0, 5));
 		panelNhap1.add(panelNhap3);
-		panelNhap3.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+		panelNhap3.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 0));
 
 		JPanel panelNDkm = new JPanel();
 		panelNDkm.setBackground(Color.WHITE);
-		panelNDkm.setBorder(new EmptyBorder(0, 0, 80, 5));
+		panelNDkm.setBorder(new EmptyBorder(0, 0, 80, 0));
 		FlowLayout fl_panelNDkm = (FlowLayout) panelNDkm.getLayout();
 		panelNhap3.add(panelNDkm);
 
@@ -213,7 +228,7 @@ public class QuanLyKhuyenMai_View extends View {
 
 		JPanel panelTxtNDkm = new JPanel();
 		panelTxtNDkm.setBackground(Color.WHITE);
-		panelTxtNDkm.setBorder(new EmptyBorder(0, 23, 0, 0));
+		panelTxtNDkm.setBorder(new EmptyBorder(0, 23, 0, 20));
 		panelNhap3.add(panelTxtNDkm);
 
 		txtNDKM = new JTextArea();
@@ -227,17 +242,24 @@ public class QuanLyKhuyenMai_View extends View {
 
 		JPanel panelDate = new JPanel();
 		panelDate.setBackground(Color.WHITE);
-		panelDate.setBorder(new EmptyBorder(0, 0, 70, 0));
+		panelDate.setBorder(new EmptyBorder(0, 0, 25, 0));
 		panelNhap3.add(panelDate);
+		panelDate.setLayout(new BoxLayout(panelDate, BoxLayout.Y_AXIS));
+
+		Component verticalStrut_1 = Box.createVerticalStrut(20);
+		panelDate.add(verticalStrut_1);
 
 		JPanel panelDate1 = new JPanel();
+		panelDate1.setBorder(new EmptyBorder(0, 0, 0, 0));
 		panelDate1.setBackground(Color.WHITE);
 		panelDate.add(panelDate1);
-		panelDate1.setLayout(new BoxLayout(panelDate1, BoxLayout.X_AXIS));
+		panelDate1.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
 		JPanel panelDate3 = new JPanel();
+		FlowLayout flowLayout_2 = (FlowLayout) panelDate3.getLayout();
+		flowLayout_2.setAlignment(FlowLayout.LEFT);
 		panelDate3.setBackground(Color.WHITE);
-		panelDate3.setBorder(new EmptyBorder(0, 20, 0, 10));
+		panelDate3.setBorder(new EmptyBorder(0, 0, 0, 10));
 		panelDate1.add(panelDate3);
 
 		JLabel lblDateKT = new JLabel("Ngày kết thúc");
@@ -248,7 +270,7 @@ public class QuanLyKhuyenMai_View extends View {
 		dateKTKM.setBackground(Color.WHITE);
 		dateKTKM.getCalendarButton().setBackground(new Color(235, 235, 235));
 		dateKTKM.getCalendarButton().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-		dateKTKM.setBorder(new EmptyBorder(0, 61, 0, 0));
+		dateKTKM.setBorder(new EmptyBorder(0, 58, 0, 0));
 		dateKTKM.getCalendarButton().setFont(new Font("Arial", Font.PLAIN, 16));
 		dateKTKM.setFont(new Font("Arial", Font.PLAIN, 16));
 		dateKTKM.setDateFormatString("dd-MM-yyyy");
@@ -256,6 +278,38 @@ public class QuanLyKhuyenMai_View extends View {
 		iconlich = new ImageIcon(getClass().getResource("/Image/icon_lich.png"));
 		dateKTKM.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
 		panelDate1.add(dateKTKM);
+
+		Component verticalStrut = Box.createVerticalStrut(20);
+		panelDate.add(verticalStrut);
+
+		JPanel panel = new JPanel();
+		panel.setBorder(new EmptyBorder(0, 0, 0, 0));
+		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setAlignment(FlowLayout.LEFT);
+		panel.setBackground(Color.WHITE);
+		panelDate.add(panel);
+
+		JPanel panelGiamGia = new JPanel();
+		FlowLayout fl_panelGiamGia = (FlowLayout) panelGiamGia.getLayout();
+		fl_panelGiamGia.setAlignment(FlowLayout.LEFT);
+		panelGiamGia.setBorder(new EmptyBorder(0, 0, 0, 45));
+		panelGiamGia.setBackground(Color.WHITE);
+		panel.add(panelGiamGia);
+
+		JLabel lblGiamGia = new JLabel("Giảm giá");
+		lblGiamGia.setForeground(new Color(70, 130, 180));
+		lblGiamGia.setFont(new Font("Arial", Font.BOLD, 16));
+		panelGiamGia.add(lblGiamGia);
+
+		JPanel panelGiamGiat = new JPanel();
+		panelGiamGiat.setBorder(new EmptyBorder(0, 55, 0, 0));
+		panelGiamGiat.setBackground(Color.WHITE);
+		panel.add(panelGiamGiat);
+		panelGiamGiat.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
+
+		txtGiamGia = new JTextField(14);
+		txtGiamGia.setFont(new Font("Arial", Font.PLAIN, 16));
+		panelGiamGiat.add(txtGiamGia);
 
 		JPanel panelNut = new JPanel();
 		panelNut.setBackground(Color.WHITE);
@@ -268,17 +322,13 @@ public class QuanLyKhuyenMai_View extends View {
 		btnThem = new PrimaryButton("Thêm khuyến mãi    ", "/Image/plus.png");
 //		btnThem.setColor_1(new Color(149, 149, 255));
 //		btnThem.setColor_2(ColorConstants.HOVER_COLOR);
-//		btnThem.setHeSoBoGoc(15);
 		btnThem.setBorderRadius(15);
-//		btnThem.setFont(new Font("Arial", Font.BOLD, 16));
+		btnThem.setFont(new Font("Arial", Font.BOLD, 16));
 		btnThem.setIconSize(32, 32);
 
 		btnHuy = new DangerPrimaryButton("Huỷ bỏ     ", "/Image/cancel.png");
-//		btnHuy.setColor_1(new Color(255, 128, 0));
-//		btnHuy.setColor_2(new Color(240, 128, 0));
-//		btnHuy.setHeSoBoGoc(15); // Độ bo góc
 		btnHuy.setBorderRadius(15); // Độ bo góc
-//		btnHuy.setFont(new Font("Arial", Font.BOLD, 16));
+		btnHuy.setFont(new Font("Arial", Font.BOLD, 16));
 		btnHuy.setIconSize(32, 32);
 
 		panelNut.add(Box.createVerticalGlue());
@@ -296,8 +346,8 @@ public class QuanLyKhuyenMai_View extends View {
 		panelBtnHuy.add(btnHuy, BorderLayout.NORTH);
 		panelNut.add(Box.createVerticalGlue());
 
-		String[] header = { "STT", "Mã khuyến mãi", "Tên khuyến mãi", "Nội dung", "Số lượng", "Ngày kết thúc",
-				"Tình trạng" };
+		String[] header = { "STT", "Mã khuyến mãi", "Tên khuyến mãi", "Nội dung", "Giảm giá", "Số lượng",
+				"Ngày kết thúc", "Tình trạng" };
 		Font headerFont = new Font("Arial", Font.BOLD, 18);
 		modelTableKM = new DefaultTableModel(header, 0);
 
@@ -306,9 +356,7 @@ public class QuanLyKhuyenMai_View extends View {
 		tableKM.setGridColor(new Color(225, 225, 225));
 		tableKM.getTableHeader().setFont(headerFont);
 		tableKM.setFont(new Font("Arial", Font.PLAIN, 16));
-		tablePanel = new JScrollPane(tableKM);
 		tableKM.getColumnModel().getColumn(0).setPreferredWidth(5);
-		DocDuLieuVaoTableHoaDon();
 
 		JPanel panelSearchAndTable = new JPanel();
 		panelSearchAndTable.setBorder(new EmptyBorder(15, 0, 0, 0));
@@ -346,7 +394,7 @@ public class QuanLyKhuyenMai_View extends View {
 		panelMakm.add(lblMakm);
 
 		comboBoxMaKM = timKiemMaKhuyenMai();
-		comboBoxMaKM.setEditable(true); // Cho phép nhập liệu
+		comboBoxMaKM.setEditable(true);
 		comboBoxMaKM.setFont(new Font("Arial", Font.PLAIN, 16));
 		comboBoxMaKM.setPreferredSize(new Dimension(150, 25));
 		panelMakm.add(comboBoxMaKM);
@@ -374,13 +422,10 @@ public class QuanLyKhuyenMai_View extends View {
 		paelSearch2.add(btnReset);
 
 		btnSearch = new PrimaryButton("Tìm kiếm", "/Image/search.png");
-//		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
-		btnSearch.setInsets(new Insets(4, 10, 4, 10));
+		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
 		btnSearch.setFont(new Font("Tahoma", Font.BOLD, 18));
 //		btnSearch.setHeSoBoGoc(10);
-		btnSearch.setBorderRadius(10);
-//		btnSearch.setKhoangCachIcon(5);
-		btnSearch.setIconTextGap(5);
+		btnSearch.setBorderRadius(5);
 		btnSearch.setIconSize(26, 26);
 		btnSearch.setVerticalTextPosition(SwingConstants.CENTER);
 		btnSearch.setVerticalAlignment(SwingConstants.TOP);
@@ -396,6 +441,14 @@ public class QuanLyKhuyenMai_View extends View {
 		panelLblDSkm.add(lblDS);
 		panelSearch1.add(panelLblDSkm, BorderLayout.WEST);
 
+	}
+
+	public JTextField getTxtGiamGia() {
+		return txtGiamGia;
+	}
+
+	public void setTxtGiamGia(JTextField txtGiamGia) {
+		this.txtGiamGia = txtGiamGia;
 	}
 
 	public JPanel getQLKhuyenMai_View() {
@@ -432,30 +485,5 @@ public class QuanLyKhuyenMai_View extends View {
 
 	public JComboBox<String> getComboBoxTrangThai() {
 		return comboBoxTrangThai;
-	}
-
-	public void DocDuLieuVaoTableHoaDon() {
-		List<KhuyenMai> list;
-		try {
-			list = km_dao.getAll();
-			for (KhuyenMai km : list) {
-				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-				String ngayKetThucDoFormatted;
-				if (km.getHanSuDungKhuyenMai() != null) {
-					ngayKetThucDoFormatted = km.getHanSuDungKhuyenMai().format(formatter);
-				} else {
-					ngayKetThucDoFormatted = "Không xác định"; // Gán giá trị mặc định nếu null
-					// Hoặc bạn có thể để trống như: ngayKetThucDoFormatted = "";
-				}
-				modelTableKM.addRow(
-						new Object[] { STT++, km.getMaKhuyenMai(), km.getTenKhuyenMai(), km.getNoiDungKhuyenMai(),
-								km.getSoLuongToiDa(), ngayKetThucDoFormatted, km.getTinhTrangKhuyenMai(),
-
-						});
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 }
