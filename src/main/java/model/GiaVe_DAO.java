@@ -47,44 +47,30 @@ public class GiaVe_DAO {
 		return dsGiaVe;
 	}
 
-	public boolean themGiaVe(GiaVe giaVe) {
-		String sql = "INSERT INTO GiaVe (maGiaVe, giaVe, tiLeTangGia, ngayCapNhap, ghiChu) VALUES (?, ?, ?, ?, ?)";
+	public GiaVe findByMaGiaVe(String maGiaVe) {
+		GiaVe giaVe = null;
+		String sql = "SELECT * FROM GiaVe WHERE maGiaVe = ?";
 		Connection con;
+
 		try {
 			con = ConnectDB.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement(sql);
+			PreparedStatement preparedStatement = con.prepareStatement(sql);
+			preparedStatement.setString(1, maGiaVe);
 
-			stmt.setString(1, giaVe.getMaGiaVe());
-			stmt.setDouble(2, giaVe.getGiaVe());
-			stmt.setFloat(3, giaVe.getTiLeTangGia());
-			stmt.setTimestamp(4, Timestamp.valueOf(giaVe.getNgayCapNhap()));
-			stmt.setString(5, giaVe.getGhiChu());
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				String maGiaVeResult = resultSet.getString(1);
+				double giaVeResult = resultSet.getDouble(2);
+				float tiLeTangGia = resultSet.getFloat(3);
+				LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
+				String ghiChu = resultSet.getString(5);
 
-			return stmt.executeUpdate() > 0;
+				giaVe = new GiaVe(maGiaVeResult, giaVeResult, tiLeTangGia, ngayCapNhap, ghiChu);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
-	}
-
-	public boolean capNhapGiaVe(GiaVe giaVe) {
-		String sql = "UPDATE GiaVe SET giaVe = ?, tiLeTangGia = ?, ngayCapNhap = ?, ghiChu = ? WHERE maGiaVe = ?";
-		Connection con;
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement(sql);
-
-			stmt.setDouble(1, giaVe.getGiaVe());
-			stmt.setFloat(2, giaVe.getTiLeTangGia());
-			stmt.setTimestamp(3, Timestamp.valueOf(giaVe.getNgayCapNhap()));
-			stmt.setString(4, giaVe.getGhiChu());
-			stmt.setString(5, giaVe.getMaGiaVe());
-
-			return stmt.executeUpdate() > 0;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return false;
-		}
+		return giaVe;
 	}
 
 	public GiaVe getGiaVeTheoChuyenTau(String maGheTau, String maChuyenTau) {

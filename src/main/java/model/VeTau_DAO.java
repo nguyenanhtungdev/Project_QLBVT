@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -59,5 +60,29 @@ public class VeTau_DAO {
 			e.printStackTrace();
 		}
 		return maVeTau;
+	}
+
+	public VeTau getVeTauByMaVeTau(String maVeTau) {
+		VeTau veTau = null;
+		String sql = "SELECT * FROM VeTau WHERE maVeTau = ?";
+		Connection con;
+
+		try {
+			con = ConnectDB.getInstance().getConnection();
+			PreparedStatement preparedStatement = con.prepareStatement(sql);
+			preparedStatement.setString(1, maVeTau);
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				String maVach = resultSet.getString(2);
+				boolean loaiVe = resultSet.getBoolean(3);
+				TrangThaiVeTau trangThai = TrangThaiVeTau.values()[resultSet.getInt(4)];
+				ChuyenTau chuyenTau = new ChuyenTau(resultSet.getString(5));
+				veTau = new VeTau(maVeTau, maVach, loaiVe, trangThai, chuyenTau);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return veTau;
 	}
 }
