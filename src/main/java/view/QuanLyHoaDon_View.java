@@ -2,16 +2,12 @@ package view;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.FlowLayout;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import com.formdev.flatlaf.FlatLightLaf;
@@ -20,35 +16,24 @@ import com.toedter.calendar.JDateChooser;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
-import connectDB.ConnectDB;
 import model.HoaDon;
 import model.HoaDon_DAO;
-import model.KhachHang;
-import other.ColorConstants;
 import other.CustomTitleLable;
 import other.PrimaryButton;
-import other.RoundField;
-import other.RoundedPanel;
 
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Image;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.sql.SQLException;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 import java.util.List;
 
 import javax.swing.JScrollPane;
@@ -56,33 +41,22 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 import java.awt.Color;
-import java.awt.Cursor;
 
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.BoxLayout;
-import java.awt.GridLayout;
-import javax.swing.border.LineBorder;
-import java.awt.Component;
 
-public class QuanLyHoaDon_View extends View {
+public class QuanLyHoaDon_View extends View implements Printable {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JLabel lblQLHD;
 	private DefaultTableModel modelTableHD;
 	private JTable tableHD;
-	private JScrollPane tablePanel;
 	private PrimaryButton btnInDS;
-	private JTextField dateField1;
-	private JTextField dateField2;
 	private static HoaDon_DAO hd_dao;
-	private int STT = 1;
-	private JTextField txtMaHD;
 	private JPanel panel_ngayLap;
 	private JDateChooser dateBD;
 	private JDateChooser dateKT;
@@ -101,7 +75,6 @@ public class QuanLyHoaDon_View extends View {
 	private JLabel lblNgyLpHo;
 	private JPanel panel_SDT;
 	private JPanel panelSDT;
-	private JTextField textField;
 	private JPanel panel_lblSDT;
 	private JLabel lblSinThoi;
 	private JPanel panel_lblloc;
@@ -113,23 +86,8 @@ public class QuanLyHoaDon_View extends View {
 	private JMenuItem maHDItem;
 	private JMenuItem dateItem;
 	private JMenuItem sdtItem;
-	private JPanel panelLogo;
-	private JLabel lbl_Icon;
-	private ImageIcon iconLogo;
-	private JPanel panelChuaLogo;
-	private JPanel panelTrong1;
-	private DefaultTableModel modelTableHDCT;
-	private JTable tableHDCT;
-	private JPanel panelTableAndTotal;
-	private JPanel panelTotal;
-	private JPanel panelTableHDCT;
-	private JPanel panelTongtien;
-	private JPanel panelThueVAT;
-	private JLabel lblThueVAT;
-	private JPanel panelTongTien;
-	private JLabel lblTongTien;
-	private JPanel panelTongTienTT;
-	private JLabel lblTongTienTT;
+	private JPanel headerPanel;
+	private JPanel buttonPanel;
 
 	public void addButtonReloadListener(ActionListener listener) {
 		btnReset.addActionListener(listener);
@@ -137,6 +95,10 @@ public class QuanLyHoaDon_View extends View {
 
 	public void addButtonXemHDCT(ActionListener listener) {
 		btnXemCT.addActionListener(listener);
+	}
+
+	public void addButtonInDSHD(ActionListener listener) {
+		btnInDS.addActionListener(listener);
 	}
 
 	public void addButtonMaHDItem(ActionListener listener) {
@@ -178,7 +140,6 @@ public class QuanLyHoaDon_View extends View {
 		return comboBox;
 	}
 
-//    btn_DangNhap = new RoundButton("Đăng Nhập", ColorConstants.PRIMARY_COLOR, ColorConstants.HOVER_COLOR);
 	public QuanLyHoaDon_View(String name, String imagePath) {
 		super(name, imagePath);
 		FlatLightLaf.setup();
@@ -196,7 +157,7 @@ public class QuanLyHoaDon_View extends View {
 		lblQLHD.setHorizontalAlignment(SwingConstants.CENTER);
 		lblQLHD.setFont(new Font("Arial", Font.BOLD, 20));
 
-		JPanel headerPanel = new JPanel(new BorderLayout());
+		headerPanel = new JPanel(new BorderLayout());
 		headerPanel.setBackground(new Color(255, 255, 255));
 		headerPanel.add(lblQLHD, BorderLayout.NORTH);
 
@@ -391,13 +352,9 @@ public class QuanLyHoaDon_View extends View {
 		panelLoc.add(panel_lblloc, BorderLayout.NORTH);
 		btnSearch = new PrimaryButton("Lọc", "/Image/search.png");
 		btnSearch.setPreferredSize(new Dimension(130, 30));
-//		btnSearch.setKhoangCachIcon(5);
-		btnSearch.setIconTextGap(5);
-//		btnSearch.setHeSoBoGoc(10);
 		btnSearch.setBorderRadius(10);
 		btnSearch.setFont(new Font("Arial", Font.BOLD, 18));
-//		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
-		btnSearch.setInsets(new Insets(4, 10, 4, 10));
+		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
 		panelLoc.add(btnSearch);
 		filterMenu = new JPopupMenu();
 		maHDItem = new JMenuItem("Lọc theo mã hóa đơn");
@@ -436,15 +393,13 @@ public class QuanLyHoaDon_View extends View {
 		tableHD.setGridColor(new Color(225, 225, 225));
 		tableHD.getTableHeader().setFont(headerFont);
 		tableHD.setFont(new Font("Arial", Font.PLAIN, 16));
-		tablePanel = new JScrollPane(tableHD);
 		tableHD.getColumnModel().getColumn(0).setPreferredWidth(5);
-		centerTableCells(tableHD);
 		tableHD.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableHD.setRowHeight(30);
-		contentPane.add(new JScrollPane(tableHD), BorderLayout.CENTER);
-		DocDuLieuVaoTableHoaDon();
+		JScrollPane tableScroll = new JScrollPane(tableHD);
+		contentPane.add(tableScroll, BorderLayout.CENTER);
 
-		JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 		buttonPanel.setBackground(Color.WHITE);
 
 		panelXemCT = new JPanel();
@@ -455,56 +410,21 @@ public class QuanLyHoaDon_View extends View {
 
 		btnXemCT = new PrimaryButton("Xem chi tiết", "/Image/eye.png");
 		btnXemCT.setVerticalTextPosition(SwingConstants.CENTER);
-//		btnXemCT.setKhoangCachIcon(5);
-		btnXemCT.setIconTextGap(5);
 		btnXemCT.setHorizontalTextPosition(SwingConstants.RIGHT);
-//		btnXemCT.setHeSoBoGoc(10);
 		btnXemCT.setBorderRadius(10);
 		btnXemCT.setFont(new Font("Tahoma", Font.BOLD, 18));
-		btnXemCT.setIconSize(26, 26);
-//		btnXemCT.setBorder(new EmptyBorder(4, 10, 4, 10));
-		btnXemCT.setInsets(new Insets(4, 10, 4, 10));
+		btnXemCT.setBorder(new EmptyBorder(4, 10, 4, 10));
 		panelXemCT.add(btnXemCT);
 
 		btnInDS = new PrimaryButton("In danh sách hoá đơn", "/Image/print.png");
-//		btnInDS.setBorder(new EmptyBorder(4, 10, 4, 10));
-		btnInDS.setInsets(new Insets(4, 10, 4, 10));
+		btnInDS.setBorder(new EmptyBorder(4, 10, 4, 10));
 		btnInDS.setFont(new Font("Tahoma", Font.BOLD, 18));
-//		btnInDS.setHeSoBoGoc(10);
 		btnInDS.setBorderRadius(10);
-//		btnInDS.setKhoangCachIcon(5);
-		btnInDS.setIconTextGap(5);
 		btnInDS.setIconSize(26, 26);
 		btnInDS.setHorizontalTextPosition(SwingConstants.RIGHT);
 		btnInDS.setVerticalTextPosition(SwingConstants.CENTER);
 		buttonPanel.add(btnInDS);
 		contentPane.add(buttonPanel, BorderLayout.SOUTH);
-	}
-
-	private JPanel createDetailRow(String label, String value) {
-		JPanel row = new JPanel(new BorderLayout());
-		row.setBackground(Color.WHITE);
-
-		JLabel labelLabel = new JLabel(label);
-		labelLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
-
-		JLabel valueLabel = new JLabel(value);
-		valueLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-
-		row.add(labelLabel, BorderLayout.WEST);
-		row.add(valueLabel, BorderLayout.CENTER);
-
-		return row;
-	}
-
-	private static void centerTableCells(JTable table) {
-		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-		centerRenderer.setHorizontalAlignment(SwingConstants.CENTER); // Căn giữa
-
-		// Căn giữa cho từng cột
-		for (int i = 0; i < table.getColumnCount(); i++) {
-			table.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-		}
 	}
 
 	public JPanel getQLHoaDon_View() {
@@ -535,23 +455,8 @@ public class QuanLyHoaDon_View extends View {
 		return modelTableHD;
 	}
 
-	public void xoaDuLieu() {
-		DefaultTableModel dm = (DefaultTableModel) tableHD.getModel();
-		dm.getDataVector().removeAllElements();
+	@Override
+	public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+		return 0;
 	}
-
-	public void DocDuLieuVaoTableHoaDon() {
-		List<HoaDon> list = hd_dao.getalltbHDKH();
-		for (HoaDon hd : list) {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-			String ngayLapHoaDoFormatted = hd.getNgayLapHoaDon().format(formatter);
-
-			modelTableHD
-					.addRow(new Object[] { STT++, hd.getMaHoaDon(), hd.getLoaiHoaDon(), hd.getKhachHang().getHoTen(),
-							hd.getKhachHang().getSoDienThoai(), ngayLapHoaDoFormatted, hd.getThueVAT(),
-
-					});
-		}
-	}
-
 }

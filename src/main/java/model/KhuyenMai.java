@@ -10,7 +10,16 @@ public class KhuyenMai {
 	private String noiDungKhuyenMai;
 	private int soLuongToiDa;
 	private LocalDateTime hanSuDungKhuyenMai;
+	private double giamGia;
 	private TinhTrangKhuyenMai tinhTrangKhuyenMai;
+
+	public double getGiamGia() {
+		return giamGia;
+	}
+
+	public void setGiamGia(double giamGia) {
+		this.giamGia = giamGia;
+	}
 
 	public String getMaKhuyenMai() {
 		return maKhuyenMai;
@@ -18,7 +27,8 @@ public class KhuyenMai {
 
 	private void setMaKhuyenMai(String maKhuyenMai) {
 		if (!maKhuyenMai.matches("^KM\\d{4}$")) {
-			throw new IllegalArgumentException("Mã khuyến mãi phải bắt đầu bằng KM và theo sau là bốn ký số ngẫu nhiên (KMXXXX)");
+			throw new IllegalArgumentException(
+					"Mã khuyến mãi phải bắt đầu bằng KM và theo sau là bốn ký số ngẫu nhiên (KMXXXX)");
 		}
 
 		this.maKhuyenMai = maKhuyenMai;
@@ -96,6 +106,18 @@ public class KhuyenMai {
 		setSoLuongToiDa(soLuongToiDa);
 		setHanSuDungKhuyenMai(hanSuDungKhuyenMai);
 		setTinhTrangKhuyenMai(tinhTrangKhuyenMai);
+	}
+
+	public KhuyenMai(String maKhuyenMai, String tenKhuyenMai, String noiDungKhuyenMai, int soLuongToiDa,
+			LocalDateTime hanSuDungKhuyenMai, double giamGia, TinhTrangKhuyenMai tinhTrangKhuyenMai) {
+		super();
+		this.maKhuyenMai = maKhuyenMai;
+		this.tenKhuyenMai = tenKhuyenMai;
+		this.noiDungKhuyenMai = noiDungKhuyenMai;
+		this.soLuongToiDa = soLuongToiDa;
+		this.hanSuDungKhuyenMai = hanSuDungKhuyenMai;
+		this.giamGia = giamGia;
+		this.tinhTrangKhuyenMai = tinhTrangKhuyenMai;
 	}
 
 	@Override

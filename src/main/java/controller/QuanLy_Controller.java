@@ -3,44 +3,47 @@ package controller;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.awt.print.PrinterException;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
 import model.ChiTiet_HoaDon;
 import model.ChiTiet_HoaDon_DAO;
 import model.ChuyenTau;
+import model.ChuyenTau_DAO;
 import model.GheTau;
 import model.GheTau_DAO;
 import model.GiaVe;
+import model.GiaVe_DAO;
 import model.HoaDon;
 import model.HoaDon_DAO;
 import model.KhachHang;
@@ -55,18 +58,39 @@ import model.TinhTrangKhuyenMai;
 import model.ToaTau;
 import model.ToaTau_DAO;
 import model.VeTau;
+import model.VeTau_DAO;
 import other.ColorConstants;
 import other.CustomTitleLable;
 import other.CustomTrainStatusButton;
-import other.RoundedPanel;
+import other.PrinterUtilities;
 import other.SeatButton;
+import view.HoaDonChiTiet_View;
 import view.QuanLyHoaDon_View;
 import view.QuanLyKhuyenMai_View;
 import view.QuanLyTau_View;
 import view.View;
 
 public class QuanLy_Controller {
-
+	private HoaDon_DAO hoaDon_DAO;
+	private VeTau_DAO veTau_DAO;
+	private ChuyenTau_DAO chuyenTau_DAO;
+	private GiaVe_DAO giaVe_DAO;
+	private ChiTiet_HoaDon_DAO ctHD_DAO;
+	private Tau_DAO tau_DAO;
+	private ToaTau_DAO toaTau_DAO;
+	private GheTau_DAO gheTau_DAO;
+	private KhuyenMai_DAO kMai_DAO;
+	private static final int ITEMS_PER_PAGE = 5;
+	private int currentIndex = 0;
+	private QuanLyTau_View qLTau_View;
+	private QuanLyHoaDon_View qLHoaDon_view;
+	private QuanLyKhuyenMai_View qLKhuyenMai_View;
+	private HoaDonChiTiet_View qlHoaDonChiTiet;
+	private int soTau;
+	private int soTrang = 1;
+	private ArrayList<Tau> danhSachTau;
+	private int sttTT = 1;
+	private int sttGT = 1;
 	private static QuanLy_Controller instance;
 
 	public static QuanLy_Controller getInstance() {
@@ -79,19 +103,6 @@ public class QuanLy_Controller {
 		return instance;
 	}
 
-	private static final int ITEMS_PER_PAGE = 5;
-	private int currentIndex = 0;
-	private QuanLyTau_View qLTau_View;
-	private QuanLyHoaDon_View qLHoaDon_view;
-	private QuanLyKhuyenMai_View qLKhuyenMai_View;
-	private int soTau;
-	private int soTrang = 1;
-	private ArrayList<Tau> danhSachTau;
-	private int sttT = 1;
-	private int sttTT = 1;
-	private int sttGT = 1;
-	private int sttHD = 1;
-
 	private CustomTrainStatusButton selectedButton;
 
 	private ArrayList<View> pageList = new ArrayList<View>();
@@ -100,23 +111,40 @@ public class QuanLy_Controller {
 		return pageList;
 	}
 
-	public QuanLy_Controller() throws SQLException {
-		this.danhSachTau = Tau_DAO.getInstance().getAllTau();
-		this.soTau = danhSachTau.size();
+	public void setPageList(ArrayList<View> pageList) {
+		this.pageList = pageList;
+	}
 
+	// QL_Tau
+	public QuanLy_Controller() throws SQLException {
 		pageList.add(this.qLHoaDon_view = new QuanLyHoaDon_View("Hóa đơn", "/Image/tabler-icon-file-settings.png/"));
 		pageList.add(this.qLTau_View = new QuanLyTau_View("Tàu", "/Image/tabler-icon-file-settings.png"));
 		pageList.add(
 				this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/tabler-icon-file-settings.png"));
 
+		this.gheTau_DAO = new GheTau_DAO();
+		this.toaTau_DAO = new ToaTau_DAO();
+		this.tau_DAO = new Tau_DAO();
+		this.danhSachTau = tau_DAO.getAllTau();
+		this.soTau = danhSachTau.size();
 		initControllerTau();
+
+		this.kMai_DAO = new KhuyenMai_DAO();
 		initControllerKM();
+
+		this.qlHoaDonChiTiet = new HoaDonChiTiet_View();
+		this.hoaDon_DAO = new HoaDon_DAO();
+		this.veTau_DAO = new VeTau_DAO();
+		this.chuyenTau_DAO = new ChuyenTau_DAO();
+		this.giaVe_DAO = new GiaVe_DAO();
+		this.ctHD_DAO = new ChiTiet_HoaDon_DAO();
 		initControllerHD();
 
 	}
 
 	private void initControllerTau() throws SQLException {
 		themSuKien();
+		DocDuLieuVaoTableTau();
 		updateTrainPanel(qLTau_View.trainContainer);
 		qLTau_View.getLblSoTrang().setText("trang: " + soTrang);
 		qLTau_View.getLblSoTau().setText("Tổng số tàu: " + soTau);
@@ -129,9 +157,11 @@ public class QuanLy_Controller {
 		qLTau_View.addButtonReloadListener(e -> reloadTau());
 	}
 
+	// QL_KhuyenMai
+
 	private void initControllerKM() {
 		themSuKienKM();
-
+		DocDuLieuVaoTableKhuyenMai();
 	}
 
 	private void themSuKienKM() {
@@ -139,6 +169,405 @@ public class QuanLy_Controller {
 		qLKhuyenMai_View.addButtonThemListener(e -> ThemKM());
 		qLKhuyenMai_View.addButtonTimListener(e -> searchKM());
 		qLKhuyenMai_View.addButtonReloadListener(e -> reLoadSearchKM());
+	}
+
+	// QL_HoaDon
+	private void initControllerHD() {
+		themSuKienHD();
+		DocDuLieuVaoTableHoaDon();
+
+	}
+
+	private void themSuKienHD() {
+		qLHoaDon_view.addButtonReloadListener(e -> reloadHoaDon());
+		qLHoaDon_view.addButtonMaHDItem(e -> locTheoMaHD());
+		qLHoaDon_view.addButtonDateItem(e -> locTheoDate());
+		qLHoaDon_view.addButtonSDTItem(e -> locTheoSDT());
+		qLHoaDon_view.addButtonXemHDCT(e -> {
+			try {
+				xemHDCT();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		});
+		qlHoaDonChiTiet.addInActionListener(e -> inHoaDonChiTiet());
+		qLHoaDon_view.addButtonInDSHD(e -> inDSHD());
+	}
+
+	////// HoaDon_view
+	public void inDSHD() {
+		PrinterUtilities.getInstance().print(new Printable() {
+			@Override
+			public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
+				if (pageIndex > 0) {
+					return NO_SUCH_PAGE;
+				}
+
+				Graphics2D g2d = (Graphics2D) graphics;
+				g2d.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+				double pageWidth = pageFormat.getImageableWidth();
+				double pageHeight = pageFormat.getImageableHeight();
+				double tableWidth = qLHoaDon_view.getTableHoaDon().getWidth();
+				double tableHeight = qLHoaDon_view.getTableHoaDon().getHeight();
+				double scaleX = (pageWidth - 40) / tableWidth;
+				double scaleY = (pageHeight - 80) / (tableHeight + 50);
+				double scale = Math.min(scaleX, scaleY);
+				g2d.scale(scale, scale);
+				String title = "Danh Sách Hoá Đơn";
+				g2d.setFont(new Font("Arial", Font.BOLD, 24));
+				FontMetrics metrics = g2d.getFontMetrics();
+				int titleX = (int) ((tableWidth - metrics.stringWidth(title)) / 2);
+				g2d.drawString(title, titleX, 24);
+				g2d.translate(20, 50);
+				qLHoaDon_view.getTableHoaDon().getTableHeader().printAll(g2d);
+
+				g2d.translate(0, qLHoaDon_view.getTableHoaDon().getTableHeader().getHeight());
+				qLHoaDon_view.getTableHoaDon().printAll(g2d);
+				g2d.drawRect(0, -qLHoaDon_view.getTableHoaDon().getTableHeader().getHeight(),
+						qLHoaDon_view.getTableHoaDon().getWidth(), qLHoaDon_view.getTableHoaDon().getHeight()
+								+ qLHoaDon_view.getTableHoaDon().getTableHeader().getHeight());
+				return PAGE_EXISTS;
+			}
+		}, "In Hoá Đơn");
+	}
+
+	private void locTheoMaHD() {
+		qLHoaDon_view.getCombSDT().setSelectedItem(null);
+		qLHoaDon_view.getDateBD().setDate(null);
+		JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
+		dateField.setText("Tạo từ ngày");
+		dateField.setForeground(Color.GRAY);
+
+		qLHoaDon_view.getDateKT().setDate(null);
+		JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
+		dateField1.setText("Đến ngày");
+		dateField1.setForeground(Color.GRAY);
+		String maHD = (String) qLHoaDon_view.getCombMaHD().getSelectedItem();
+
+		if (maHD == null || maHD.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn mã hóa đơn!");
+			return;
+		}
+
+		boolean found = false;
+		HoaDon hoaDon = hoaDon_DAO.layTTHoaDonTheoMa(maHD);
+		if (hoaDon != null) {
+			xoaDuLieuTableHoaDon();
+			themHoaDonVaoBang(hoaDon);
+			found = true;
+		} else {
+			JOptionPane.showMessageDialog(null, "Không tìm thấy Hóa đơn với mã " + maHD + "!");
+		}
+
+		if (!found) {
+			JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào!");
+		}
+	}
+
+	private void locTheoSDT() {
+		qLHoaDon_view.getCombMaHD().setSelectedItem(null);
+		qLHoaDon_view.getDateBD().setDate(null);
+		JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
+		dateField.setText("Tạo từ ngày");
+		dateField.setForeground(Color.GRAY);
+
+		qLHoaDon_view.getDateKT().setDate(null);
+		JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
+		dateField1.setText("Đến ngày");
+		dateField1.setForeground(Color.GRAY);
+		String soDT = (String) qLHoaDon_view.getCombSDT().getSelectedItem();
+
+		if (soDT == null || soDT.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn số điện thoại để lọc!");
+			return;
+		}
+
+		List<HoaDon> hoaDons = hoaDon_DAO.layTTHoaDonTheoSDT(soDT);
+		xoaDuLieuTableHoaDon();
+		for (HoaDon hoaDon : hoaDons) {
+			themHoaDonVaoBang(hoaDon);
+		}
+		if (hoaDons.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào với số điện thoại " + soDT + "!");
+		}
+	}
+
+	private void locTheoDate() {
+		qLHoaDon_view.getCombMaHD().setSelectedItem(null);
+		qLHoaDon_view.getCombSDT().setSelectedItem(null);
+		Date startDate = qLHoaDon_view.getDateBD().getDate();
+		Date endDate = qLHoaDon_view.getDateKT().getDate();
+		if (startDate == null || endDate == null) {
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn khoảng thời gian để lọc!");
+			return;
+		}
+		if (startDate.after(endDate)) {
+			JOptionPane.showMessageDialog(null, "Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
+			return;
+		}
+		try {
+			LocalDateTime sqlStartDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+			LocalDateTime sqlEndDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+			List<HoaDon> hoaDons = hoaDon_DAO.layTTHoaDonTheoDate(sqlStartDate, sqlEndDate);
+			xoaDuLieuTableHoaDon();
+			for (HoaDon hoaDon : hoaDons) {
+				themHoaDonVaoBang(hoaDon);
+			}
+			if (hoaDons.isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào trong khoảng thời gian đã chọn!");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ!");
+		}
+	}
+
+	public void reloadHoaDon() {
+		xoaDuLieuTableHoaDon();
+		DocDuLieuVaoTableHoaDon();
+		qLHoaDon_view.getCombMaHD().setSelectedItem(null);
+		qLHoaDon_view.getCombSDT().setSelectedItem(null);
+		int selectedRow = qLHoaDon_view.getTableHoaDon().getSelectedRow();
+		if (selectedRow != -1) {
+			qLHoaDon_view.getModelHD().removeRow(selectedRow);
+		}
+		qLHoaDon_view.getDateBD().setDate(null);
+		JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
+		dateField.setText("Tạo từ ngày");
+		dateField.setForeground(Color.GRAY);
+		qLHoaDon_view.getDateKT().setDate(null);
+		JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
+		dateField1.setText("Đến ngày");
+		dateField1.setForeground(Color.GRAY);
+	}
+
+	private void themHoaDonVaoBang(HoaDon hd) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+		String ngayLapHoaDonFormatted = hd.getNgayLapHoaDon().format(formatter);
+		String loaiHoaDon = "";
+		if ("ThanhToan".equals(hd.getLoaiHoaDon())) {
+			loaiHoaDon = "Thanh toán";
+		} else if ("GiuCho".equals(hd.getLoaiHoaDon())) {
+			loaiHoaDon = "Giữ chỗ";
+		}
+		double tongTienSauThue = 0.0;
+
+		try {
+			Map<String, Double> result = layTongTienHoaDon(hd.getMaHoaDon());
+			tongTienSauThue = result.getOrDefault("tongTienSauThue", 0.0);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		qLHoaDon_view.getModelHD()
+				.addRow(new Object[] { qLHoaDon_view.getModelHD().getRowCount() + 1, hd.getMaHoaDon(), loaiHoaDon,
+						hd.getKhachHang().getHoTen(), hd.getKhachHang().getSoDienThoai(), ngayLapHoaDonFormatted,
+						hd.getThueVAT() + "%", String.format("%,.0f", tongTienSauThue) + " VNĐ" });
+	}
+
+	private void xoaDuLieuTableHoaDon() {
+		DefaultTableModel dm = (DefaultTableModel) qLHoaDon_view.getTableHoaDon().getModel();
+		dm.getDataVector().removeAllElements();
+	}
+
+	public void DocDuLieuVaoTableHoaDon() {
+		List<HoaDon> list = hoaDon_DAO.getalltbHDKH();
+		for (HoaDon hd : list) {
+			themHoaDonVaoBang(hd);
+		}
+	}
+
+	public Map<String, Double> layTongTienHoaDon(String maHD) throws SQLException {
+		HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
+		ChiTiet_HoaDon_DAO chiTietHoaDonDAO = ChiTiet_HoaDon_DAO.getInstance();
+		VeTau_DAO veTauDAO = new VeTau_DAO();
+		ChuyenTau_DAO chuyenTauDAO = new ChuyenTau_DAO();
+		GiaVe_DAO giaVeDAO = new GiaVe_DAO();
+		KhuyenMai_DAO khuyenMaiDAO = new KhuyenMai_DAO(); // Giả sử bạn có DAO này
+
+		List<ChiTiet_HoaDon> chiTietHoaDons = chiTietHoaDonDAO.getAll().stream()
+				.filter(p -> p.getHoaDon().getMaHoaDon().equals(maHD)).collect(Collectors.toList());
+		if (chiTietHoaDons.isEmpty()) {
+			return Collections.emptyMap();
+		}
+		double tongTien = 0.0;
+		double tongTienKhuyenMai = 0.0;
+
+		for (ChiTiet_HoaDon ctHD : chiTietHoaDons) {
+			// Tính tổng tiền từ các vé tàu
+			VeTau veTau = veTauDAO.getVeTauByMaVeTau(ctHD.getVeTau().getMaVeTau());
+			if (veTau == null) {
+				continue;
+			}
+			ChuyenTau chuyenTau = chuyenTauDAO.getById(veTau.getChuyenTau().getMaChuyenTau());
+			if (chuyenTau == null) {
+				continue;
+			}
+			GiaVe giaVe = giaVeDAO.findByMaGiaVe(chuyenTau.getGiaVe().getMaGiaVe());
+			if (giaVe == null) {
+				continue;
+			}
+			tongTien += giaVe.getGiaVe();
+			String maKhuyenMai = ctHD.getKhuyenMai().getMaKhuyenMai();
+			if (maKhuyenMai != null && !maKhuyenMai.isEmpty()) {
+				KhuyenMai khuyenMai = khuyenMaiDAO.getById1(maKhuyenMai);
+				if (khuyenMai != null) {
+					double giamGia = khuyenMai.getGiamGia();
+					tongTienKhuyenMai += giamGia;
+				}
+			}
+		}
+		HoaDon hoaDon = hoaDonDAO.layTTHoaDonTheoMa(maHD);
+		double thueVAT = hoaDon.getThueVAT();
+		double soTienThue = tongTien * thueVAT / 100;
+		double tongTienSauVAT = tongTien + soTienThue - tongTienKhuyenMai;
+
+		Map<String, Double> result = new HashMap<>();
+		result.put("tongTienTruocThue", tongTien);
+		result.put("tienThue", soTienThue);
+		result.put("tongTienKhuyenMai", tongTienKhuyenMai);
+		result.put("tongTienSauThue", tongTienSauVAT);
+		return result;
+	}
+
+	public String getSelectedMaHD() {
+		int selectedRow = qLHoaDon_view.getTableHoaDon().getSelectedRow();
+		if (selectedRow != -1) {
+			return qLHoaDon_view.getTableHoaDon().getValueAt(selectedRow, 1).toString();
+		}
+		return null;
+	}
+
+	private void xemHDCT() throws SQLException {
+		int row = qLHoaDon_view.getTableHoaDon().getSelectedRow();
+		int rowCount = qLHoaDon_view.getTableHoaDon().getRowCount();
+		if (row != -1 && row < rowCount) {
+			String maHD = getSelectedMaHD();
+			HoaDon hoaDon = hoaDon_DAO.layTTHoaDonTheoMa(maHD);
+			ThongTinTram ttTram = hoaDon_DAO.layThongTinTramTheoMa(hoaDon.getThongTinTram().getMaNhaGa());
+			KhachHang kh = hoaDon_DAO.layKhachHangTheoMa(hoaDon.getKhachHang().getMaKhachHang());
+			LocalDateTime ngayLapHoaDon = hoaDon.getNgayLapHoaDon();
+			DateTimeFormatter formatter = DateTimeFormatter
+					.ofPattern("'Ngày' dd 'tháng' MM 'năm' yyyy, HH 'giờ' mm 'phút' ss 'giây'");
+			String formattedDate = ngayLapHoaDon.format(formatter);
+
+			qlHoaDonChiTiet.getDateLabel().setText(formattedDate);
+			qlHoaDonChiTiet.getMaHoaDonLabel().setText("Mã hóa đơn: " + hoaDon.getMaHoaDon());
+
+			qlHoaDonChiTiet.getDonViBH().setValue(ttTram.getTenNhaGa());
+			qlHoaDonChiTiet.getMaSoThue().setValue(ttTram.getMaSoThue());
+			qlHoaDonChiTiet.getDiaChi().setValue(ttTram.getDiaChi());
+			qlHoaDonChiTiet.getSoTaiKhoan().setValue(ttTram.getSoTaiKhoản());
+			qlHoaDonChiTiet.getTenNganHang().setValue(ttTram.getTenNganHang());
+
+			qlHoaDonChiTiet.getHoTenKH().setValue(kh.getHoTen());
+			qlHoaDonChiTiet.getSoDienThoai().setValue(kh.getSoDienThoai());
+			qlHoaDonChiTiet.getEmail().setValue(kh.getEmail());
+			qlHoaDonChiTiet.getLoaiKhachHang().setValue(formatLoaiKhachHang(kh.getLoaiKH()));
+			String phuongThucThanhToan = hoaDon.getPhuongThucThanhToan();
+			if ("TienMat".equals(phuongThucThanhToan)) {
+				phuongThucThanhToan = "Tiền mặt";
+			}
+			qlHoaDonChiTiet.getHinhThucThanhToan().setValue(phuongThucThanhToan);
+
+			DecimalFormat df = new DecimalFormat("#.##");
+			Map<String, Double> tongTienHoaDon = layTongTienHoaDon(maHD);
+			double tongTienSauThue = tongTienHoaDon.get("tongTienSauThue");
+
+			List<ChiTiet_HoaDon> ctHD1 = ctHD_DAO.getAll().stream()
+					.filter(p -> p.getHoaDon().getMaHoaDon().equals(maHD)).collect(Collectors.toList());
+			xoaDuLieuTableHoaDonChiTiet();
+			for (int i = 0; i < ctHD1.size(); i++) {
+				ChiTiet_HoaDon ctHD = ctHD1.get(i);
+				VeTau veTau = veTau_DAO.getVeTauByMaVeTau(ctHD.getVeTau().getMaVeTau());
+				if (veTau == null) {
+					continue;
+				}
+				ChuyenTau chuyenTau = chuyenTau_DAO.getById(veTau.getChuyenTau().getMaChuyenTau());
+				GiaVe giaVe = giaVe_DAO.findByMaGiaVe(chuyenTau.getGiaVe().getMaGiaVe());
+				if (giaVe == null) {
+					continue;
+				}
+
+				double donGia = giaVe.getGiaVe();
+				double thanhTienTruocThue = donGia;
+				double giamGia = 0.0;
+				if (ctHD.getKhuyenMai() != null) {
+					KhuyenMai khuyenMai = kMai_DAO.getById1(ctHD.getKhuyenMai().getMaKhuyenMai());
+					if (khuyenMai != null) {
+						giamGia = khuyenMai.getGiamGia();
+					}
+				}
+
+				double thueSuat = hoaDon.getThueVAT();
+				double tongTienSauThue1 = (thanhTienTruocThue - giamGia) * (1 + thueSuat / 100);
+
+				String formattedDonGia = String.format("%,.0f", donGia);
+				String formattedThanhTienTruocThue = String.format("%,.0f", thanhTienTruocThue);
+				String formattedGiamGia = df.format(giamGia);
+				String formattedTongTienSauThue1 = String.format("%,.0f", tongTienSauThue1);
+
+				DefaultTableModel model = (DefaultTableModel) qlHoaDonChiTiet.getModelTableHDCT();
+				model.addRow(new Object[] { i + 1, veTau.getMaVeTau(), veTau.isLoaiVe() ? "Vé thường" : "Vé Vip",
+						ctHD.getSoLuong(), formattedDonGia, formattedThanhTienTruocThue, formattedGiamGia + "%",
+						thueSuat + "%", formattedTongTienSauThue1 });
+			}
+			int currentRowCount = qlHoaDonChiTiet.getModelTableHDCT().getRowCount();
+
+			int remainingRows = 13 - currentRowCount;
+			for (int i = 0; i < remainingRows; i++) {
+				DefaultTableModel model = (DefaultTableModel) qlHoaDonChiTiet.getModelTableHDCT();
+				model.addRow(new Object[] { "", "", "", "", "", "", "", "", "" });
+			}
+			int rowHeight = qlHoaDonChiTiet.getTableHDCT().getRowHeight();
+			int currentRowCount1 = qlHoaDonChiTiet.getModelTableHDCT().getRowCount();
+			qlHoaDonChiTiet.getTableHDCT()
+					.setPreferredScrollableViewportSize(new Dimension(1000, rowHeight * currentRowCount1));
+
+			qlHoaDonChiTiet.getLblTongTien().setText("Tổng tiền: " + String.format("%,.0f", tongTienSauThue) + " VNĐ");
+			qlHoaDonChiTiet.getLblThueVAT().setText("Thuế VAT: " + hoaDon.getThueVAT() + "%");
+			double tongTienSauThueRounded = Math.round(tongTienSauThue / 1000.0) * 1000.0;
+			qlHoaDonChiTiet.getLblTongTienTT()
+					.setText("Tổng tiền thanh toán: " + String.format("%,.0f", tongTienSauThueRounded) + " VNĐ");
+
+			// Sau khi cập nhật dữ liệu xong, hiển thị JFrame
+			qlHoaDonChiTiet.getModelTableHDCT().fireTableDataChanged();
+			qlHoaDonChiTiet.revalidate();
+			qlHoaDonChiTiet.repaint();
+			qlHoaDonChiTiet.setLocationRelativeTo(null);
+			qlHoaDonChiTiet.setVisible(true);
+		} else {
+			JOptionPane.showMessageDialog(qLHoaDon_view, "Vui lòng chọn hoá đơn!");
+		}
+	}
+
+	private void xoaDuLieuTableHoaDonChiTiet() {
+		DefaultTableModel dm = (DefaultTableModel) qlHoaDonChiTiet.getTableHDCT().getModel();
+		dm.getDataVector().removeAllElements();
+	}
+
+	public static String formatLoaiKhachHang(LoaiKhachHang loaiKH) {
+		switch (loaiKH) {
+		case TRE_EM:
+			return "Trẻ em";
+		case SINH_VIEN:
+			return "Sinh viên";
+		case HOC_SINH:
+			return "Học sinh";
+		case NGUOI_GIA:
+			return "Người già";
+		case NGUOI_KHUYET_TAT:
+			return "Người khuyết tật";
+		case KHACH_THUONG:
+			return "Khách thường";
+		default:
+			return "Không xác định";
+		}
+	}
+
+	private void inHoaDonChiTiet() {
+		qlHoaDonChiTiet.print();
 	}
 
 	// Khuyen_Mai
@@ -152,14 +581,17 @@ public class QuanLy_Controller {
 					? LocalDateTime.ofInstant(dateHanSuDung.toInstant(), ZoneId.systemDefault()).withHour(0)
 							.withMinute(0).withSecond(0).withNano(0)
 					: null;
+			double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().trim()); // Chuyển giamGia
+																									// sang double
+
 			String maKhuyenMaiCu;
 			try {
-				maKhuyenMaiCu = KhuyenMai_DAO.getInstance().getMaxMaKhuyenMai();
+				maKhuyenMaiCu = kMai_DAO.getMaxMaKhuyenMai();
 				String maKhuyenMai = generateNextMaKhuyenMai(maKhuyenMaiCu);
 				KhuyenMai khuyenMai = new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa,
-						hanSuDung, TinhTrangKhuyenMai.CON);
+						hanSuDung, giamGia, TinhTrangKhuyenMai.CON); // Gán giá trị giamGia vào đối tượng KhuyenMai
 
-				boolean result = KhuyenMai_DAO.getInstance().them(khuyenMai);
+				boolean result = kMai_DAO.them(khuyenMai);
 
 				if (result) {
 					themKhuyenMaiVaoBang(khuyenMai);
@@ -172,7 +604,6 @@ public class QuanLy_Controller {
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-
 		}
 	}
 
@@ -190,6 +621,9 @@ public class QuanLy_Controller {
 		String tenKhuyenMai = qLKhuyenMai_View.getTxtTenkm().getText().trim();
 		String soLuongToiDaStr = qLKhuyenMai_View.getTxtSLKM().getText().trim();
 		String noiDungKhuyenMai = qLKhuyenMai_View.getTxtNDKM().getText().trim();
+
+		String giamGia = qLKhuyenMai_View.getTxtGiamGia().getText().trim();
+
 		Date dateHanSuDung = qLKhuyenMai_View.getDateKTKM().getDate();
 		LocalDateTime hanSuDung = dateHanSuDung != null
 				? LocalDateTime.ofInstant(dateHanSuDung.toInstant(), ZoneId.systemDefault()).withHour(0).withMinute(0)
@@ -221,6 +655,23 @@ public class QuanLy_Controller {
 			JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Vui lòng nhập nội dung khuyến mãi!");
 			return false;
 		}
+		if (giamGia.isEmpty()) {
+			JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Vui lòng nhập giá trị giảm giá!");
+			return false;
+		}
+		double giamGiaValue;
+		try {
+			giamGiaValue = Double.parseDouble(giamGia);
+			if (giamGiaValue < 0 || giamGiaValue > 100) {
+				JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(),
+						"Giảm giá phải nằm trong khoảng từ 0 đến 100!");
+				return false;
+			}
+		} catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Giảm giá phải là một số hợp lệ!");
+			return false;
+		}
+
 		if (hanSuDung == null || !hanSuDung.isAfter(LocalDateTime.now())) {
 			JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(),
 					"Hạn sử dụng khuyến mãi phải sau thời gian hiện tại!");
@@ -233,7 +684,7 @@ public class QuanLy_Controller {
 		xoaDuLieuTableKM();
 		List<KhuyenMai> kmList;
 		try {
-			kmList = KhuyenMai_DAO.getInstance().getAll();
+			kmList = kMai_DAO.getAll1();
 			for (KhuyenMai km : kmList) {
 				themKhuyenMaiVaoBang(km);
 			}
@@ -255,7 +706,7 @@ public class QuanLy_Controller {
 		try {
 			List<KhuyenMai> danhSachKM = new ArrayList<>();
 			if (maKM != null && !maKM.isEmpty()) {
-				KhuyenMai km = KhuyenMai_DAO.getInstance().getById(maKM);
+				KhuyenMai km = kMai_DAO.getById1(maKM);
 				if (km != null) {
 					danhSachKM.add(km);
 				} else {
@@ -265,8 +716,7 @@ public class QuanLy_Controller {
 
 			if (trangThai != null && !trangThai.isEmpty()) {
 				TinhTrangKhuyenMai tinhTrangEnum = convertStringToTinhTrang(trangThai);
-				List<KhuyenMai> danhSachKMTheoTrangThai = KhuyenMai_DAO.getInstance()
-						.getKhuyenMaiTheoTrangThai(tinhTrangEnum);
+				List<KhuyenMai> danhSachKMTheoTrangThai = kMai_DAO.getKhuyenMaiTheoTrangThai(tinhTrangEnum);
 				if (!danhSachKMTheoTrangThai.isEmpty()) {
 					danhSachKM.addAll(danhSachKMTheoTrangThai);
 				} else {
@@ -299,9 +749,37 @@ public class QuanLy_Controller {
 		}
 	}
 
+	public void DocDuLieuVaoTableKhuyenMai() {
+		List<KhuyenMai> list;
+		try {
+			list = kMai_DAO.getAll1();
+			for (KhuyenMai km : list) {
+				themKhuyenMaiVaoBang(km);
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	private void themKhuyenMaiVaoBang(KhuyenMai kMai) {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		String ngayKetThucDoFormatted;
+		String tinhTrangKhuyenMai = "";
+		switch (kMai.getTinhTrangKhuyenMai()) {
+		case CON:
+			tinhTrangKhuyenMai = "Còn";
+			break;
+		case HET_SO_LUONG:
+			tinhTrangKhuyenMai = "Hết số lượng";
+			break;
+		case HET_HAN_SU_DUNG:
+			tinhTrangKhuyenMai = "Hết hạn sử dụng";
+			break;
+		default:
+			tinhTrangKhuyenMai = "Không xác định"; // Trường hợp mặc định nếu không khớp
+			break;
+		}
 		if (kMai.getHanSuDungKhuyenMai() != null) {
 			ngayKetThucDoFormatted = kMai.getHanSuDungKhuyenMai().format(formatter);
 		} else {
@@ -309,8 +787,8 @@ public class QuanLy_Controller {
 		}
 		qLKhuyenMai_View.getModelTableKM()
 				.addRow(new Object[] { qLKhuyenMai_View.getModelTableKM().getRowCount() + 1, kMai.getMaKhuyenMai(),
-						kMai.getTenKhuyenMai(), kMai.getNoiDungKhuyenMai(), kMai.getSoLuongToiDa(),
-						ngayKetThucDoFormatted, kMai.getTinhTrangKhuyenMai(), });
+						kMai.getTenKhuyenMai(), kMai.getNoiDungKhuyenMai(), kMai.getGiamGia(), kMai.getSoLuongToiDa(),
+						ngayKetThucDoFormatted, tinhTrangKhuyenMai, });
 
 	}
 
@@ -327,475 +805,12 @@ public class QuanLy_Controller {
 		qLKhuyenMai_View.getTxtTenkm().requestFocus();
 	}
 
-	private void initControllerHD() {
-		themSuKienHD();
-
-	}
-
-	private void themSuKienHD() {
-		qLHoaDon_view.addButtonReloadListener(e -> reloadHoaDon());
-		qLHoaDon_view.addButtonMaHDItem(e -> locTheoMaHD());
-		qLHoaDon_view.addButtonDateItem(e -> locTheoDate());
-		qLHoaDon_view.addButtonSDTItem(e -> locTheoSDT());
-		qLHoaDon_view.addButtonXemHDCT(e -> xemHDCT());
-	}
-
-	////// HoaDon_view
-	private void locTheoMaHD() {
-		qLHoaDon_view.getCombSDT().setSelectedItem(null);
-		qLHoaDon_view.getDateBD().setDate(null);
-		JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
-		dateField.setText("Tạo từ ngày");
-		dateField.setForeground(Color.GRAY);
-
-		qLHoaDon_view.getDateKT().setDate(null);
-		JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
-		dateField1.setText("Đến ngày");
-		dateField1.setForeground(Color.GRAY);
-		String maHD = (String) qLHoaDon_view.getCombMaHD().getSelectedItem();
-
-		if (maHD == null || maHD.isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Vui lòng chọn mã hóa đơn!");
-			return;
-		}
-
-		boolean found = false;
-		HoaDon hoaDon = HoaDon_DAO.getInstance().layTTHoaDonTheoMa(maHD);
-		if (hoaDon != null) {
-			xoaDuLieuTableHoaDon();
-			themHoaDonVaoBang(hoaDon);
-			found = true;
-		} else {
-			JOptionPane.showMessageDialog(null, "Không tìm thấy Hóa đơn với mã " + maHD + "!");
-		}
-
-		if (!found) {
-			JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào!");
-		}
-	}
-
-	private void locTheoSDT() {
-		qLHoaDon_view.getCombMaHD().setSelectedItem(null);
-		qLHoaDon_view.getDateBD().setDate(null);
-		JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
-		dateField.setText("Tạo từ ngày");
-		dateField.setForeground(Color.GRAY);
-
-		qLHoaDon_view.getDateKT().setDate(null);
-		JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
-		dateField1.setText("Đến ngày");
-		dateField1.setForeground(Color.GRAY);
-		String soDT = (String) qLHoaDon_view.getCombSDT().getSelectedItem();
-
-		if (soDT == null || soDT.isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Vui lòng chọn số điện thoại để lọc!");
-			return;
-		}
-
-		List<HoaDon> hoaDons = HoaDon_DAO.getInstance().layTTHoaDonTheoSDT(soDT);
-		xoaDuLieuTableHoaDon();
-		for (HoaDon hoaDon : hoaDons) {
-			themHoaDonVaoBang(hoaDon);
-		}
-		if (hoaDons.isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào với số điện thoại " + soDT + "!");
-		}
-	}
-
-	private void locTheoDate() {
-		qLHoaDon_view.getCombMaHD().setSelectedItem(null);
-		qLHoaDon_view.getCombSDT().setSelectedItem(null);
-		Date startDate = qLHoaDon_view.getDateBD().getDate();
-		Date endDate = qLHoaDon_view.getDateKT().getDate();
-		if (startDate == null || endDate == null) {
-			JOptionPane.showMessageDialog(null, "Vui lòng chọn khoảng thời gian để lọc!");
-			return;
-		}
-		if (startDate.after(endDate)) {
-			JOptionPane.showMessageDialog(null, "Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
-			return;
-		}
-		try {
-			LocalDateTime sqlStartDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-			LocalDateTime sqlEndDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-			List<HoaDon> hoaDons = HoaDon_DAO.getInstance().layTTHoaDonTheoDate(sqlStartDate, sqlEndDate);
-			xoaDuLieuTableHoaDon();
-			for (HoaDon hoaDon : hoaDons) {
-				themHoaDonVaoBang(hoaDon);
-			}
-			if (hoaDons.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào trong khoảng thời gian đã chọn!");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ!");
-		}
-	}
-
-	private void themHoaDonVaoBang(HoaDon hd) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-		String ngayLapHoaDoFormatted = hd.getNgayLapHoaDon().format(formatter);
-		qLHoaDon_view.getModelHD().addRow(new Object[] { qLHoaDon_view.getModelHD().getRowCount() + 1, // STT
-				hd.getMaHoaDon(), hd.getLoaiHoaDon(), hd.getKhachHang().getHoTen(), hd.getKhachHang().getSoDienThoai(),
-				ngayLapHoaDoFormatted, hd.getThueVAT(), });
-	}
-
-	public void reloadHoaDon() {
-		xoaDuLieuTableHoaDon();
-		sttHD = 1;
-		DocDuLieuVaoTableHoaDon();
-		qLHoaDon_view.getCombMaHD().setSelectedItem(null);
-		qLHoaDon_view.getCombSDT().setSelectedItem(null);
-
-		qLHoaDon_view.getDateBD().setDate(null);
-		JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
-		dateField.setText("Tạo từ ngày");
-		dateField.setForeground(Color.GRAY);
-
-		qLHoaDon_view.getDateKT().setDate(null);
-		JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
-		dateField1.setText("Đến ngày"); // Đặt lại placeholder
-		dateField1.setForeground(Color.GRAY); // Đặt màu chữ thành xám
-	}
-
-	private void xoaDuLieuTableHoaDon() {
-		DefaultTableModel dm = (DefaultTableModel) qLHoaDon_view.getTableHoaDon().getModel();
-		dm.getDataVector().removeAllElements();
-	}
-
-	public void DocDuLieuVaoTableHoaDon() {
-		List<HoaDon> list = HoaDon_DAO.getInstance().getalltbHDKH();
-		for (HoaDon hd : list) {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-			String ngayLapHoaDoFormatted = hd.getNgayLapHoaDon().format(formatter);
-
-			qLHoaDon_view.getModelHD()
-					.addRow(new Object[] { sttHD++, hd.getMaHoaDon(), hd.getLoaiHoaDon(), hd.getKhachHang().getHoTen(),
-							hd.getKhachHang().getSoDienThoai(), ngayLapHoaDoFormatted, hd.getThueVAT(),
-
-					});
-		}
-	}
-
-	private boolean isButtonClicked = false;
-
-	private void xemHDCT() {
-		qLHoaDon_view.getTableHoaDon().addMouseListener(new MouseAdapter() {
-			private JPanel panelLogo;
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				int row = qLHoaDon_view.getTableHoaDon().getSelectedRow();
-				if (row != -1) {
-					if (!isButtonClicked) {
-						isButtonClicked = true;
-						String maHD = (String) qLHoaDon_view.getModelHD().getValueAt(row, 1);
-//			                	private JPanel panelLogo;
-						JLabel lbl_Icon;
-						ImageIcon iconLogo;
-						JPanel panelTrong1;
-						JPanel panelChiTiet;
-						DefaultTableModel modelTableHDCT;
-						JTable tableHDCT;
-						JPanel panelTableAndTotal;
-						JPanel panelTableHDCT;
-						JPanel panelTotal;
-						JPanel panelTongtien;
-						JPanel panelTongTien;
-						JLabel lblTongTien;
-						JPanel panelThueVAT;
-						JLabel lblThueVAT;
-						JPanel panelTongTienTT;
-						JLabel lblTongTienTT;
-						HoaDon hoaDon = HoaDon_DAO.getInstance().layTTHoaDonTheoMa(maHD);
-						ThongTinTram ttTram = HoaDon_DAO.getInstance().layThongTinTramTheoMa(maHD);
-						KhachHang kh = HoaDon_DAO.getInstance()
-								.layKhachHangTheoMa(hoaDon.getKhachHang().getMaKhachHang());
-						ArrayList<ChiTiet_HoaDon> ctHD = ChiTiet_HoaDon_DAO.getInstance().layChiTietHDTheoMaHD(maHD);
-
-						LocalDateTime ngayLapHoaDon = hoaDon.getNgayLapHoaDon();
-						DateTimeFormatter formatter = DateTimeFormatter
-								.ofPattern("Ngày dd tháng MM năm yyyy, HH giờ mm phút ss giây");
-						String formattedDate = ngayLapHoaDon.format(formatter);
-
-						panelChiTiet = new JPanel();
-						panelChiTiet.setBackground(Color.WHITE);
-
-						panelChiTiet.setLayout(new BorderLayout());
-						panelChiTiet.setBackground(Color.WHITE);
-						panelChiTiet.setBorder(new EmptyBorder(20, 20, 20, 20));
-
-						JPanel headerPanelCT = new JPanel(new BorderLayout());
-						headerPanelCT.setBorder(new EmptyBorder(0, 0, 25, 0));
-						headerPanelCT.setBackground(Color.WHITE);
-
-						panelLogo = new JPanel();
-						panelLogo.setBackground(Color.WHITE);
-
-						lbl_Icon = new JLabel("");
-						iconLogo = new ImageIcon(getClass().getResource("/Image/logo1.png"));
-						lbl_Icon.setPreferredSize(new Dimension(250, 70));
-						lbl_Icon.setMaximumSize(new Dimension(250, 70));
-						lbl_Icon.setIcon(
-								new ImageIcon(iconLogo.getImage().getScaledInstance(130, 70, Image.SCALE_SMOOTH)));
-
-						RoundedPanel panelChuaLogo = new RoundedPanel(20);
-						panelChuaLogo.setPreferredSize(new Dimension(265, 65));
-						panelChuaLogo.setBackground(new Color(70, 130, 169));
-						panelChuaLogo.setBorder(new EmptyBorder(5, 5, 5, 5));
-						panelChuaLogo.setLayout(new BoxLayout(panelChuaLogo, BoxLayout.X_AXIS));
-
-						lbl_Icon.setIcon(
-								new ImageIcon(iconLogo.getImage().getScaledInstance(270, 80, Image.SCALE_SMOOTH)));
-						panelChuaLogo.add(lbl_Icon);
-
-						panelLogo.add(panelChuaLogo);
-						headerPanelCT.add(panelLogo, BorderLayout.WEST);
-
-						JLabel titleLabel = new JLabel("HÓA ĐƠN GIÁ TRỊ GIA TĂNG", JLabel.CENTER);
-						titleLabel.setFont(new Font("Arial", Font.BOLD, 20));
-						titleLabel.setForeground(Color.BLUE);
-
-						JLabel dateLabel = new JLabel(formattedDate, JLabel.CENTER);
-						dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-
-						JPanel titlePanel = new JPanel(new BorderLayout());
-						titlePanel.setBackground(Color.WHITE);
-						titlePanel.add(titleLabel, BorderLayout.CENTER);
-						titlePanel.add(dateLabel, BorderLayout.SOUTH);
-						headerPanelCT.add(titlePanel, BorderLayout.CENTER);
-
-						JPanel codePanel = new JPanel();
-						codePanel.setBackground(Color.WHITE);
-						JLabel maHoaDonLabel = new JLabel("Mã hóa đơn: " + hoaDon.getMaHoaDon());
-						maHoaDonLabel.setFont(new Font("Arial", Font.PLAIN, 16));
-						maHoaDonLabel.setHorizontalAlignment(SwingConstants.RIGHT);
-						codePanel.setLayout(new BoxLayout(codePanel, BoxLayout.Y_AXIS));
-						panelTrong1 = new JPanel();
-						panelTrong1.setBackground(Color.WHITE);
-						codePanel.add(panelTrong1);
-						codePanel.add(maHoaDonLabel);
-
-						headerPanelCT.add(codePanel, BorderLayout.EAST);
-						panelChiTiet.add(headerPanelCT, BorderLayout.NORTH);
-
-						// Content Panel
-						JPanel contentPanel = new JPanel();
-						contentPanel.setBorder(new EmptyBorder(0, 0, 25, 0));
-						contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-						contentPanel.setBackground(Color.WHITE);
-
-						contentPanel.add(createDetailRow("Đơn vị bán hàng: ", ttTram.getTenNhaGa()));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Mã số thuế: ", ttTram.getMaSoThue()));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Địa chỉ: ", ttTram.getDiaChi()));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Số tài khoản: ", ttTram.getSoTaiKhoản()));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Tên ngân hàng: ", ttTram.getTenNganHang()));
-						contentPanel.add(Box.createVerticalStrut(30));
-
-						contentPanel.add(createDetailRow("Họ và tên khách hàng: ", kh.getHoTen()));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Số điện thoại: ", kh.getSoDienThoai()));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Email: ", kh.getEmail()));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Loại khách hàng: ", formatLoaiKhachHang(kh.getLoaiKH())));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Hình thức thanh toán: ", hoaDon.getPhuongThucThanhToan()));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Số tài khoản: ", ""));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Tên ngân hàng: ", ""));
-						contentPanel.add(Box.createVerticalStrut(10));
-						contentPanel.add(createDetailRow("Tên ngân hàng viết tắt: ", ""));
-
-						// Thêm contentPanel vào panelChiTiet
-						panelChiTiet.add(contentPanel, BorderLayout.CENTER);
-
-						String[] headerCT = { "STT", "Mã vé", "Loại vé", "Số lượng", "Đơn giá", "Thành tiền trước thuế",
-								"Giảm giá", "Thuế suất", "Tổng tiền sau thuế" };
-						String[] headerCT1 = { "", "a", "b", "1", "2", "3=1x2", "4", "5", "6=(3-4)+5" };
-						Font headerFontCT = new Font("Arial", Font.BOLD, 16);
-						modelTableHDCT = new DefaultTableModel(new Object[][] { headerCT1 }, headerCT);
-//						     // Thêm 9 dòng trống vào bảng
-//						        for (int i = 1; i <= 9; i++) {
-//						            modelTableHDCT.addRow(new Object[]{i, "", "", "", "", "", "", "", ""});
-//						        }
-						if (hoaDon == null || ttTram == null || kh == null) {
-							JOptionPane.showMessageDialog(null, "Error retrieving invoice data.");
-							return;
-						}
-
-						// Cập nhật bảng
-						tableHDCT = new JTable(modelTableHDCT);
-						for (int i = 0; i < ctHD.size(); i++) {
-							ChiTiet_HoaDon chiTiet = ctHD.get(i);
-
-							// Lấy thông tin vé tàu cho chi tiết hóa đơn
-							VeTau vt = ChiTiet_HoaDon_DAO.getInstance()
-									.layTTveTauTheoMaVeTau(chiTiet.getVeTau().getMaVeTau());
-							ChuyenTau ct = ChiTiet_HoaDon_DAO.getInstance()
-									.layChuyenTauTheoMaChuyenTau(vt.getChuyenTau().getMaChuyenTau());
-							GiaVe gv = ChiTiet_HoaDon_DAO.getInstance().layGiaVeTheoMaGiaVe(ct.getGiaVe().getMaGiaVe());
-
-							// Tính toán thành tiền trước thuế, giảm giá, thuế suất, và tổng tiền sau thuế
-							double donGia = gv.getGiaVe();
-							int soLuong = chiTiet.getSoLuong();
-							double thanhTienTruocThue = donGia * soLuong;
-							double giamGia = thanhTienTruocThue * (kh.getLoaiKH().getDiscount());
-							double thueSuat = 0.1; // Ví dụ thuế suất 10%
-							double tongTienSauThue = thanhTienTruocThue - giamGia + (thanhTienTruocThue * thueSuat);
-
-							// Thêm dòng vào bảng
-							modelTableHDCT.addRow(new Object[] { i + 1, // STT
-									vt.getMaVeTau(), vt.isLoaiVe() ? "Loại 1" : "Loại 2", soLuong, donGia,
-									thanhTienTruocThue, thueSuat, tongTienSauThue });
-						}
-
-						tableHDCT = new JTable(modelTableHDCT);
-						tableHDCT.getTableHeader().setFont(headerFontCT);
-						tableHDCT.setFont(new Font("Arial", Font.PLAIN, 16));
-						tableHDCT.setShowGrid(true);
-						tableHDCT.setGridColor(new Color(225, 225, 225));
-						tableHDCT.setIntercellSpacing(new Dimension(0, 1));
-						tableHDCT.getColumnModel().getColumn(0).setPreferredWidth(5);
-						tableHDCT.getColumnModel().getColumn(5).setPreferredWidth(150);
-						tableHDCT.getColumnModel().getColumn(8).setPreferredWidth(150);
-						tableHDCT.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-						tableHDCT.setRowHeight(30);
-						int rowHeight = tableHDCT.getRowHeight();
-						int rowCount = modelTableHDCT.getRowCount();
-
-						panelTableAndTotal = new JPanel();
-						panelTableAndTotal.setBackground(Color.WHITE);
-						panelChiTiet.add(panelTableAndTotal, BorderLayout.SOUTH);
-						panelTableAndTotal.setLayout(new BorderLayout(0, 0));
-
-						panelTableHDCT = new JPanel();
-						panelTableAndTotal.add(panelTableHDCT, BorderLayout.CENTER);
-						panelTableHDCT.setLayout(new BorderLayout(0, 0));
-
-						tableHDCT.setPreferredScrollableViewportSize(new Dimension(1000, rowHeight * rowCount));
-						panelTableHDCT.add(new JScrollPane(tableHDCT));
-
-						panelTotal = new JPanel();
-						FlowLayout flowLayout_1 = (FlowLayout) panelTotal.getLayout();
-						flowLayout_1.setAlignment(FlowLayout.RIGHT);
-						panelTotal.setBackground(Color.WHITE);
-						panelTableAndTotal.add(panelTotal, BorderLayout.SOUTH);
-
-						panelTongtien = new JPanel();
-						panelTongtien.setBackground(Color.WHITE);
-						panelTongtien.setBorder(new LineBorder(new Color(53, 154, 255), 1, true));
-						panelTongtien.setPreferredSize(new Dimension(350, 120));
-						panelTotal.add(panelTongtien);
-						panelTongtien.setLayout(new BoxLayout(panelTongtien, BoxLayout.Y_AXIS));
-
-						panelTongTien = new JPanel();
-						panelTongTien.setBackground(Color.WHITE);
-						panelTongtien.add(panelTongTien);
-						panelTongTien.setLayout(new BorderLayout(0, 0));
-
-						lblTongTien = new JLabel("Tổng tiền:");
-						lblTongTien.setForeground(new Color(70, 130, 169));
-						lblTongTien.setFont(new Font("Arial", Font.BOLD, 18));
-						panelTongTien.add(lblTongTien);
-
-						panelThueVAT = new JPanel();
-						panelThueVAT.setBackground(Color.WHITE);
-						panelTongtien.add(panelThueVAT);
-						panelThueVAT.setLayout(new BorderLayout(0, 0));
-
-						lblThueVAT = new JLabel("Thuế VAT: " + hoaDon.getThueVAT() + "%");
-						lblThueVAT.setForeground(new Color(70, 130, 169));
-						lblThueVAT.setFont(new Font("Arial", Font.BOLD, 18));
-						panelThueVAT.add(lblThueVAT);
-
-						panelTongTienTT = new JPanel();
-						panelTongTienTT.setBackground(Color.WHITE);
-						panelTongtien.add(panelTongTienTT);
-						panelTongTienTT.setLayout(new BorderLayout(0, 0));
-
-						lblTongTienTT = new JLabel("Tổng tiền thanh toán:");
-						lblTongTienTT.setForeground(new Color(70, 130, 169));
-						lblTongTienTT.setFont(new Font("Arial", Font.BOLD, 18));
-						panelTongTienTT.add(lblTongTienTT, BorderLayout.CENTER);
-
-						JScrollPane scrollPane = new JScrollPane(panelChiTiet);
-						scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-						scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-						showDetailPanel(scrollPane);
-
-						isButtonClicked = false;
-						qLHoaDon_view.getQLHoaDon_View().revalidate();
-						qLHoaDon_view.getQLHoaDon_View().repaint();
-					} else {
-						// Nếu nút đã được bấm, có thể hiển thị thông báo hoặc không làm gì
-						JOptionPane.showMessageDialog(null, "Nút đã được bấm!");
-					}
-				}
-			}
-
-			private void showDetailPanel(JScrollPane scrollPane) {
-				JOptionPane.showMessageDialog(null, scrollPane, "Chi tiết hóa đơn", JOptionPane.PLAIN_MESSAGE);
-				JDialog dialog = new JDialog();
-				dialog.setTitle("Chi tiết hoá đơn");
-				dialog.setSize(1100, 700); // Kích thước của dialog
-				dialog.setLocationRelativeTo(null); // Căn giữa màn hình
-				dialog.setModal(true); // Chặn các thao tác khác khi dialog mở
-				dialog.add(scrollPane);
-				dialog.setVisible(true);
-
-			}
-		});
-	}
-
-	private JPanel createDetailRow(String label, String value) {
-		JPanel row = new JPanel(new BorderLayout());
-		row.setBackground(Color.WHITE);
-
-		JLabel labelLabel = new JLabel(label);
-		labelLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
-
-		JLabel valueLabel = new JLabel(value);
-		valueLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
-
-		row.add(labelLabel, BorderLayout.WEST);
-		row.add(valueLabel, BorderLayout.CENTER);
-
-		return row;
-	}
-
-	public static String formatLoaiKhachHang(LoaiKhachHang loaiKH) {
-		switch (loaiKH) {
-		case TRE_EM:
-			return "Trẻ em";
-		case SINH_VIEN:
-			return "Sinh viên";
-		case HOC_SINH:
-			return "Học sinh";
-		case NGUOI_GIA:
-			return "Người già";
-		case NGUOI_KHUYET_TAT:
-			return "Người khuyết tật";
-		case KHACH_THUONG:
-			return "Khách thường";
-		default:
-			return "Không xác định";
-		}
-	}
-
 	////// Tau_view
 	private void reloadTau() {
-		sttT = 1;
 		xoaDuLieuTableTau();
 		List<Tau> tauList;
 		try {
-			tauList = Tau_DAO.getInstance().getAllTau();
+			tauList = tau_DAO.getAllTau();
 			for (Tau tau : tauList) {
 				themTauVaoBang(tau);
 			}
@@ -818,7 +833,7 @@ public class QuanLy_Controller {
 			List<Tau> danhSachTau = new ArrayList<>();
 
 			if (maTau != null && !maTau.isEmpty()) {
-				Tau tau = Tau_DAO.getInstance().layTTTauTheoMa(maTau);
+				Tau tau = tau_DAO.layTTTauTheoMa(maTau);
 				if (tau != null) {
 					danhSachTau.add(tau);
 				} else {
@@ -828,7 +843,7 @@ public class QuanLy_Controller {
 			if (trangThai != null && !trangThai.isEmpty()) {
 				TrangThaiTau trangThaiEnum = chuyenDoiTrangThai(trangThai);
 				if (trangThaiEnum != null) {
-					List<Tau> tauList = Tau_DAO.getInstance().layTTTauTheoTrangThai(trangThaiEnum);
+					List<Tau> tauList = tau_DAO.layTTTauTheoTrangThai(trangThaiEnum);
 					if (!tauList.isEmpty()) {
 						danhSachTau.addAll(tauList);
 					} else {
@@ -848,7 +863,6 @@ public class QuanLy_Controller {
 		}
 	}
 
-	// Phương thức để chuyển đổi từ trạng thái tiếng Việt sang enum
 	private TrangThaiTau chuyenDoiTrangThai(String trangThai) {
 		switch (trangThai) {
 		case "Hoạt động":
@@ -862,7 +876,6 @@ public class QuanLy_Controller {
 		}
 	}
 
-	// Phương thức để thêm tàu vào bảng
 	private void themTauVaoBang(Tau tau) {
 		String trangThaiHienThi;
 		switch (tau.getTrangThai()) {
@@ -885,6 +898,15 @@ public class QuanLy_Controller {
 						trangThaiHienThi, tau.getGhiChu() });
 	}
 
+	public void DocDuLieuVaoTableTau() throws SQLException {
+		qLTau_View.getModelTau().setRowCount(0);
+		ArrayList<Tau> dsTau;
+		dsTau = tau_DAO.getAllTau();
+		for (Tau t : dsTau) {
+			themTauVaoBang(t);
+		}
+	}
+
 	private void xoaDuLieuTableTau() {
 		DefaultTableModel dm = (DefaultTableModel) qLTau_View.getTableTau().getModel();
 		dm.getDataVector().removeAllElements();
@@ -896,7 +918,7 @@ public class QuanLy_Controller {
 			soTrang++;
 			updateDisplay();
 		} else {
-			javax.swing.JOptionPane.showMessageDialog(qLTau_View, "Đã đến trang cuối cùng.", "Thông báo",
+			javax.swing.JOptionPane.showMessageDialog(null, "Đã đến trang cuối cùng.", "Thông báo",
 					javax.swing.JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
@@ -907,7 +929,7 @@ public class QuanLy_Controller {
 			soTrang--;
 			updateDisplay();
 		} else {
-			javax.swing.JOptionPane.showMessageDialog(qLTau_View, "Đã đến trang đầu tiên.", "Thông báo",
+			javax.swing.JOptionPane.showMessageDialog(null, "Đã đến trang đầu tiên.", "Thông báo",
 					javax.swing.JOptionPane.INFORMATION_MESSAGE);
 		}
 	}
@@ -952,7 +974,7 @@ public class QuanLy_Controller {
 	public void DocDuLieuVaoTableToaTau(String maTau) {
 		qLTau_View.getModelTTau().setRowCount(0);
 
-		ArrayList<ToaTau> dsTTau = ToaTau_DAO.getInstance().getToaTauTheoMaTau(maTau);
+		ArrayList<ToaTau> dsTTau = toaTau_DAO.getToaTauTheoMaTau(maTau);
 		for (ToaTau tt : dsTTau) {
 			String trangThai = tt.isTrangThai() ? "Còn ghế" : "Đầy ghế";
 			String loaiToaDescription;
@@ -987,7 +1009,7 @@ public class QuanLy_Controller {
 	private JButton selectedToaTauButton;
 
 	private void updateToaTau(JPanel toaTauPanel, String maTau) {
-		ArrayList<ToaTau> dsToaTau = ToaTau_DAO.getInstance().getToaTauTheoMaTau(maTau);
+		ArrayList<ToaTau> dsToaTau = toaTau_DAO.getToaTauTheoMaTau(maTau);
 
 		toaTauPanel.removeAll();
 		for (int i = dsToaTau.size() - 1; i >= 0; i--) {
@@ -1069,7 +1091,7 @@ public class QuanLy_Controller {
 	}
 
 	private void updateGheTau(JPanel gheTauPanel, String maToaTau) {
-		ArrayList<GheTau> dsGheTau = GheTau_DAO.getInstance().getGheTauTheoMaToaTau(maToaTau);
+		ArrayList<GheTau> dsGheTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
 
 		gheTauPanel.removeAll();
 
@@ -1084,15 +1106,10 @@ public class QuanLy_Controller {
 			JButton gheTauItem = createGheTau(gTau, i + 1, dsGheTau.size());
 			int rowIndex = i;
 			gheTauItem.addActionListener(e -> {
-				// Kiểm tra chỉ số dòng có hợp lệ không trước khi chọn dòng
 				if (rowIndex >= 0 && rowIndex < qLTau_View.getTableGheTau().getRowCount()) {
-					qLTau_View.getTableGheTau().setRowSelectionInterval(rowIndex, rowIndex); // Chọn dòng trong JTable
+					qLTau_View.getTableGheTau().setRowSelectionInterval(rowIndex, rowIndex);
 					qLTau_View.getTableGheTau()
-							.scrollRectToVisible(qLTau_View.getTableGheTau().getCellRect(rowIndex, 0, true)); // Cuộn
-																												// đến
-																												// dòng
-																												// đã
-																												// chọn
+							.scrollRectToVisible(qLTau_View.getTableGheTau().getCellRect(rowIndex, 0, true));
 				} else {
 					JOptionPane.showMessageDialog(null, "Không tìm thấy dòng để chọn.");
 				}
@@ -1105,7 +1122,7 @@ public class QuanLy_Controller {
 	}
 
 	private JButton createGheTau(GheTau gTau, int i, int size) {
-		Color buttonColor; // Khai báo biến để lưu màu
+		Color buttonColor;
 
 		switch (gTau.getTrangThai()) {
 		case "TRONG":
@@ -1116,6 +1133,9 @@ public class QuanLy_Controller {
 			break;
 		case "DANG_BAO_TRI":
 			buttonColor = Color.RED;
+			break;
+		case "DANG_GIU_CHO":
+			buttonColor = Color.LIGHT_GRAY;
 			break;
 		default:
 			buttonColor = ColorConstants.PRIMARY_COLOR;
@@ -1128,7 +1148,7 @@ public class QuanLy_Controller {
 	public void DocDuLieuVaoTableGheTau(String maToaTau) {
 		qLTau_View.getModelGheTau().setRowCount(0);
 
-		ArrayList<GheTau> dsGTau = GheTau_DAO.getInstance().getGheTauTheoMaToaTau(maToaTau);
+		ArrayList<GheTau> dsGTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
 		for (GheTau gt : dsGTau) {
 			String trangThaiHienThi;
 			switch (gt.getTrangThai()) {
@@ -1140,6 +1160,9 @@ public class QuanLy_Controller {
 				break;
 			case "DANG_BAO_TRI":
 				trangThaiHienThi = "Đang bảo trì";
+				break;
+			case "DANG_GIU_CHO":
+				trangThaiHienThi = "Đang giữ chỗ";
 				break;
 			default:
 				trangThaiHienThi = "Không xác định";
