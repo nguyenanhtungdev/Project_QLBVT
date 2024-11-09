@@ -787,7 +787,7 @@ public class QuanLy_Controller {
 		}
 		qLKhuyenMai_View.getModelTableKM()
 				.addRow(new Object[] { qLKhuyenMai_View.getModelTableKM().getRowCount() + 1, kMai.getMaKhuyenMai(),
-						kMai.getTenKhuyenMai(), kMai.getNoiDungKhuyenMai(), kMai.getGiamGia(), kMai.getSoLuongToiDa(),
+						kMai.getTenKhuyenMai(), kMai.getNoiDungKhuyenMai(), kMai.getGiamGia()+"%", kMai.getSoLuongToiDa(),
 						ngayKetThucDoFormatted, tinhTrangKhuyenMai, });
 
 	}
