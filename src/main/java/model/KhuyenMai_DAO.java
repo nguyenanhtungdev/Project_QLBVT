@@ -99,8 +99,8 @@ public class KhuyenMai_DAO {
 					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
 			double giamGia = resultSet.getDouble("giamGia");
 
-			return new KhuyenMai(noiDungKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-					giamGia, tinhTrangKhuyenMai);
+			return new KhuyenMai(id, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai, giamGia,
+					tinhTrangKhuyenMai);
 		}
 
 		return null;
@@ -126,9 +126,9 @@ public class KhuyenMai_DAO {
 			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
 				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
 						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-
+				double giamGia = resultSet.getDouble("giamGia");
 				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-						tinhTrangKhuyenMai));
+						giamGia, tinhTrangKhuyenMai));
 			}
 		}
 
