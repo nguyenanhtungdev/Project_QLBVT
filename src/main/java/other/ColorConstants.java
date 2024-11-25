@@ -8,7 +8,7 @@ public class ColorConstants {
 	public static final Color DANGER_COLOR = Color.decode("#FF3014"); // màu đỏ
 	public static final Color TEXT_COLOR = Color.WHITE;
 	public static final Color BACKGROUND_COLOR = Color.WHITE;
-	public static final Color HOVER_COLOR = ColorUtilities.darken(PRIMARY_COLOR);
-	public static final Color PRESSED_COLOR = ColorUtilities.brighten(PRIMARY_COLOR);
+	public static final Color HOVER_COLOR = ColorUtils.darken(PRIMARY_COLOR);
+	public static final Color PRESSED_COLOR = ColorUtils.brighten(PRIMARY_COLOR);
 	public static final Color SELECT_COLOR = Color.LIGHT_GRAY;
 }
