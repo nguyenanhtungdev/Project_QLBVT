@@ -13,6 +13,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 
+import util.ColorUtils;
+
 public class SecondaryButton extends RoundedButton {
 
 	private static final long serialVersionUID = -6386152828233821838L;
@@ -41,8 +43,8 @@ public class SecondaryButton extends RoundedButton {
 		this.borderThickness = 2;
 		this.setForeground(ColorConstants.PRIMARY_COLOR);
 
-		BufferedImage bufferedIcon = ColorUtilities.convertImageIconToBufferedImage(icon);
-		BufferedImage changedColorBufferedIcon = ColorUtilities.changeColorToColor(bufferedIcon, Color.WHITE,
+		BufferedImage bufferedIcon = ColorUtils.copyImageIconToBufferedImage(icon);
+		BufferedImage changedColorBufferedIcon = ColorUtils.changeColorToColor(bufferedIcon, Color.WHITE,
 				getForeground());
 
 		Image scaledIcon = changedColorBufferedIcon.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);

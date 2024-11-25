@@ -22,23 +22,23 @@ import org.jfree.data.category.DefaultCategoryDataset;
 
 import model.ThongKeNgay;
 import model.ThongKeTuan;
-import other.BieuDo;
+import other.TrainChart;
 import other.ColorConstants;
 import other.PrimaryButton;
 import other.RoundedButton;
-import other.TheThongKe;
-import other.TieuDe;
+import other.TrainStatisticCard;
+import other.TrainTitle;
 
 public class TongQuan_View extends View implements Printable {
 	private static final long serialVersionUID = 4640477356217922276L;
 
-	private TieuDe tieuDeNgay;
-	private TieuDe tieuDeTuan;
-	private TheThongKe theDoanhThu;
-	private TheThongKe theSoLuongHoaDon;
-	private TheThongKe theSoLuongVeBan;
-	private TheThongKe theSoLuongVeHuy;
-	private TheThongKe theSoLuongKhuyenMaiDaDung;
+	private TrainTitle tieuDeNgay;
+	private TrainTitle tieuDeTuan;
+	private TrainStatisticCard theDoanhThu;
+	private TrainStatisticCard theSoLuongHoaDon;
+	private TrainStatisticCard theSoLuongVeBan;
+	private TrainStatisticCard theSoLuongVeHuy;
+	private TrainStatisticCard theSoLuongKhuyenMaiDaDung;
 	private Box pNorth;
 	private Box pCenter;
 	private Box pSouth;
@@ -53,7 +53,6 @@ public class TongQuan_View extends View implements Printable {
 	public TongQuan_View(String name, String imagePath) {
 		super(name, imagePath);
 
-		
 		setContentPane(new JPanel() {
 			@Override
 			public Insets getInsets() {
@@ -66,7 +65,7 @@ public class TongQuan_View extends View implements Printable {
 		// NORTH
 		pNorth = Box.createVerticalBox();
 
-		tieuDeNgay = new TieuDe("Tổng quan trong ngày (dd/MM/yyyy)");
+		tieuDeNgay = new TrainTitle("Tổng quan trong ngày (dd/MM/yyyy)");
 		tieuDeNgay.setAlignmentX(LEFT_ALIGNMENT);
 		pNorth.add(tieuDeNgay);
 
@@ -74,11 +73,11 @@ public class TongQuan_View extends View implements Printable {
 		pThe.setOpaque(false);
 		pThe.setAlignmentX(LEFT_ALIGNMENT);
 
-		pThe.add(theDoanhThu = new TheThongKe("Doanh thu", ""));
-		pThe.add(theSoLuongHoaDon = new TheThongKe("Số lượng hóa đơn", ""));
-		pThe.add(theSoLuongVeBan = new TheThongKe("Vé bán được", ""));
-		pThe.add(theSoLuongVeHuy = new TheThongKe("Vé đã hủy", ""));
-		pThe.add(theSoLuongKhuyenMaiDaDung = new TheThongKe("Khuyến mãi đã dùng", ""));
+		pThe.add(theDoanhThu = new TrainStatisticCard("Doanh thu", ""));
+		pThe.add(theSoLuongHoaDon = new TrainStatisticCard("Số lượng hóa đơn", ""));
+		pThe.add(theSoLuongVeBan = new TrainStatisticCard("Vé bán được", ""));
+		pThe.add(theSoLuongVeHuy = new TrainStatisticCard("Vé đã hủy", ""));
+		pThe.add(theSoLuongKhuyenMaiDaDung = new TrainStatisticCard("Khuyến mãi đã dùng", ""));
 		pThe.setMaximumSize(pThe.getPreferredSize());
 		pNorth.add(pThe);
 
@@ -86,8 +85,8 @@ public class TongQuan_View extends View implements Printable {
 
 		// CENTER
 		pCenter = Box.createVerticalBox();
-		pCenter.add(tieuDeTuan = new TieuDe("Tổng quan doanh thu trong 7 ngày (dd/MM/yyyy - dd/MM/yyyy)", TieuDe.H2));
-		pCenter.add(chart = BieuDo.taoBieuDoDuong(doanhThuDataset, "", "Ngày", "Doanh thu (VNĐ)"));
+		pCenter.add(tieuDeTuan = new TrainTitle("Tổng quan doanh thu trong 7 ngày (dd/MM/yyyy - dd/MM/yyyy)"));
+		pCenter.add(chart = TrainChart.createLineChart(doanhThuDataset, "", "Ngày", "Doanh thu (VNĐ)"));
 		add(pCenter, BorderLayout.CENTER);
 
 		// SOUTH

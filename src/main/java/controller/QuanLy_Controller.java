@@ -62,8 +62,8 @@ import model.VeTau_DAO;
 import other.ColorConstants;
 import other.CustomTitleLable;
 import other.CustomTrainStatusButton;
-import other.PrinterUtilities;
 import other.SeatButton;
+import util.PrinterUtils;
 import view.HoaDonChiTiet_View;
 import view.QuanLyHoaDon_View;
 import view.QuanLyKhuyenMai_View;
@@ -197,7 +197,7 @@ public class QuanLy_Controller {
 
 	////// HoaDon_view
 	public void inDSHD() {
-		PrinterUtilities.getInstance().print(new Printable() {
+		PrinterUtils.print(new Printable() {
 			@Override
 			public int print(Graphics graphics, PageFormat pageFormat, int pageIndex) throws PrinterException {
 				if (pageIndex > 0) {
@@ -787,8 +787,8 @@ public class QuanLy_Controller {
 		}
 		qLKhuyenMai_View.getModelTableKM()
 				.addRow(new Object[] { qLKhuyenMai_View.getModelTableKM().getRowCount() + 1, kMai.getMaKhuyenMai(),
-						kMai.getTenKhuyenMai(), kMai.getNoiDungKhuyenMai(), kMai.getGiamGia()+"%", kMai.getSoLuongToiDa(),
-						ngayKetThucDoFormatted, tinhTrangKhuyenMai, });
+						kMai.getTenKhuyenMai(), kMai.getNoiDungKhuyenMai(), kMai.getGiamGia() + "%",
+						kMai.getSoLuongToiDa(), ngayKetThucDoFormatted, tinhTrangKhuyenMai, });
 
 	}
 

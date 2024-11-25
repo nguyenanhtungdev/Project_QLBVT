@@ -14,7 +14,7 @@ import javax.swing.JTextField;
 
 import other.PrimaryButton;
 import other.SecondaryButton;
-import other.TieuDe;
+import other.TrainTitle;
 
 public class TaoMoi_View extends View {
 
@@ -29,7 +29,7 @@ public class TaoMoi_View extends View {
 	}
 
 	private void renderUI() {
-		TieuDe tieuDeMoi = new TieuDe("Tạo thống kê mới");
+		TrainTitle tieuDeMoi = new TrainTitle("Tạo thống kê mới");
 
 		JLabel lLoai = new JLabel("Loại thống kê");
 		JLabel lLoaiKH = new JLabel("Loại khách hàng");

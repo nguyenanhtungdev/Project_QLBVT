@@ -22,7 +22,7 @@ import model.ThongKeTuan;
 import model.TrangThaiVeTau;
 import model.VeTau;
 import model.VeTau_DAO;
-import other.PrinterUtilities;
+import util.PrinterUtils;
 import view.KetQuaThongKe_View;
 import view.View;
 import view.TaoMoi_View;
@@ -82,10 +82,8 @@ public class ThongKe_Controller {
 					.filter(p -> chuyenTaus.stream().anyMatch(p1 -> p1.getGiaVe().getMaGiaVe().equals(p.getMaGiaVe())))
 					.toList();
 
-			List<KhuyenMai> khuyenMais = KhuyenMai_DAO.getInstance().getAll().stream()
-					.filter(p -> chiTietHoaDons.stream()
-							.anyMatch(p1 -> p1.getKhuyenMai().getMaKhuyenMai().equals(p.getMaKhuyenMai())))
-					.toList();
+			List<KhuyenMai> khuyenMais = KhuyenMai_DAO.getInstance().getAll().stream().filter(p -> chiTietHoaDons
+					.stream().anyMatch(p1 -> p1.getKhuyenMai().getMaKhuyenMai().equals(p.getMaKhuyenMai()))).toList();
 
 			double doanhThu = giaVes.stream().map(m -> m.getGiaVe()).reduce(0D, (acc, curr) -> acc + curr);
 			int soLuongHoaDon = (int) hoaDons.size();
@@ -117,7 +115,7 @@ public class ThongKe_Controller {
 	}
 
 	private void inTongQuan(ActionEvent e) {
-		PrinterUtilities.getInstance().print(tongQuanPage, null);
+		PrinterUtils.print(tongQuanPage, "In thống kê tổng quan");
 	}
 
 }

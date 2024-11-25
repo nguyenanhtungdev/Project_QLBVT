@@ -25,7 +25,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import other.ColorConstants;
 import other.PrimaryButton;
 import other.SecondaryButton;
-import other.TieuDe;
+import other.TrainTitle;
 
 public class KetQuaThongKe_View extends View {
 
@@ -45,7 +45,7 @@ public class KetQuaThongKe_View extends View {
 		JScrollPane pScroll = new JScrollPane(pMain);
 		pScroll.setBorder(null);
 
-		TieuDe tieuDe = new TieuDe("Báo cáo");
+		TrainTitle tieuDe = new TrainTitle("Báo cáo");
 
 		JLabel lNguoiTao = new JLabel("Người tạo: Nguyễn Anh Tùng");
 		JLabel lThoiGianTao = new JLabel("Thời gian tạo: 10:45:29 24/9/2024");
@@ -88,7 +88,7 @@ public class KetQuaThongKe_View extends View {
 		lDenLuc.setFont(font);
 		lMaKhuyenMai.setFont(font);
 
-		TieuDe tieuDeBieuDo = new TieuDe("Biểu đồ", TieuDe.H2);
+		TrainTitle tieuDeBieuDo = new TrainTitle("Biểu đồ");
 
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		dataset.addValue(5000000, "doanh thu", "17/9");

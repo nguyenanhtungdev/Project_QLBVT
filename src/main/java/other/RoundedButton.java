@@ -15,6 +15,8 @@ import java.awt.event.MouseListener;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import util.ColorUtils;
+
 public class RoundedButton extends JButton implements MouseListener {
 
 	private static final long serialVersionUID = 8730610760264205199L;
@@ -64,12 +66,13 @@ public class RoundedButton extends JButton implements MouseListener {
 		this.borderRadius = 8;
 		this.insets = new Insets(8, 16, 8, 16);
 		this.normalColor = normalColor;
-		this.hoveredColor = ColorUtilities.darken(normalColor);
-		this.pressedColor = ColorUtilities.brighten(normalColor);
+		this.hoveredColor = ColorUtils.darken(normalColor);
+		this.pressedColor = ColorUtils.brighten(normalColor);
 
 		setContentAreaFilled(false);
 		setFocusPainted(false);
 		setBackground(normalColor);
+		setBorder(null);
 
 		setFont(new Font("Arial", Font.BOLD, 16));
 		setForeground(ColorConstants.TEXT_COLOR);
@@ -84,8 +87,8 @@ public class RoundedButton extends JButton implements MouseListener {
 		this.borderRadius = 50;
 		this.insets = new Insets(8, 8, 8, 8);
 		this.normalColor = normalColor;
-		this.hoveredColor = ColorUtilities.darken(normalColor);
-		this.pressedColor = ColorUtilities.brighten(normalColor);
+		this.hoveredColor = ColorUtils.darken(normalColor);
+		this.pressedColor = ColorUtils.brighten(normalColor);
 		this.icon = icon;
 		this.iconWidth = icon.getIconWidth();
 		this.iconHeight = icon.getIconHeight();
@@ -93,6 +96,7 @@ public class RoundedButton extends JButton implements MouseListener {
 		setContentAreaFilled(false);
 		setFocusPainted(false);
 		setBackground(normalColor);
+		setBorder(null);
 
 		setFont(new Font("Arial", Font.BOLD, 16));
 		setForeground(ColorConstants.TEXT_COLOR);
@@ -109,8 +113,8 @@ public class RoundedButton extends JButton implements MouseListener {
 		this.borderRadius = 8;
 		this.insets = new Insets(8, 16, 8, 16);
 		this.normalColor = normalColor;
-		this.hoveredColor = ColorUtilities.darken(normalColor);
-		this.pressedColor = ColorUtilities.brighten(normalColor);
+		this.hoveredColor = ColorUtils.darken(normalColor);
+		this.pressedColor = ColorUtils.brighten(normalColor);
 		this.icon = new ImageIcon(getClass().getResource(iconPath));
 		this.iconWidth = icon.getIconWidth();
 		this.iconHeight = icon.getIconHeight();
@@ -118,6 +122,7 @@ public class RoundedButton extends JButton implements MouseListener {
 		setContentAreaFilled(false);
 		setFocusPainted(false);
 		setBackground(normalColor);
+		setBorder(null);
 
 		setFont(new Font("Arial", Font.BOLD, 16));
 		setForeground(ColorConstants.TEXT_COLOR);
