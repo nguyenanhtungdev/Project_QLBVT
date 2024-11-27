@@ -46,6 +46,7 @@ import other.PrimaryButton;
 
 import java.awt.FlowLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
 
 public class QuanLyKhuyenMai_View extends View {
 
@@ -67,6 +68,7 @@ public class QuanLyKhuyenMai_View extends View {
 	private JTextField txtSLKM;
 	private JTextArea txtNDKM;
 	private JTextField txtGiamGia;
+	private PrimaryButton btnCapNhap;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -92,6 +94,10 @@ public class QuanLyKhuyenMai_View extends View {
 
 	public void addButtonThemListener(ActionListener listener) {
 		btnThem.addActionListener(listener);
+	}
+
+	public void addButtonCapNhapListener(ActionListener listener) {
+		btnCapNhap.addActionListener(listener);
 	}
 
 	public void addButtonHuyListener(ActionListener listener) {
@@ -317,19 +323,20 @@ public class QuanLyKhuyenMai_View extends View {
 		panelNut.setLayout(new BoxLayout(panelNut, BoxLayout.Y_AXIS));
 
 		panelNut.setBorder(
-				new CompoundBorder(new LineBorder(new Color(192, 192, 192), 1, true), new EmptyBorder(0, 10, 0, 10)));
+				new CompoundBorder(new LineBorder(new Color(192, 192, 192), 1, true), new EmptyBorder(0, 20, 0, 20)));
 
-		btnThem = new PrimaryButton("Thêm khuyến mãi    ", "/Image/plus.png");
-//		btnThem.setColor_1(new Color(149, 149, 255));
-//		btnThem.setColor_2(ColorConstants.HOVER_COLOR);
+		btnThem = new PrimaryButton("Thêm   ", "/Image/plus.png");
+		btnThem.setText("Thêm     ");
 		btnThem.setBorderRadius(15);
-		btnThem.setFont(new Font("Arial", Font.BOLD, 16));
+		btnThem.setFont(new Font("Arial", Font.BOLD, 18));
 		btnThem.setIconSize(32, 32);
+		btnThem.setPreferredSize(new Dimension(170, 35));
 
 		btnHuy = new DangerPrimaryButton("Huỷ bỏ     ", "/Image/cancel.png");
 		btnHuy.setBorderRadius(15); // Độ bo góc
-		btnHuy.setFont(new Font("Arial", Font.BOLD, 16));
+		btnHuy.setFont(new Font("Arial", Font.BOLD, 18));
 		btnHuy.setIconSize(32, 32);
+		btnHuy.setPreferredSize(new Dimension(170, 35));
 
 		panelNut.add(Box.createVerticalGlue());
 		JPanel panelBtnThem = new JPanel();
@@ -339,6 +346,23 @@ public class QuanLyKhuyenMai_View extends View {
 		panelBtnThem.add(btnThem, BorderLayout.SOUTH);
 		panelNut.add(Box.createVerticalStrut(20));
 
+		JPanel panelBtnCapNhap = new JPanel();
+		panelBtnCapNhap.setBorder(new EmptyBorder(15, 0, 0, 0));
+		panelBtnCapNhap.setBackground(Color.WHITE);
+		panelNut.add(panelBtnCapNhap);
+		panelBtnCapNhap.setLayout(new BorderLayout(0, 0));
+
+		btnCapNhap = new PrimaryButton("Cập nhập", "/Image/update.png");
+		btnCapNhap.setText("Cập nhập");
+		btnCapNhap.setPreferredSize(new Dimension(170, 35));
+		btnCapNhap.setFont(new Font("Arial", Font.BOLD, 18));
+		btnCapNhap.setBorderRadius(15);
+		btnCapNhap.setIconSize(32, 32);
+		panelBtnCapNhap.add(btnCapNhap, BorderLayout.NORTH);
+
+		Component verticalStrut_2 = Box.createVerticalStrut(20);
+		panelNut.add(verticalStrut_2);
+
 		JPanel panelBtnHuy = new JPanel();
 		panelBtnHuy.setBackground(Color.WHITE);
 		panelNut.add(panelBtnHuy);
@@ -347,9 +371,16 @@ public class QuanLyKhuyenMai_View extends View {
 		panelNut.add(Box.createVerticalGlue());
 
 		String[] header = { "STT", "Mã khuyến mãi", "Tên khuyến mãi", "Nội dung", "Giảm giá", "Số lượng",
-				"Ngày kết thúc", "Tình trạng" };
+				"Ngày kết thúc", "Trạng thái" };
 		Font headerFont = new Font("Arial", Font.BOLD, 18);
-		modelTableKM = new DefaultTableModel(header, 0);
+		modelTableKM = new DefaultTableModel(header, 0) {
+			private static final long serialVersionUID = 277400464860378899L;
+
+			@Override
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
+		};
 
 		tableKM = new JTable(modelTableKM);
 		tableKM.setShowGrid(true);
@@ -357,6 +388,11 @@ public class QuanLyKhuyenMai_View extends View {
 		tableKM.getTableHeader().setFont(headerFont);
 		tableKM.setFont(new Font("Arial", Font.PLAIN, 16));
 		tableKM.getColumnModel().getColumn(0).setPreferredWidth(5);
+		tableKM.getColumnModel().getColumn(2).setPreferredWidth(150);
+		tableKM.getColumnModel().getColumn(3).setPreferredWidth(150);
+		tableKM.getColumnModel().getColumn(4).setPreferredWidth(50);
+		tableKM.getColumnModel().getColumn(5).setPreferredWidth(50);
+		tableKM.getTableHeader().setReorderingAllowed(false);
 
 		JPanel panelSearchAndTable = new JPanel();
 		panelSearchAndTable.setBorder(new EmptyBorder(15, 0, 0, 0));
@@ -422,13 +458,11 @@ public class QuanLyKhuyenMai_View extends View {
 		paelSearch2.add(btnReset);
 
 		btnSearch = new PrimaryButton("Tìm kiếm", "/Image/search.png");
-		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
-		btnSearch.setFont(new Font("Tahoma", Font.BOLD, 18));
-//		btnSearch.setHeSoBoGoc(10);
-		btnSearch.setBorderRadius(5);
+		btnSearch.setPreferredSize(new Dimension(170, 35));
+		btnSearch.setFont(new Font("Arial", Font.BOLD, 18));
+		btnSearch.setBorderRadius(10);
 		btnSearch.setIconSize(26, 26);
 		btnSearch.setVerticalTextPosition(SwingConstants.CENTER);
-		btnSearch.setVerticalAlignment(SwingConstants.TOP);
 		btnSearch.setHorizontalTextPosition(SwingConstants.RIGHT);
 		paelSearch2.add(btnSearch);
 
