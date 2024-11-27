@@ -153,26 +153,52 @@ public class KhuyenMai_DAO {
 	}
 
 	public boolean capNhat(KhuyenMai entity, String maKM) throws SQLException {
-	    String sql = "UPDATE KhuyenMai SET tenKhuyenMai = ?, noiDungKhuyenMai = ?, soLuongToiDa = ?, hanSuDungKhuyenMai = ?, tinhTrangKhuyenMai = ?, giamGia = ? WHERE maKhuyenMai = ?";
+		String sql = "UPDATE KhuyenMai SET tenKhuyenMai = ?, noiDungKhuyenMai = ?, soLuongToiDa = ?, hanSuDungKhuyenMai = ?, tinhTrangKhuyenMai = ?, giamGia = ? WHERE maKhuyenMai = ?";
 
-	    Connection con = ConnectDB.getInstance().getConnection();
-	    PreparedStatement statement = con.prepareStatement(sql);
+		Connection con = ConnectDB.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
 
-	    // Đảm bảo rằng tất cả các giá trị được set đúng
-	    statement.setNString(1, entity.getTenKhuyenMai());
-	    statement.setNString(2, entity.getNoiDungKhuyenMai());
-	    statement.setInt(3, entity.getSoLuongToiDa());
-	    statement.setTimestamp(4, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
-	    statement.setInt(5, entity.getTinhTrangKhuyenMai().getValue());
-	    statement.setDouble(6, entity.getGiamGia());
-	    statement.setString(7, maKM);
+		// Đảm bảo rằng tất cả các giá trị được set đúng
+		statement.setNString(1, entity.getTenKhuyenMai());
+		statement.setNString(2, entity.getNoiDungKhuyenMai());
+		statement.setInt(3, entity.getSoLuongToiDa());
+		statement.setTimestamp(4, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
+		statement.setInt(5, entity.getTinhTrangKhuyenMai().getValue());
+		statement.setDouble(6, entity.getGiamGia());
+		statement.setString(7, maKM);
 
-	    int count = statement.executeUpdate();
-	    return count > 0;
+		int count = statement.executeUpdate();
+		return count > 0;
 	}
 
+	public List<KhuyenMai> getKhuyenMaiHetHanTrong7Ngay() throws SQLException {
+		String sql = "SELECT * FROM KhuyenMai WHERE DATEDIFF(DAY, GETDATE(), hanSuDungKhuyenMai) <= 7 AND DATEDIFF(DAY, GETDATE(), hanSuDungKhuyenMai) >= 0";
 
+		Connection con = ConnectDB.getInstance().getConnection();
+		Statement statement = con.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
 
+		List<KhuyenMai> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maKhuyenMai = resultSet.getString("maKhuyenMai");
+			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
+			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
+					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
+					: null;
+
+			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
+				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
+				double giamGia = resultSet.getDouble("giamGia");
+				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
+						giamGia, tinhTrangKhuyenMai));
+			}
+		}
+
+		return list;
+	}
 
 	public List<KhuyenMai> getAll() throws SQLException {
 		String sql = "SELECT * FROM KhuyenMai";

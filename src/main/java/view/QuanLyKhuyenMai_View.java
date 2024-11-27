@@ -46,7 +46,6 @@ import other.PrimaryButton;
 
 import java.awt.FlowLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 
 public class QuanLyKhuyenMai_View extends View {
 
@@ -441,10 +440,10 @@ public class QuanLyKhuyenMai_View extends View {
 		paelSearch2.add(paneTT);
 		paneTT.setLayout(new BoxLayout(paneTT, BoxLayout.X_AXIS));
 
-		JLabel lblTT = new JLabel("Trạng thái ");
+		JLabel lblTT = new JLabel("Tình trạng ");
 		lblTT.setFont(new Font("Arial", Font.BOLD, 16));
 		paneTT.add(lblTT);
-		String[] items = { "", "Còn", "Hết số lượng", "Hết hạn sử dụng" };
+		String[] items = { "", "Hết hạn sau 7 ngày", "Còn số lượng", "Hết số lượng", "Hết hạn sử dụng" };
 		comboBoxTrangThai = new JComboBox<>(items);
 		comboBoxTrangThai.setFont(new Font("Arial", Font.PLAIN, 16));
 		paneTT.add(comboBoxTrangThai);
