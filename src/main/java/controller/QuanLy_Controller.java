@@ -734,77 +734,74 @@ public class QuanLy_Controller {
 	}
 
 	private void CapNhapKM() {
-	    int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
-	    if (selectedRow < 0) {
-	        JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng cần cập nhật!");
-	        return;
-	    }
+		int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
+		if (selectedRow < 0) {
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng cần cập nhật!");
+			return;
+		}
 
-	    String maKM = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 1);
-	    String tenKM = qLKhuyenMai_View.getTxtTenkm().getText();
-	    String noiDung = qLKhuyenMai_View.getTxtNDKM().getText();
-	    int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText());
-	    LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-	    double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", ""));
-	    String currentTinhTrang = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 7);
-	    
-	    
-    
-	    TinhTrangKhuyenMai newTinhTrang = null;
+		String maKM = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 1);
+		String tenKM = qLKhuyenMai_View.getTxtTenkm().getText();
+		String noiDung = qLKhuyenMai_View.getTxtNDKM().getText();
+		int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText());
+		LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault())
+				.toLocalDateTime();
+		double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", ""));
+		String currentTinhTrang = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 7);
 
-	    if ("Hết số lượng".equals(currentTinhTrang)) {
-	    	int currentSoLuong;
+		TinhTrangKhuyenMai newTinhTrang = null;
+
+		if ("Hết số lượng".equals(currentTinhTrang)) {
+			int currentSoLuong;
 			try {
 				currentSoLuong = kMai_DAO.getById1(maKM).getSoLuongToiDa();
-			    if (soLuong <= currentSoLuong) {
-		            JOptionPane.showMessageDialog(null, "Số lượng mới không hợp lệ!");
-		            return; 
-		        }
-		        newTinhTrang = TinhTrangKhuyenMai.HET_SO_LUONG;
+				if (soLuong <= currentSoLuong) {
+					JOptionPane.showMessageDialog(null, "Số lượng mới không hợp lệ!");
+					return;
+				}
+				newTinhTrang = TinhTrangKhuyenMai.HET_SO_LUONG;
 			} catch (SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} 	        
-	    } else if ("Còn".equals(currentTinhTrang)) {
-	        newTinhTrang = TinhTrangKhuyenMai.CON;
-	    } else if ("Hết hạn sử dụng".equals(currentTinhTrang)) {
-	        newTinhTrang = TinhTrangKhuyenMai.HET_HAN_SU_DUNG;
-	    } else {
-	        throw new IllegalArgumentException("Giá trị tình trạng không hợp lệ: " + currentTinhTrang);
-	    }
+			}
+		} else if ("Còn".equals(currentTinhTrang)) {
+			newTinhTrang = TinhTrangKhuyenMai.CON;
+		} else if ("Hết hạn sử dụng".equals(currentTinhTrang)) {
+			newTinhTrang = TinhTrangKhuyenMai.HET_HAN_SU_DUNG;
+		} else {
+			throw new IllegalArgumentException("Giá trị tình trạng không hợp lệ: " + currentTinhTrang);
+		}
 
-	    if (newTinhTrang == TinhTrangKhuyenMai.HET_SO_LUONG && soLuong > 0) {
-	        newTinhTrang = TinhTrangKhuyenMai.CON;
-	    } else if (newTinhTrang == TinhTrangKhuyenMai.HET_HAN_SU_DUNG && hanSuDung.isAfter(LocalDateTime.now())) {
-	        newTinhTrang = TinhTrangKhuyenMai.CON; 
-	    }
+		if (newTinhTrang == TinhTrangKhuyenMai.HET_SO_LUONG && soLuong > 0) {
+			newTinhTrang = TinhTrangKhuyenMai.CON;
+		} else if (newTinhTrang == TinhTrangKhuyenMai.HET_HAN_SU_DUNG && hanSuDung.isAfter(LocalDateTime.now())) {
+			newTinhTrang = TinhTrangKhuyenMai.CON;
+		}
 
-	    KhuyenMai kmEntity = new KhuyenMai();
-	    kmEntity.setTenKhuyenMai(tenKM);
-	    kmEntity.setNoiDungKhuyenMai(noiDung);
-	    kmEntity.setSoLuongToiDa(soLuong);
-	    kmEntity.setHanSuDungKhuyenMai(hanSuDung);
-	    kmEntity.setTinhTrangKhuyenMai(newTinhTrang); 
-	    kmEntity.setGiamGia(giamGia);
+		KhuyenMai kmEntity = new KhuyenMai();
+		kmEntity.setTenKhuyenMai(tenKM);
+		kmEntity.setNoiDungKhuyenMai(noiDung);
+		kmEntity.setSoLuongToiDa(soLuong);
+		kmEntity.setHanSuDungKhuyenMai(hanSuDung);
+		kmEntity.setTinhTrangKhuyenMai(newTinhTrang);
+		kmEntity.setGiamGia(giamGia);
 
+		try {
+			boolean result = kMai_DAO.capNhat(kmEntity, maKM);
 
-	    try {
-	        boolean result = kMai_DAO.capNhat(kmEntity, maKM);
-
-	        if (result) {
-	            JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
-	            xoaDuLieuTableKM();
-	            DocDuLieuVaoTableKhuyenMai();
-	        } else {
-	            JOptionPane.showMessageDialog(null, "Cập nhật thất bại!");
-	        }
-	    } catch (SQLException ex) {
-	        ex.printStackTrace();
-	        JOptionPane.showMessageDialog(null, "Lỗi cập nhật dữ liệu!");
-	    }
+			if (result) {
+				JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
+				xoaDuLieuTableKM();
+				DocDuLieuVaoTableKhuyenMai();
+			} else {
+				JOptionPane.showMessageDialog(null, "Cập nhật thất bại!");
+			}
+		} catch (SQLException ex) {
+			ex.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Lỗi cập nhật dữ liệu!");
+		}
 	}
 
-	
 	private void searchKM() {
 		String maKM = (String) qLKhuyenMai_View.getComboBoxMaKM().getSelectedItem();
 		String trangThai = (String) qLKhuyenMai_View.getComboBoxTrangThai().getSelectedItem();
@@ -815,6 +812,7 @@ public class QuanLy_Controller {
 
 		try {
 			List<KhuyenMai> danhSachKM = new ArrayList<>();
+
 			if (maKM != null && !maKM.isEmpty()) {
 				KhuyenMai km = kMai_DAO.getById1(maKM);
 				if (km != null) {
@@ -825,12 +823,23 @@ public class QuanLy_Controller {
 			}
 
 			if (trangThai != null && !trangThai.isEmpty()) {
-				TinhTrangKhuyenMai tinhTrangEnum = convertStringToTinhTrang(trangThai);
-				List<KhuyenMai> danhSachKMTheoTrangThai = kMai_DAO.getKhuyenMaiTheoTrangThai(tinhTrangEnum);
-				if (!danhSachKMTheoTrangThai.isEmpty()) {
-					danhSachKM.addAll(danhSachKMTheoTrangThai);
+				if (trangThai.equals("Hết hạn sau 7 ngày")) {
+					// Lọc các khuyến mãi có hạn sử dụng trong vòng 7 ngày
+					List<KhuyenMai> danhSachKMHetHan7Ngay = kMai_DAO.getKhuyenMaiHetHanTrong7Ngay();
+					if (!danhSachKMHetHan7Ngay.isEmpty()) {
+						danhSachKM.addAll(danhSachKMHetHan7Ngay);
+					} else {
+						JOptionPane.showMessageDialog(null, "Không tìm thấy khuyến mãi hết hạn trong 7 ngày!");
+					}
 				} else {
-					JOptionPane.showMessageDialog(null, "Không tìm thấy khuyến mãi với trạng thái " + trangThai + "!");
+					TinhTrangKhuyenMai tinhTrangEnum = convertStringToTinhTrang(trangThai);
+					List<KhuyenMai> danhSachKMTheoTrangThai = kMai_DAO.getKhuyenMaiTheoTrangThai(tinhTrangEnum);
+					if (!danhSachKMTheoTrangThai.isEmpty()) {
+						danhSachKM.addAll(danhSachKMTheoTrangThai);
+					} else {
+						JOptionPane.showMessageDialog(null,
+								"Không tìm thấy khuyến mãi với trạng thái " + trangThai + "!");
+					}
 				}
 			}
 
