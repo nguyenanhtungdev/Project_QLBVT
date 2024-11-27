@@ -52,7 +52,6 @@ public class QuanLyHoaDon_View extends View implements Printable {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	private JLabel lblQLHD;
 	private DefaultTableModel modelTableHD;
 	private JTable tableHD;
 	private PrimaryButton btnInDS;
@@ -153,13 +152,8 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
 
-		lblQLHD = new JLabel("Quản Lý Hoá Đơn");
-		lblQLHD.setHorizontalAlignment(SwingConstants.CENTER);
-		lblQLHD.setFont(new Font("Arial", Font.BOLD, 20));
-
 		headerPanel = new JPanel(new BorderLayout());
 		headerPanel.setBackground(new Color(255, 255, 255));
-		headerPanel.add(lblQLHD, BorderLayout.NORTH);
 
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
@@ -384,9 +378,15 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		contentPane.add(headerPanel, BorderLayout.NORTH);
 
 		String[] header = { "STT", "Mã hoá đơn", "Loại hoá đơn", "Tên khách hàng", "Số điện thoại", "Ngày lập",
-				"Thuế VAT", "Tổng tiền" };
+		        "Thuế VAT", "Tổng tiền" };
 		Font headerFont = new Font("Arial", Font.BOLD, 18);
-		modelTableHD = new DefaultTableModel(header, 0);
+		modelTableHD = new DefaultTableModel(header, 0) {
+			private static final long serialVersionUID = -5859507107413891521L;
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 
 		tableHD = new JTable(modelTableHD);
 		tableHD.setShowGrid(true);
@@ -396,6 +396,8 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		tableHD.getColumnModel().getColumn(0).setPreferredWidth(5);
 		tableHD.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableHD.setRowHeight(30);
+		tableHD.getTableHeader().setReorderingAllowed(false);
+
 		JScrollPane tableScroll = new JScrollPane(tableHD);
 		contentPane.add(tableScroll, BorderLayout.CENTER);
 

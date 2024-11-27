@@ -159,11 +159,6 @@ public class QuanLyTau_View extends View {
 		headerPanel.add(panel_Tilte, BorderLayout.NORTH);
 		panel_Tilte.setLayout(new BorderLayout(0, 0));
 
-		JLabel lblQLTau = new JLabel("Quản Lý Tàu");
-		lblQLTau.setHorizontalAlignment(SwingConstants.CENTER);
-		lblQLTau.setFont(new Font("Arial", Font.BOLD, 23));
-		panel_Tilte.add(lblQLTau);
-
 		panel_45 = new JPanel();
 		panel_DSTau.add(panel_45, BorderLayout.SOUTH);
 		panel_45.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -288,7 +283,13 @@ public class QuanLyTau_View extends View {
 
 		String[] header = { "STT", "Mã tàu", "Tên tàu", "Số toa", "Năm sản xuất", "Nhà sản xuất", "Tốc độ trung bình",
 				"Tốc độ tối đa", "Trạng thái", "Ghi chú" };
-		modelTableTau = new DefaultTableModel(header, 0);
+		modelTableTau = new DefaultTableModel(header, 0) {
+			private static final long serialVersionUID = 6293001865070277594L;
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 		tableTau = new JTable(modelTableTau);
 		tableTau.setShowGrid(true);
 		tableTau.setGridColor(new Color(225, 225, 225));
@@ -305,6 +306,7 @@ public class QuanLyTau_View extends View {
 		tableTau.getColumnModel().getColumn(9).setPreferredWidth(200);
 		tablePanelTau = new JScrollPane(tableTau);
 		tableTau.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		tableTau.getTableHeader().setReorderingAllowed(false);
 		tableTau.setRowHeight(30);
 		panel_TableTau.add(tablePanelTau);
 
@@ -312,7 +314,13 @@ public class QuanLyTau_View extends View {
 		panelDS = new JPanel();
 		panelDS.setLayout(new BorderLayout());
 		String[] headerTT = { "STT", "Mã toa", "Tên toa", "Số thu tự toa", "Loại toa", "Số lượng ghế", "Trạng thái" };
-		modelTableTTau = new DefaultTableModel(headerTT, 0);
+		modelTableTTau = new DefaultTableModel(headerTT, 0) {
+			private static final long serialVersionUID = 1646158358200751731L;
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 		tableTTau = new JTable(modelTableTTau);
 		tableTTau.setShowGrid(true);
 		tableTTau.setGridColor(new Color(225, 225, 225));
@@ -320,6 +328,7 @@ public class QuanLyTau_View extends View {
 		tablePanelTTau = new JScrollPane(tableTTau);
 		tableTTau.setRowHeight(30);
 		tableTTau.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		tableTTau.getTableHeader().setReorderingAllowed(false);
 
 		JPanel panel_lblTTau = new JPanel();
 		panel_lblTTau.setBackground(Color.WHITE);
@@ -434,7 +443,13 @@ public class QuanLyTau_View extends View {
 
 		// tableGhe
 		String[] headerGhe = { "STT", "Mã ghế", "Loại ghế", "Số toa", "Trạng thái" };
-		modelTableGhe = new DefaultTableModel(headerGhe, 0);
+		modelTableGhe = new DefaultTableModel(headerGhe, 0) {
+			private static final long serialVersionUID = 1489491129915894460L;
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		        return false;
+		    }
+		};
 		panel_TableGhe.setLayout(new BoxLayout(panel_TableGhe, BoxLayout.X_AXIS));
 		tableTGhe = new JTable(modelTableGhe);
 		tableTGhe.setShowGrid(true);
@@ -443,7 +458,7 @@ public class QuanLyTau_View extends View {
 		tablePanelGhe = new JScrollPane(tableTGhe);
 		tableTGhe.setRowHeight(30);
 		tableTGhe.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-
+		tableTGhe.getTableHeader().setReorderingAllowed(false);
 		panel_TableGhe.add(tablePanelGhe);
 
 		panel_GheTau.setVisible(false);

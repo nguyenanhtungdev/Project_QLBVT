@@ -15,6 +15,8 @@ import java.awt.print.Printable;
 import java.awt.print.PrinterException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -117,10 +119,9 @@ public class QuanLy_Controller {
 
 	// QL_Tau
 	public QuanLy_Controller() throws SQLException {
-		pageList.add(this.qLHoaDon_view = new QuanLyHoaDon_View("Hóa đơn", "/Image/tabler-icon-file-settings.png/"));
-		pageList.add(this.qLTau_View = new QuanLyTau_View("Tàu", "/Image/tabler-icon-file-settings.png"));
-		pageList.add(
-				this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/tabler-icon-file-settings.png"));
+		pageList.add(this.qLHoaDon_view = new QuanLyHoaDon_View("Hóa đơn", "/Image/iconHoaDon.png"));
+		pageList.add(this.qLTau_View = new QuanLyTau_View("Tàu", "/Image/Trains.png"));
+		pageList.add(this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/Sales.png"));
 
 		this.gheTau_DAO = new GheTau_DAO();
 		this.toaTau_DAO = new ToaTau_DAO();
@@ -162,11 +163,13 @@ public class QuanLy_Controller {
 	private void initControllerKM() {
 		themSuKienKM();
 		DocDuLieuVaoTableKhuyenMai();
+		LayDataTuBangKM();
 	}
 
 	private void themSuKienKM() {
 		qLKhuyenMai_View.addButtonHuyListener(e -> huyTxtKM());
 		qLKhuyenMai_View.addButtonThemListener(e -> ThemKM());
+		qLKhuyenMai_View.addButtonCapNhapListener(e -> CapNhapKM());
 		qLKhuyenMai_View.addButtonTimListener(e -> searchKM());
 		qLKhuyenMai_View.addButtonReloadListener(e -> reLoadSearchKM());
 	}
@@ -695,6 +698,113 @@ public class QuanLy_Controller {
 		qLKhuyenMai_View.getComboBoxTrangThai().setSelectedItem(null);
 	}
 
+	private void LayDataTuBangKM() {
+		qLKhuyenMai_View.getTableKM().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
+				if (selectedRow >= 0) {
+					String tenKM = qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 2).toString();
+					String soLuong = qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 5).toString();
+					String noiDung = qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 3).toString();
+					String ngayKT = qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 6).toString();
+
+					String giamGia = qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 4).toString();
+					if (giamGia.contains("%")) {
+						giamGia = giamGia.replace("%", "").trim();
+					}
+					if (giamGia.endsWith(".0")) {
+						giamGia = giamGia.substring(0, giamGia.length() - 2);
+					}
+					qLKhuyenMai_View.getTxtTenkm().setText(tenKM);
+					qLKhuyenMai_View.getTxtSLKM().setText(soLuong);
+					qLKhuyenMai_View.getTxtNDKM().setText(noiDung);
+
+					try {
+						Date date = new SimpleDateFormat("dd-MM-yyyy").parse(ngayKT);
+						qLKhuyenMai_View.getDateKTKM().setDate(date);
+					} catch (ParseException ex) {
+						ex.printStackTrace();
+					}
+
+					qLKhuyenMai_View.getTxtGiamGia().setText(giamGia);
+				}
+			}
+		});
+	}
+
+	private void CapNhapKM() {
+	    int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
+	    if (selectedRow < 0) {
+	        JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng cần cập nhật!");
+	        return;
+	    }
+
+	    String maKM = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 1);
+	    String tenKM = qLKhuyenMai_View.getTxtTenkm().getText();
+	    String noiDung = qLKhuyenMai_View.getTxtNDKM().getText();
+	    int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText());
+	    LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+	    double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", ""));
+	    String currentTinhTrang = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 7);
+	    
+	    
+    
+	    TinhTrangKhuyenMai newTinhTrang = null;
+
+	    if ("Hết số lượng".equals(currentTinhTrang)) {
+	    	int currentSoLuong;
+			try {
+				currentSoLuong = kMai_DAO.getById1(maKM).getSoLuongToiDa();
+			    if (soLuong <= currentSoLuong) {
+		            JOptionPane.showMessageDialog(null, "Số lượng mới không hợp lệ!");
+		            return; 
+		        }
+		        newTinhTrang = TinhTrangKhuyenMai.HET_SO_LUONG;
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 	        
+	    } else if ("Còn".equals(currentTinhTrang)) {
+	        newTinhTrang = TinhTrangKhuyenMai.CON;
+	    } else if ("Hết hạn sử dụng".equals(currentTinhTrang)) {
+	        newTinhTrang = TinhTrangKhuyenMai.HET_HAN_SU_DUNG;
+	    } else {
+	        throw new IllegalArgumentException("Giá trị tình trạng không hợp lệ: " + currentTinhTrang);
+	    }
+
+	    if (newTinhTrang == TinhTrangKhuyenMai.HET_SO_LUONG && soLuong > 0) {
+	        newTinhTrang = TinhTrangKhuyenMai.CON;
+	    } else if (newTinhTrang == TinhTrangKhuyenMai.HET_HAN_SU_DUNG && hanSuDung.isAfter(LocalDateTime.now())) {
+	        newTinhTrang = TinhTrangKhuyenMai.CON; 
+	    }
+
+	    KhuyenMai kmEntity = new KhuyenMai();
+	    kmEntity.setTenKhuyenMai(tenKM);
+	    kmEntity.setNoiDungKhuyenMai(noiDung);
+	    kmEntity.setSoLuongToiDa(soLuong);
+	    kmEntity.setHanSuDungKhuyenMai(hanSuDung);
+	    kmEntity.setTinhTrangKhuyenMai(newTinhTrang); 
+	    kmEntity.setGiamGia(giamGia);
+
+
+	    try {
+	        boolean result = kMai_DAO.capNhat(kmEntity, maKM);
+
+	        if (result) {
+	            JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
+	            xoaDuLieuTableKM();
+	            DocDuLieuVaoTableKhuyenMai();
+	        } else {
+	            JOptionPane.showMessageDialog(null, "Cập nhật thất bại!");
+	        }
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Lỗi cập nhật dữ liệu!");
+	    }
+	}
+
+	
 	private void searchKM() {
 		String maKM = (String) qLKhuyenMai_View.getComboBoxMaKM().getSelectedItem();
 		String trangThai = (String) qLKhuyenMai_View.getComboBoxTrangThai().getSelectedItem();
@@ -729,6 +839,7 @@ public class QuanLy_Controller {
 			for (KhuyenMai km : danhSachKM) {
 				themKhuyenMaiVaoBang(km);
 			}
+			huyTxtKM();
 
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -801,6 +912,7 @@ public class QuanLy_Controller {
 		qLKhuyenMai_View.getTxtTenkm().setText("");
 		qLKhuyenMai_View.getTxtSLKM().setText("");
 		qLKhuyenMai_View.getTxtNDKM().setText("");
+		qLKhuyenMai_View.getTxtGiamGia().setText("");
 		qLKhuyenMai_View.getDateKTKM().setDate(null);
 		qLKhuyenMai_View.getTxtTenkm().requestFocus();
 	}

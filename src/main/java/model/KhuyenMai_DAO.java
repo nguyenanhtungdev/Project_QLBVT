@@ -152,21 +152,27 @@ public class KhuyenMai_DAO {
 		return count > 0;
 	}
 
-	public boolean capNhat(KhuyenMai entity) throws SQLException {
-		String sql = "UPDATE KhuyenMai SET tenKhuyenMai = ?, noiDungKhuyenMai = ?, soLuongToiDa = ?, hanSuDungKhuyenMai = ?, tinhTrangKhuyenMai = ? WHERE maCa = ?";
+	public boolean capNhat(KhuyenMai entity, String maKM) throws SQLException {
+	    String sql = "UPDATE KhuyenMai SET tenKhuyenMai = ?, noiDungKhuyenMai = ?, soLuongToiDa = ?, hanSuDungKhuyenMai = ?, tinhTrangKhuyenMai = ?, giamGia = ? WHERE maKhuyenMai = ?";
 
-		Connection con = ConnectDB.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setNString(1, entity.getTenKhuyenMai());
-		statement.setNString(2, entity.getNoiDungKhuyenMai());
-		statement.setInt(3, entity.getSoLuongToiDa());
-		statement.setTimestamp(4, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
-		statement.setInt(5, entity.getTinhTrangKhuyenMai().getValue());
-		statement.setString(6, entity.getMaKhuyenMai());
-		int count = statement.executeUpdate();
+	    Connection con = ConnectDB.getInstance().getConnection();
+	    PreparedStatement statement = con.prepareStatement(sql);
 
-		return count == 0;
+	    // Đảm bảo rằng tất cả các giá trị được set đúng
+	    statement.setNString(1, entity.getTenKhuyenMai());
+	    statement.setNString(2, entity.getNoiDungKhuyenMai());
+	    statement.setInt(3, entity.getSoLuongToiDa());
+	    statement.setTimestamp(4, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
+	    statement.setInt(5, entity.getTinhTrangKhuyenMai().getValue());
+	    statement.setDouble(6, entity.getGiamGia());
+	    statement.setString(7, maKM);
+
+	    int count = statement.executeUpdate();
+	    return count > 0;
 	}
+
+
+
 
 	public List<KhuyenMai> getAll() throws SQLException {
 		String sql = "SELECT * FROM KhuyenMai";
