@@ -217,4 +217,33 @@ public class KhuyenMai_DAO {
 		return null;
 	}
 
+	public List<KhuyenMai> getKhuyenMaiHetHanTrong7Ngay() throws SQLException {
+		String sql = "SELECT * FROM KhuyenMai WHERE DATEDIFF(DAY, GETDATE(), hanSuDungKhuyenMai) <= 7 AND DATEDIFF(DAY, GETDATE(), hanSuDungKhuyenMai) >= 0";
+
+		Connection con = ConnectDB.getInstance().getConnection();
+		Statement statement = con.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
+
+		List<KhuyenMai> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maKhuyenMai = resultSet.getString("maKhuyenMai");
+			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
+			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
+					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
+					: null;
+
+			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
+				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
+				double giamGia = resultSet.getDouble("giamGia");
+				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
+						giamGia, tinhTrangKhuyenMai));
+			}
+		}
+
+		return list;
+	}
+
 }
