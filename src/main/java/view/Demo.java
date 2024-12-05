@@ -1,99 +1,66 @@
 package view;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Demo {
-    public static void main(String[] args) {
-        // Dữ liệu mẫu
-        Object[][] data = {
-                {"John Doe", 30, "Male"},
-                {"Jane Smith", 25, "Female"},
-                {"Tom Brown", 40, "Male"},
-                {"Emily White", 35, "Female"},
-                {"Michael Green", 50, "Male"}
-        };
 
-        // Tên cột
-        String[] columnNames = {"Name", "Age", "Gender"};
+    public static List<Integer> suggestCustomerPayment(int totalAmount) {
+        List<Integer> suggestions = new ArrayList<>();
 
-        // Tạo bảng với dữ liệu và tên cột
-        JTable table = new JTable(data, columnNames) {
-            // Tùy chỉnh renderer để tạo màu xen kẽ cho các dòng
-            @Override
-            public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-                Component c = super.prepareRenderer(renderer, row, column);
-                if (!isRowSelected(row)) {
-                    c.setBackground(row % 2 == 0 ? new Color(240, 240, 240) : Color.WHITE);
-                }
-                return c;
+        // Các mệnh giá tiền phổ biến tại Việt Nam
+        int[] denominations = {500_000, 200_000, 100_000, 50_000, 20_000, 10_000, 5_000, 2_000, 1_000};
+
+        // Gợi ý mệnh giá gần nhất mà khách có thể đưa
+        for (int denomination : denominations) {
+            if (denomination >= totalAmount) {
+                suggestions.add(denomination);
             }
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false; // Không cho phép chỉnh sửa bất kỳ ô nào
-            }
-        };
-
-        // Thiết lập font cho bảng
-        table.setFont(new Font("Arial", Font.PLAIN, 14));
-        table.setRowHeight(30);  // Tăng chiều cao hàng để tạo khoảng trống
-
-        // Tùy chỉnh tiêu đề bảng
-        JTableHeader header = table.getTableHeader();
-        header.setFont(new Font("Arial", Font.BOLD, 16));
-        header.setBackground(new Color(100, 149, 237));  // Màu xanh cho tiêu đề
-        header.setForeground(Color.WHITE);
-
-        // Đặt border và căn chỉnh cho header
-        ((DefaultTableCellRenderer) header.getDefaultRenderer()).setHorizontalAlignment(JLabel.CENTER);
-        table.setFillsViewportHeight(true);  // Tự động điều chỉnh chiều cao bảng
-
-        // Điều chỉnh chiều rộng cột dựa trên nội dung
-        TableColumnModel columnModel = table.getColumnModel();
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            columnModel.getColumn(i).setPreferredWidth(150);
         }
 
-        // Đặt màu nền cho dòng được chọn
-        table.setSelectionBackground(new Color(135, 206, 250));  // Màu xanh nhạt cho dòng được chọn
-        table.setSelectionForeground(Color.BLACK);
-
-        // Thêm đường viền cho các ô
-        table.setShowGrid(true);
-        table.setGridColor(Color.LIGHT_GRAY);
-
-        // Thêm bảng vào JScrollPane
-        JScrollPane scrollPane = new JScrollPane(table);
-        // Tùy chỉnh renderer để xóa border khi ô được chọn
-        DefaultTableCellRenderer noBorderRenderer = new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-                Component cell = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
-                // Xóa border khi ô được chọn
-                if (isSelected) {
-                    setBorder(BorderFactory.createEmptyBorder()); // Xóa viền khi được chọn
-                }
-
-                return cell;
+        // Thêm các giá trị tùy chỉnh (tổng tiền + khoảng thêm để linh hoạt)
+        int increments[] = {10_000, 20_000, 50_000}; // Khoảng tiền khách có thể đưa nhiều hơn
+        for (int increment : increments) {
+            int customAmount = totalAmount + increment;
+            if (!suggestions.contains(customAmount)) {
+                suggestions.add(customAmount);
             }
-        };
-
-        // Áp dụng renderer cho tất cả các cột
-        for (int i = 0; i < table.getColumnCount(); i++) {
-            table.getColumnModel().getColumn(i).setCellRenderer(noBorderRenderer);
         }
 
+        return suggestions;
+    }
 
-        // Tạo JFrame để hiển thị bảng
-        JFrame frame = new JFrame("Formatted Table Example");
+    public static void createAndShowGUI(int totalAmount) {
+        // Tạo frame chính
+        JFrame frame = new JFrame("Gợi ý số tiền khách đưa");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.add(scrollPane);
-        frame.pack();
+        frame.setSize(400, 300);
+
+        // Lấy danh sách gợi ý tiền
+        List<Integer> suggestions = suggestCustomerPayment(totalAmount);
+
+        // Tạo panel với GridLayout
+        JPanel gridPanel = new JPanel(new GridLayout(0, 3, 10, 10)); // Hiển thị 3 cột, khoảng cách 10px
+
+        // Thêm các nút gợi ý vào panel
+        for (int suggestion : suggestions) {
+            JButton button = new JButton(suggestion + " VND");
+            button.setFont(new Font("Arial", Font.BOLD, 14));
+            button.addActionListener(e -> JOptionPane.showMessageDialog(frame, "Khách chọn: " + suggestion + " VND"));
+            gridPanel.add(button);
+        }
+
+        // Thêm panel vào frame
+        frame.add(gridPanel);
         frame.setVisible(true);
+    }
+
+    public static void main(String[] args) {
+        int totalAmount = 360_000; // Tổng tiền cần thanh toán
+
+        // Hiển thị giao diện
+        SwingUtilities.invokeLater(() -> createAndShowGUI(totalAmount));
     }
 }

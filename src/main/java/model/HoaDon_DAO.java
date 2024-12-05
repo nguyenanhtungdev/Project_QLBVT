@@ -8,8 +8,11 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import connectDB.ConnectDB;
 import model.KhachHang.LoaiKhachHang;
@@ -121,7 +124,7 @@ public class HoaDon_DAO {
 		}
 		return hoaDons;
 	}
-
+	
 	public ArrayList<HoaDon> getalltbHDKH() {
 		ArrayList<HoaDon> hoaDons = new ArrayList<>();
 		Connection con = null;
@@ -380,18 +383,7 @@ public class HoaDon_DAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				if (resultSet != null)
-					resultSet.close();
-				if (preparedStatement != null)
-					preparedStatement.close();
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+		} 
 		return thongTinTram;
 	}
 
@@ -436,5 +428,112 @@ public class HoaDon_DAO {
 		}
 		return khachHang;
 	}
+	public String getMaHoaDonMaxTrongThang() {
+        String sql = "SELECT MAX(maHoaDon) FROM HoaDon WHERE maHoaDon LIKE ?";
+        Connection con;
+        String maHoaDon = null;
+        try {
+            con = ConnectDB.getInstance().getConnection();
+            PreparedStatement preparedStatement = con.prepareStatement(sql);
+            LocalDate today = LocalDate.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMM"); 
+            String prefix = today.format(formatter);
 
+            preparedStatement.setString(1, "HD" + prefix + "%");
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                maHoaDon = resultSet.getString(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return maHoaDon;
+    }
+	
+	public boolean addHoaDon(HoaDon hoaDon) {
+	    Connection con = null;
+	    PreparedStatement preparedStatement = null;
+
+	    try {
+	        ConnectDB.getInstance();
+	        con = ConnectDB.getInstance().getConnection();
+
+	        String sql = "INSERT INTO HoaDon (maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon, maKH, maNhaGa, maNV, maThongTinGiuCho) "
+	                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+	        preparedStatement = con.prepareStatement(sql); 
+	        preparedStatement.setString(1, hoaDon.getMaHoaDon());
+	        preparedStatement.setTimestamp(2, Timestamp.valueOf(hoaDon.getNgayLapHoaDon())); // Chuyển LocalDateTime thành Timestamp
+	        preparedStatement.setString(3, hoaDon.getGhiChu());
+	        preparedStatement.setFloat(4, hoaDon.getThueVAT());
+	        preparedStatement.setString(5, hoaDon.getPhuongThucThanhToan());
+	        preparedStatement.setString(6, hoaDon.getLoaiHoaDon());
+	        preparedStatement.setString(7, hoaDon.getKhachHang().getMaKhachHang());
+	        preparedStatement.setString(8, hoaDon.getThongTinTram().getMaNhaGa());
+	        preparedStatement.setString(9, hoaDon.getNhanVien().getMaNV());
+
+	        if (hoaDon.getThongTinGiuCho() != null) {
+	            preparedStatement.setString(10, hoaDon.getThongTinGiuCho().getMaThongTinGiuCho());
+	        } else {
+	            preparedStatement.setNull(10, java.sql.Types.VARCHAR); 
+	        }
+
+	        int rowsInserted = preparedStatement.executeUpdate();
+
+	        return rowsInserted > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } 
+	    
+	    return false;
+	}
+	public Map<String, Object> getThongTinHoaDon(String maHoaDon) {
+	    Map<String, Object> thongTinHoaDon = new HashMap<>();
+	    Connection con = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        ConnectDB.getInstance();
+	        con = ConnectDB.getInstance().getConnection();
+
+	        String sql = "SELECT " +
+	                     "ttt.tenNhaGa, ttt.dienThoai, ttt.diaChi, " +
+	                     "kh.hoTen, kh.soDienThoai, kh.CCCD, " +
+	                     "vt.maVeTau, vt.loaiVe, " +
+	                     "ct.gaKhoiHanh, ct.gaDen, ct.thoiGianKhoiHanh " +
+	                     "FROM HoaDon hd " +
+	                     "INNER JOIN KhachHang kh ON hd.maKH = kh.maKH " +
+	                     "INNER JOIN ThongTinTram ttt ON ttt.maNhaGa = hd.maNhaGa " +
+	                     "INNER JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon " +
+	                     "INNER JOIN VeTau vt ON cthd.maVeTau = vt.maVeTau " +
+	                     "INNER JOIN ChuyenTau ct ON ct.maChuyenTau = vt.maChuyenTau " +
+	                     "WHERE hd.maHoaDon = ?";
+
+	        stmt = con.prepareStatement(sql);
+	        stmt.setString(1, maHoaDon);
+
+	        rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            thongTinHoaDon.put("tenNhaGa", rs.getString("tenNhaGa"));
+	            thongTinHoaDon.put("dienThoaiNhaGa", rs.getString("dienThoai"));
+	            thongTinHoaDon.put("diaChiNhaGa", rs.getString("diaChi"));
+	            thongTinHoaDon.put("hoTenKhachHang", rs.getString("hoTen"));
+	            thongTinHoaDon.put("soDienThoaiKH", rs.getString("soDienThoai"));
+	            thongTinHoaDon.put("cccdKH", rs.getString("CCCD"));
+	            thongTinHoaDon.put("maVeTau", rs.getString("maVeTau"));
+	            thongTinHoaDon.put("loaiVe", rs.getString("loaiVe"));
+	            thongTinHoaDon.put("gaKhoiHanh", rs.getString("gaKhoiHanh"));
+	            thongTinHoaDon.put("gaDen", rs.getString("gaDen"));
+	            thongTinHoaDon.put("thoiGianKhoiHanh", rs.getString("thoiGianKhoiHanh"));
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } 
+	    return thongTinHoaDon;
+	}
 }

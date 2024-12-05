@@ -2,6 +2,8 @@ package model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class HoaDon {
 	private String maHoaDon;
@@ -55,11 +57,11 @@ public class HoaDon {
 	}
 
 	public void setNgayLapHoaDon(LocalDateTime ngayLapHoaDon) {
-		if (ngayLapHoaDon.isBefore(LocalDateTime.now())) {
-            this.ngayLapHoaDon= ngayLapHoaDon;
-        } else {
-            throw new IllegalArgumentException("Ngày lập hóa đơn không hợp lệ. ");
-        }
+		if (!ngayLapHoaDon.isAfter(LocalDateTime.now())) { // chấp nhận cả trường hợp ngày lập hóa đơn bằng hoặc trước thời điểm hiện tại
+		    this.ngayLapHoaDon = ngayLapHoaDon;
+		} else {
+		    throw new IllegalArgumentException("Ngày lập hóa đơn không hợp lệ.");
+		}
 	}
 
 	public String getGhiChu() {
@@ -81,7 +83,15 @@ public class HoaDon {
             throw new IllegalArgumentException("Thuế VAT phải > 0");
         }
 	}
-
+	
+	public double tinhTongTien(ArrayList<Double> dsChiTiet) {
+		double tongTien = 0.0;
+		for(int i = 0;i< dsChiTiet.size();i++) {
+			tongTien += dsChiTiet.get(i);
+		}
+		return tongTien;
+	}
+	
 	public String getPhuongThucThanhToan() {
 		return phuongThucThanhToan;
 	}
@@ -103,7 +113,7 @@ public class HoaDon {
 	public KhachHang getKhachHang() {
 		return khachHang;
 	}
-
+	
 	public void setKhachHang(KhachHang khachHang) {
 		this.khachHang = khachHang;
 	}

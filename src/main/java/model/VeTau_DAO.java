@@ -85,4 +85,35 @@ public class VeTau_DAO {
 		}
 		return veTau;
 	}
+	
+	public boolean addVeTau(VeTau veTau) {
+	    Connection con = null;
+	    PreparedStatement preparedStatement = null;
+
+	    try {
+
+	        ConnectDB.getInstance();
+	        con = ConnectDB.getInstance().getConnection();
+
+	        String sql = "INSERT INTO VeTau (maVeTau, maVach, loaiVe, trangThai, maChuyenTau) "
+	                   + "VALUES (?, ?, ?, ?, ?)";
+
+	        preparedStatement = con.prepareStatement(sql);
+
+	        preparedStatement.setString(1, veTau.getMaVeTau());
+	        preparedStatement.setString(2, veTau.getMaVach());
+	        preparedStatement.setBoolean(3, veTau.isLoaiVe());
+	        preparedStatement.setInt(4, veTau.getTrangThai().ordinal()); // Chuyển trạng thái sang giá trị int
+	        preparedStatement.setString(5, veTau.getChuyenTau().getMaChuyenTau());
+	        
+	        int rowsInserted = preparedStatement.executeUpdate();
+
+	        return rowsInserted > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return false;
+	}
+
 }

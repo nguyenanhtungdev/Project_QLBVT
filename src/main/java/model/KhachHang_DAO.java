@@ -68,44 +68,90 @@ public class KhachHang_DAO {
 		return khachHangs;
 	}
 
-	public boolean updateKhachHang(KhachHang khachHang) {
-		Connection con = null;
-		PreparedStatement preparedStatement = null;
-		String sql = "UPDATE KhachHang SET hoTen = ?, soDienThoai = ?, email = ?, gioiTinh = ?, CCCD = ?, ngaySinh = ?, loaiKhachHang = ? WHERE maKhachHang = ?";
+	public boolean insertKhachHang(KhachHang khachHang) {
+	    Connection con = null;
+	    PreparedStatement preparedStatement = null;
+	    String sql = "INSERT INTO KhachHang (maKhachHang, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKhachHang) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+	    try {
+	        ConnectDB.getInstance();
+	        con = ConnectDB.getInstance().getConnection();
+	        preparedStatement = con.prepareStatement(sql);
+
+	        // Thiết lập các giá trị cho câu lệnh SQL
+	        preparedStatement.setString(1, khachHang.getMaKhachHang());
+	        preparedStatement.setString(2, khachHang.getHoTen());
+	        preparedStatement.setString(3, khachHang.getSoDienThoai());
+	        preparedStatement.setString(4, khachHang.getEmail());
+	        preparedStatement.setBoolean(5, khachHang.isGioiTinh());
+	        preparedStatement.setString(6, khachHang.getCCCD());
+	        preparedStatement.setDate(7, java.sql.Date.valueOf(khachHang.getNgaySinh()));
+	        preparedStatement.setString(8, khachHang.getLoaiKH().name());
+
+	        // Thực thi câu lệnh SQL
+	        int rowsInserted = preparedStatement.executeUpdate();
+
+	        // Trả về true nếu có hàng được thêm
+	        return rowsInserted > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+
+	public String getMaKHMax() {
+		ArrayList<VeTau> khachHangs = new ArrayList<>();
+		String sql = "SELECT MAX(maKH) FROM KhachHang";
+		Connection con;
+		String maKH = null;
 		try {
-			ConnectDB.getInstance();
 			con = ConnectDB.getInstance().getConnection();
-			preparedStatement = con.prepareStatement(sql);
-
-			// Thiết lập các giá trị cho câu lệnh SQL
-			preparedStatement.setString(1, khachHang.getHoTen());
-			preparedStatement.setString(2, khachHang.getSoDienThoai());
-			preparedStatement.setString(3, khachHang.getEmail());
-			preparedStatement.setBoolean(4, khachHang.isGioiTinh());
-			preparedStatement.setString(5, khachHang.getCCCD());
-			preparedStatement.setDate(6, java.sql.Date.valueOf(khachHang.getNgaySinh()));
-			preparedStatement.setString(7, khachHang.getLoaiKH().name());
-			preparedStatement.setString(8, khachHang.getMaKhachHang());
-
-			// Thực thi câu lệnh SQL
-			int rowsUpdated = preparedStatement.executeUpdate();
-
-			// Trả về true nếu có hàng được cập nhật
-			return rowsUpdated > 0;
-
+			Statement statement = con.createStatement();
+			ResultSet resultSet = statement.executeQuery(sql);
+			while (resultSet.next()) {
+				maKH = resultSet.getString(1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
-		} finally {
-			try {
-				if (preparedStatement != null)
-					preparedStatement.close();
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
 		}
+		return maKH;
 	}
+	
+	public KhachHang findKhachHangByCCCDOrSDT(String cccd, String sdt) {
+	    String sql = "SELECT * FROM KhachHang WHERE CCCD = ? OR SoDienThoai = ?";
+	    Connection con = null;
+	    PreparedStatement preparedStatement = null;
+
+	    try {
+	        ConnectDB.getInstance();
+	        con = ConnectDB.getInstance().getConnection();
+	        preparedStatement = con.prepareStatement(sql);
+	        
+	        preparedStatement.setString(1, cccd);
+	        preparedStatement.setString(2, sdt);
+
+	        ResultSet resultSet = preparedStatement.executeQuery();
+	        if (resultSet.next()) {
+				String maKhachHang = resultSet.getString(1);
+				String hoTen = resultSet.getString(2);
+				String soDienThoai = resultSet.getString(3);
+				String email = resultSet.getString(4);
+				boolean gioiTinh = resultSet.getBoolean(5);
+				String CCCD = resultSet.getString(6);
+				LocalDate ngaySinh = resultSet.getDate(7).toLocalDate();
+				String loaiKHStr = resultSet.getString(8);
+
+				KhachHang.LoaiKhachHang loaiKH = KhachHang.LoaiKhachHang.valueOf(loaiKHStr);
+
+				KhachHang khachHang = new KhachHang(maKhachHang, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh,
+						loaiKH);
+	            return khachHang;
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return null;
+	}
+
 }

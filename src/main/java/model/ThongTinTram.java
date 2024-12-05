@@ -27,6 +27,10 @@ public class ThongTinTram {
 		super();
 		this.maNhaGa = maNhaGa;
 	}
+	
+	public ThongTinTram() {
+		super();
+	}
 
 	public String getMaNhaGa() {
 		return maNhaGa;

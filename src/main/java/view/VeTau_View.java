@@ -36,6 +36,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.JComboBox;
+import java.awt.event.ActionEvent;
 
 public class VeTau_View extends View {
 
@@ -48,10 +49,10 @@ public class VeTau_View extends View {
 	private JTable danhSachVeTau;
 	private DefaultTableModel danhSachVeTauModel;
 	private String title[] = { "STT", "Mã vé tàu", "Loại vé", "Mã ghế tàu", "Mã KH", "Họ tên", "SĐT", "Email",
-			"Giới tính", "CCCD", "Ngày sinh", "Loại KH", "Chi Tiết" };
-	private PrimaryButton btn_ThemTT;
-	private PrimaryButton btn_CapNhatTT;
+			"Giới tính", "CCCD", "Ngày sinh", "Loại KH", "Chi Tiết","Giá vé" };
 	private PrimaryButton btn_XoaTrang;
+	private PrimaryButton btn_CapNhatTT;
+	private PrimaryButton btn_XoaVeTau;
 	private PrimaryButton btn_ThanhToan;
 	private JTextField txt_MaKH;
 	private JTextField txt_HoTen;
@@ -66,9 +67,10 @@ public class VeTau_View extends View {
 	// Thêm sự kiện cho lớp thanh toán view
 	public void addSuKien(ActionListener listener, FocusListener focusListener, KeyListener keyListener) {
 		btn_ThanhToan.addActionListener(listener);
-		btn_ThemTT.addActionListener(listener);
 		btn_XoaTrang.addActionListener(listener);
+		btn_XoaVeTau.addActionListener(listener);
 		btn_HuyBo.addActionListener(listener);
+		btn_CapNhatTT.addActionListener(listener);
 
 		txt_HoTen.addFocusListener(focusListener);
 		txt_Email.addFocusListener(focusListener);
@@ -343,7 +345,7 @@ public class VeTau_View extends View {
 		lblNewLabel_2_2_1_2.setFont(new Font("Arial", Font.BOLD, 18));
 		panel_15_2_1_2.add(lblNewLabel_2_2_1_2);
 
-		String gioTinh[] = { "Trống", "Nam", "Nữ" };
+		String gioTinh[] = { "trống", "Nam", "Nữ" };
 		comboBox_GioiTinh = new JComboBox(gioTinh);
 		comboBox_GioiTinh.setEnabled(false);
 		comboBox_GioiTinh.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -370,7 +372,7 @@ public class VeTau_View extends View {
 		lblNewLabel_2_2_1_2_1_1.setFont(new Font("Arial", Font.BOLD, 18));
 		panel_15_2_1_2_1_1.add(lblNewLabel_2_2_1_2_1_1);
 
-		String loaiKH[] = { "Trống", "Trẻ em", "Học sinh", "Sinh viên", "Người già", "Khuyết tật", "Khách Thường" };
+		String loaiKH[] = {"Khách thường", "Trẻ em", "Học sinh", "Sinh viên", "Người già", "Khuyết tật"};
 		comboBox_LoaiKH = new JComboBox(loaiKH);
 		comboBox_LoaiKH.setEnabled(false);
 		comboBox_LoaiKH.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -391,28 +393,22 @@ public class VeTau_View extends View {
 		panel_3.setMaximumSize(new Dimension(180, Integer.MAX_VALUE));
 		panel_1.add(panel_3);
 
-		btn_ThemTT = new PrimaryButton("Thêm", "/Image/icon_them.png");
-		btn_ThemTT.setText("Thêm mới");
-//		btn_ThemTT.setBorder(new EmptyBorder(4, 6, 4, 6));
-		btn_ThemTT.setInsets(new Insets(4, 6, 4, 6));
-//		btn_ThemTT.setHeSoBoGoc(10);
-		btn_ThemTT.setBorderRadius(10);
-//		btn_ThemTT.setKhoangCachIcon(5);
-		btn_ThemTT.setIconTextGap(5);
-		btn_ThemTT.setIconSize(22, 22);
-		btn_ThemTT.setAlignmentX(Component.LEFT_ALIGNMENT);
-		btn_ThemTT.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+		btn_XoaTrang = new PrimaryButton("Làm mới", "/Image/restore.png");
+
+		btn_XoaTrang.setInsets(new Insets(4, 6, 4, 6));
+		btn_XoaTrang.setBorderRadius(10);
+		btn_XoaTrang.setIconTextGap(5);
+		btn_XoaTrang.setIconSize(22, 22);
+		btn_XoaTrang.setAlignmentX(Component.LEFT_ALIGNMENT);
+		btn_XoaTrang.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
 
 		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.Y_AXIS));
-		btn_ThemTT.setFont(new Font("Arial", Font.BOLD, 18));
-		panel_3.add(btn_ThemTT);
+		btn_XoaTrang.setFont(new Font("Arial", Font.BOLD, 18));
+		panel_3.add(btn_XoaTrang);
 
 		btn_CapNhatTT = new PrimaryButton("Cập nhật", "/Image/icon_ChinhSua.png");
-//		btn_CapNhatTT.setBorder(new EmptyBorder(4, 6, 4, 6));
 		btn_CapNhatTT.setInsets(new Insets(4, 6, 4, 6));
-//		btn_CapNhatTT.setHeSoBoGoc(10);
 		btn_CapNhatTT.setBorderRadius(10);
-//		btn_CapNhatTT.setKhoangCachIcon(5);
 		btn_CapNhatTT.setIconTextGap(5);
 		btn_CapNhatTT.setIconSize(22, 22);
 		btn_CapNhatTT.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -423,22 +419,22 @@ public class VeTau_View extends View {
 		btn_CapNhatTT.setFont(new Font("Arial", Font.BOLD, 18));
 		panel_3.add(btn_CapNhatTT);
 
-		btn_XoaTrang = new PrimaryButton("Xóa trắng", "/Image/icon_XoaTrang.png");
-		btn_XoaTrang.setText("Xóa vé tàu");
+		btn_XoaVeTau = new PrimaryButton("Xóa trắng", "/Image/icon_XoaTrang.png");
+		btn_XoaVeTau.setText("Xóa vé tàu");
 //		btn_XoaTrang.setBorder(new EmptyBorder(4, 6, 4, 6));
-		btn_XoaTrang.setInsets(new Insets(4, 6, 4, 6));
+		btn_XoaVeTau.setInsets(new Insets(4, 6, 4, 6));
 //		btn_XoaTrang.setHeSoBoGoc(10);
-		btn_XoaTrang.setBorderRadius(10);
+		btn_XoaVeTau.setBorderRadius(10);
 //		btn_XoaTrang.setKhoangCachIcon(5);
-		btn_XoaTrang.setIconTextGap(5);
-		btn_XoaTrang.setIconSize(22, 22);
-		btn_XoaTrang.setAlignmentX(Component.LEFT_ALIGNMENT);
-		btn_XoaTrang.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+		btn_XoaVeTau.setIconTextGap(5);
+		btn_XoaVeTau.setIconSize(22, 22);
+		btn_XoaVeTau.setAlignmentX(Component.LEFT_ALIGNMENT);
+		btn_XoaVeTau.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
 
 		Component horizontalStrut_1_3_1_1 = Box.createVerticalStrut(20);
 		panel_3.add(horizontalStrut_1_3_1_1);
-		btn_XoaTrang.setFont(new Font("Arial", Font.BOLD, 18));
-		panel_3.add(btn_XoaTrang);
+		btn_XoaVeTau.setFont(new Font("Arial", Font.BOLD, 18));
+		panel_3.add(btn_XoaVeTau);
 
 		JPanel panel_center = new JPanel();
 		panel_center.setBackground(Color.WHITE);
@@ -500,16 +496,16 @@ public class VeTau_View extends View {
 		danhSachVeTau.getColumnModel().getColumn(4).setPreferredWidth(140);
 		danhSachVeTau.getColumnModel().getColumn(5).setPreferredWidth(180);
 		danhSachVeTau.getColumnModel().getColumn(6).setPreferredWidth(140);
-		danhSachVeTau.getColumnModel().getColumn(7).setPreferredWidth(140);
+		danhSachVeTau.getColumnModel().getColumn(7).setPreferredWidth(170);
 		danhSachVeTau.getColumnModel().getColumn(8).setPreferredWidth(90);
 		danhSachVeTau.getColumnModel().getColumn(9).setPreferredWidth(160);
 		danhSachVeTau.getColumnModel().getColumn(10).setPreferredWidth(140);
 		danhSachVeTau.getColumnModel().getColumn(11).setPreferredWidth(100);
 		danhSachVeTau.getColumnModel().getColumn(12).setPreferredWidth(300);
+		danhSachVeTau.getColumnModel().getColumn(13).setPreferredWidth(150);
 
-		danhSachVeTau.getColumnModel().getColumn(11).setCellRenderer(new MultiLineCellRenderer());// Gán renderer cho
-																									// cột "Chi tiết"
-		header.setReorderingAllowed(false); // Không cho di chuyển cột
+		danhSachVeTau.getColumnModel().getColumn(12).setCellRenderer(new MultiLineCellRenderer());
+		header.setReorderingAllowed(false);
 		// Thiết lập chiều rộng và khóa không cho thay đổi kích thước cho các cột
 		for (int i = 0; i < danhSachVeTau.getColumnCount(); i++) {
 			danhSachVeTau.getColumnModel().getColumn(i).setResizable(false); // Khóa không cho thay đổi kích thước
@@ -517,9 +513,8 @@ public class VeTau_View extends View {
 
 		// Thêm vào JScrollPane
 		JScrollPane scrollPane = new JScrollPane(danhSachVeTau);
-		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_NEVER);
-		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);// Đảm bảo thanh cuộn ngang
-																							// luôn hiển thị
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		panel_5.add(scrollPane);
 
 		JPanel panel_bottom = new JPanel();
@@ -599,9 +594,7 @@ public class VeTau_View extends View {
 
 		btn_ThanhToan = new PrimaryButton("Thanh toán", "/Image/icon_ThanhToan.png");
 		btn_ThanhToan.setInsets(new Insets(6, 20, 6, 20));
-//		btn_ThanhToan.setHeSoBoGoc(10);
 		btn_ThanhToan.setBorderRadius(10);
-//		btn_ThanhToan.setKhoangCachIcon(5);
 		btn_ThanhToan.setIconTextGap(5);
 		btn_ThanhToan.setIconSize(24, 24);
 		btn_ThanhToan.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -616,17 +609,15 @@ public class VeTau_View extends View {
 		public MultiLineCellRenderer() {
 			setLineWrap(true);
 			setWrapStyleWord(true);
-			setOpaque(true); // Để JTextArea có nền giống với JTable
-			setFont(new Font("Arial", Font.PLAIN, 14));
+			setOpaque(true); 
+			setFont(new Font("Arial", Font.PLAIN, 16));
 		}
 
 		@Override
 		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
 				int row, int column) {
-			// Thiết lập giá trị cho JTextArea từ nội dung ô
+		
 			setText(value != null ? value.toString() : "");
-
-			// Điều chỉnh màu nền nếu ô được chọn
 			if (isSelected) {
 				setBackground(table.getSelectionBackground());
 				setForeground(table.getSelectionForeground());
@@ -634,12 +625,8 @@ public class VeTau_View extends View {
 				setBackground(table.getBackground());
 				setForeground(table.getForeground());
 			}
-
-			// Tính chiều cao ô dựa trên nội dung
 			setSize(table.getColumnModel().getColumn(column).getWidth(), getPreferredSize().height);
 			int preferredHeight = getPreferredSize().height;
-
-			// Điều chỉnh chiều cao hàng để vừa với nội dung
 			if (table.getRowHeight(row) != preferredHeight) {
 				table.setRowHeight(row, preferredHeight);
 			}
@@ -673,7 +660,7 @@ public class VeTau_View extends View {
 	}
 
 	public PrimaryButton getBtn_ThemTT() {
-		return btn_ThemTT;
+		return btn_XoaTrang;
 	}
 
 	public PrimaryButton getBtn_CapNhatTT() {
@@ -736,4 +723,8 @@ public class VeTau_View extends View {
 		return lbl_ThoiGianGiuVe;
 	}
 
+	public PrimaryButton getBtn_XoaVeTau() {
+		return btn_XoaVeTau;
+	}
+	
 }

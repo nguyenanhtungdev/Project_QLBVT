@@ -108,7 +108,7 @@ public class NhanVien {
 	}
 
 	public void setDiaChi(String diaChi) {
-		if (diaChi != null && diaChi.matches("^[a-zA-Z0-9._-]+@gmail.com$")) {
+		if (diaChi != null && diaChi.matches("^[a-zA-Z0-9/., ]+$")) {
             this.diaChi = diaChi;
         } else {
             throw new IllegalArgumentException("Định dạng địa chỉ không hợp lệ! ");

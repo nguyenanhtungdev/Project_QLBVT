@@ -3,6 +3,8 @@ package model;
 import java.time.LocalDate;
 import java.time.Period;
 
+import javax.swing.JOptionPane;
+
 public class KhachHang {
 	private String maKhachHang;
 	private String hoTen;
@@ -13,7 +15,7 @@ public class KhachHang {
 	private LocalDate ngaySinh;
 	public LoaiKhachHang loaiKH;
 
-	public enum LoaiKhachHang {
+	public static enum LoaiKhachHang {
 		TRE_EM(1.0), SINH_VIEN(0.05), HOC_SINH(0.1), NGUOI_GIA(0.15), NGUOI_KHUYET_TAT(0.2), KHACH_THUONG(0);
 
 		private final double discount;
@@ -26,7 +28,53 @@ public class KhachHang {
 		public double getDiscount() {
 			return discount;
 		}
+		public static LoaiKhachHang chuyenDoiLoaiKH(String loaiKH) {
+		    switch (loaiKH) {
+		        case "Trẻ em":
+		            return LoaiKhachHang.TRE_EM;
+		        case "Học sinh":
+		            return LoaiKhachHang.HOC_SINH;
+		        case "Sinh viên":
+		            return LoaiKhachHang.SINH_VIEN;
+		        case "Người già":
+		            return LoaiKhachHang.NGUOI_GIA;
+		        case "Khuyết tật":
+		            return LoaiKhachHang.NGUOI_KHUYET_TAT;
+		        case "Khách thường":
+		            return LoaiKhachHang.KHACH_THUONG;
+		        default:
+		        	showError("Loại khách hàng không hợp lệ: " + loaiKH);
+                    return null;
+		    }
+		}
+		public static String chuyenDoiTuEnumSangChuoi(LoaiKhachHang loaiKH) {
+		    switch (loaiKH) {
+		        case TRE_EM:
+		            return "Trẻ em";
+		        case HOC_SINH:
+		            return "Học sinh";
+		        case SINH_VIEN:
+		            return "Sinh viên";
+		        case NGUOI_GIA:
+		            return "Người già";
+		        case NGUOI_KHUYET_TAT:
+		            return "Khuyết tật";
+		        case KHACH_THUONG:
+		            return "Khách thường";
+		        default:
+                    showError("Loại khách hàng không hợp lệ: " + loaiKH);
+                    return null; 
+		    }
+		}
+		public static String chuyenDoiDiscountToString(double discount) {
+		    return String.format("%.0f%%", discount * 100);
+		}
 	}
+	
+    // Phương thức hiển thị thông báo lỗi
+    private static void showError(String message) {
+        JOptionPane.showMessageDialog(null, message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+    }
 
 	public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String email, boolean gioiTinh, String CCCD,
 			LocalDate ngaySinh, LoaiKhachHang loaiKH) {
@@ -62,7 +110,7 @@ public class KhachHang {
 		if (maKhachHang != null && maKhachHang.matches("^KH\\d{7}$")) {
 			this.maKhachHang = maKhachHang;
 		} else {
-			throw new IllegalArgumentException("Mã khách hàng phải có dạng 'NVxxxxxxx', với 'xxxxxxx' là các chữ số.");
+			showError("Mã khách hàng phải có dạng 'KHxxxxxxx', với 'xxxxxxx' là các chữ số.");
 		}
 	}
 
@@ -74,7 +122,7 @@ public class KhachHang {
 		if (hoTen != null && hoTen.matches("^[a-zA-Z\\p{L} ]+$")) {
 			this.hoTen = hoTen;
 		} else {
-			throw new IllegalArgumentException("Họ tên khách hàng chỉ được chứa các chữ cái và khoảng trắng.");
+			showError("Họ tên khách hàng chỉ được chứa các chữ cái và khoảng trắng.");
 		}
 
 	}
@@ -87,7 +135,7 @@ public class KhachHang {
 		if (soDienThoai != null && soDienThoai.matches("^\\d{10}$")) {
 			this.soDienThoai = soDienThoai;
 		} else {
-			throw new IllegalArgumentException("Độ dài chuỗi phải tuân thủ là 10 ký tự. ");
+			showError("Độ dài chuỗi phải tuân thủ là 10 ký tự. ");
 		}
 	}
 
@@ -99,7 +147,7 @@ public class KhachHang {
 		if (email != null && email.matches("^[a-zA-Z0-9._-]+@gmail.com$")) {
 			this.email = email;
 		} else {
-			throw new IllegalArgumentException("Định dạng email không hợp lệ! ");
+			showError("Định dạng email không hợp lệ! ");
 		}
 	}
 
@@ -119,7 +167,7 @@ public class KhachHang {
 		if (CCCD != null && CCCD.matches("^\\d{12}$")) {
 			this.CCCD = CCCD;
 		} else {
-			throw new IllegalArgumentException("Định dạng CCCD không hợp lệ! ");
+			showError("Định dạng CCCD không hợp lệ! ");
 		}
 	}
 
@@ -131,7 +179,7 @@ public class KhachHang {
 		if (ngaySinh.isBefore(LocalDate.now()) && Period.between(ngaySinh, LocalDate.now()).getYears() >= 5) {
 			this.ngaySinh = ngaySinh;
 		} else {
-			throw new IllegalArgumentException("Ngày sinh không hợp lệ!");
+			showError("Ngày sinh không hợp lệ!");
 		}
 	}
 

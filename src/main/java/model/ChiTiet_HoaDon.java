@@ -10,6 +10,12 @@ public class ChiTiet_HoaDon {
 	public ChiTiet_HoaDon() {
 
 	}
+	
+	public ChiTiet_HoaDon(int soLuong, HoaDon hoaDon, VeTau veTau) {
+		this.soLuong = soLuong;
+		this.hoaDon = hoaDon;
+		this.veTau = veTau;
+	}
 
 	public ChiTiet_HoaDon(int soLuong, HoaDon hoaDon, KhuyenMai khuyenMai, VeTau veTau) {
 		setSoLuong(soLuong);
@@ -54,10 +60,10 @@ public class ChiTiet_HoaDon {
 		this.khuyenMai = khuyenMai;
 	}
 
-	public float tinhThanhTien(float giaVeHienTai, float tiLeGiamGia) {
-		return giaVeHienTai - giaVeHienTai * (tiLeGiamGia / 100);
+	public double tinhThanhTien(Double giaVeHienTai, Double tiLeGiamGia) {
+		return giaVeHienTai - (giaVeHienTai * tiLeGiamGia);
 	}
-
+	
 	@Override
 	public String toString() {
 		return "ChiTiet_HoaDon {soLuong: " + soLuong + ", hoaDon: " + hoaDon + ", veTau: " + veTau + ", khuyenMai: "

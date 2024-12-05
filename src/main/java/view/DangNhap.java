@@ -3,6 +3,8 @@ package view;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,7 +23,6 @@ import other.RoundedButton;
 import other.SecondaryButton;
 import other.RoundField;
 import other.RoundPassField;
-import other.Shortcut;
 import other.TextFont;
 
 import javax.swing.JFrame;
@@ -87,6 +88,7 @@ public class DangNhap extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
 		setResizable(false);
+
 		contentPane = new JPanel();
 		contentPane.setBorder(null);
 
@@ -101,7 +103,6 @@ public class DangNhap extends JFrame {
 		panel_Left.setLayout(null);
 
 		image = new JLabel("");
-//        image.setIcon(new ImageIcon(DangNhap.class.getResource("/view/bg-login.png")));
 		image.setIcon(new ImageIcon(getClass().getResource("/Image/bg-login.png")));
 		image.setBounds(0, 0, 412, 570);
 		panel_Left.add(image);
@@ -147,6 +148,7 @@ public class DangNhap extends JFrame {
 		lblMtKhu.setBounds(73, 274, 119, 27);
 		lblMtKhu.setForeground(ColorConstants.PRIMARY_COLOR);
 		panel_Right.add(lblMtKhu);
+		
 
 		JLabel lbl_DangNhap = new JLabel("ĐĂNG NHẬP");
 		lbl_DangNhap.setHorizontalAlignment(SwingConstants.CENTER);
@@ -177,8 +179,6 @@ public class DangNhap extends JFrame {
 		panel_Right.add(checkbox_hienMK);
 
 		enterJtextField();
-		// Gọi phương thức để thêm phím tắt
-		Shortcut.addShowPasswordShortcut(txt_passWord, checkbox_hienMK, "showPassword");
 	}
 
 	private void enterJtextField() {

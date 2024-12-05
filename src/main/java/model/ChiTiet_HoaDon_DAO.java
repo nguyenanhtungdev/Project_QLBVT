@@ -102,4 +102,30 @@ public class ChiTiet_HoaDon_DAO {
 		}
 		return cthoaDons;
 	}
+	public boolean addChiTietHoaDon(ChiTiet_HoaDon chiTietHoaDon) {
+	    Connection con = null;
+	    PreparedStatement preparedStatement = null;
+
+	    try {
+	        ConnectDB.getInstance();
+	        con = ConnectDB.getInstance().getConnection();
+	        String sql = "INSERT INTO ChiTiet_HoaDon (soLuong, maHoaDon, maKhuyenMai, maVeTau) "
+	                   + "VALUES (?, ?, ?, ?)";
+
+	        preparedStatement = con.prepareStatement(sql);
+
+	        preparedStatement.setInt(1, chiTietHoaDon.getSoLuong());
+	        preparedStatement.setString(2, chiTietHoaDon.getHoaDon().getMaHoaDon());
+	        preparedStatement.setString(3, chiTietHoaDon.getKhuyenMai().getMaKhuyenMai());
+	        preparedStatement.setString(4, chiTietHoaDon.getVeTau().getMaVeTau());
+
+	        int rowsInserted = preparedStatement.executeUpdate();
+	        return rowsInserted > 0;
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } 
+	    return false; 
+	}
+
 }

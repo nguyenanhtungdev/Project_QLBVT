@@ -24,33 +24,6 @@ public class KhuyenMai_DAO {
 		return instance;
 	}
 
-//	public List<KhuyenMai> getAll() throws SQLException {
-//		String sql = "SELECT * FROM KhuyenMai";
-//
-//		Connection con = ConnectDB.getInstance().getConnection();
-//		Statement statement = con.createStatement();
-//		ResultSet resultSet = statement.executeQuery(sql);
-//
-//		List<KhuyenMai> list = new ArrayList<>();
-//		while (resultSet.next()) {
-//			String maKhuyenMai = resultSet.getString("maKhuyenMai");
-//			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
-//			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai").isBlank() ? "NULL"
-//					: resultSet.getNString("noiDungKhuyenMai");
-//			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-//			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") == null
-//					? LocalDateTime.of(2100, 12, 31, 23, 59)
-//					: resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
-//			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
-//					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-//
-//			list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-//					tinhTrangKhuyenMai));
-//		}
-//
-//		return list;
-//	}
-
 	public KhuyenMai getById(String maKhuyenMai) throws SQLException {
 		String sql = "SELECT * FROM KhuyenMai WHERE maKhuyenMai = ?";
 
@@ -152,52 +125,20 @@ public class KhuyenMai_DAO {
 		return count > 0;
 	}
 
-	public boolean capNhat(KhuyenMai entity, String maKM) throws SQLException {
-		String sql = "UPDATE KhuyenMai SET tenKhuyenMai = ?, noiDungKhuyenMai = ?, soLuongToiDa = ?, hanSuDungKhuyenMai = ?, tinhTrangKhuyenMai = ?, giamGia = ? WHERE maKhuyenMai = ?";
+	public boolean capNhat(KhuyenMai entity) throws SQLException {
+		String sql = "UPDATE KhuyenMai SET tenKhuyenMai = ?, noiDungKhuyenMai = ?, soLuongToiDa = ?, hanSuDungKhuyenMai = ?, tinhTrangKhuyenMai = ? WHERE maCa = ?";
 
 		Connection con = ConnectDB.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-
-		// Đảm bảo rằng tất cả các giá trị được set đúng
 		statement.setNString(1, entity.getTenKhuyenMai());
 		statement.setNString(2, entity.getNoiDungKhuyenMai());
 		statement.setInt(3, entity.getSoLuongToiDa());
 		statement.setTimestamp(4, Timestamp.valueOf(entity.getHanSuDungKhuyenMai()));
 		statement.setInt(5, entity.getTinhTrangKhuyenMai().getValue());
-		statement.setDouble(6, entity.getGiamGia());
-		statement.setString(7, maKM);
-
+		statement.setString(6, entity.getMaKhuyenMai());
 		int count = statement.executeUpdate();
-		return count > 0;
-	}
 
-	public List<KhuyenMai> getKhuyenMaiHetHanTrong7Ngay() throws SQLException {
-		String sql = "SELECT * FROM KhuyenMai WHERE DATEDIFF(DAY, GETDATE(), hanSuDungKhuyenMai) <= 7 AND DATEDIFF(DAY, GETDATE(), hanSuDungKhuyenMai) >= 0";
-
-		Connection con = ConnectDB.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
-
-		List<KhuyenMai> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maKhuyenMai = resultSet.getString("maKhuyenMai");
-			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
-			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
-			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
-					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
-					: null;
-
-			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
-				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
-						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-				double giamGia = resultSet.getDouble("giamGia");
-				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-						giamGia, tinhTrangKhuyenMai));
-			}
-		}
-
-		return list;
+		return count == 0;
 	}
 
 	public List<KhuyenMai> getAll() throws SQLException {

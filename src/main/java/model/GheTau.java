@@ -32,8 +32,8 @@ public class GheTau {
     }
 
     public void setMaGheTau(String maGheTau) {
-    	maGheTau = maGheTau.trim();
-		if (maGheTau != null && maGheTau.matches("^GT\\d{4}$")) {
+        maGheTau = maGheTau.trim();
+        if (maGheTau != null && maGheTau.matches("^GT\\d{4}$")) {
             this.maGheTau = maGheTau;
         } else {
             throw new IllegalArgumentException("Mã ghế tàu phải có dạng 'GTXXXX', với 'XXXX' là các chữ số.");
@@ -70,22 +70,23 @@ public class GheTau {
     }
 
     public void setTrangThai(String trangThai) {
-        if (trangThai.equals("DA_THANH_TOAN") || trangThai.equals("TRONG") || trangThai.equals("DANG_BAO_TRI") || trangThai.equals("DANG_GIU_CHO")) {
+        if (trangThai.equals("DA_THANH_TOAN") || trangThai.equals("TRONG") || trangThai.equals("DANG_BAO_TRI")
+                || trangThai.equals("DANG_GIU_CHO")) {
             this.trangThai = trangThai;
         } else {
             throw new IllegalArgumentException("Trạng thái không hợp lệ!");
         }
     }
-    
+
     public ToaTau getToaTau() {
-		return toaTau;
-	}
+        return toaTau;
+    }
 
-	public void setToaTau(ToaTau toaTau) {
-		this.toaTau = toaTau;
-	}
+    public void setToaTau(ToaTau toaTau) {
+        this.toaTau = toaTau;
+    }
 
-	// Phương thức toString
+    // Phương thức toString
     @Override
     public String toString() {
         return "GheTau{" +

@@ -63,6 +63,7 @@ public class TaiKhoan {
 	public void setMatKhau(String matKhau) {
 		// Ràng buộc: tối thiểu 8 ký tự, bao gồm ít nhất 1 chữ hoa, 1 chữ thường, 1 số
 		// và 1 ký tự đặc biệt
+		matKhau = matKhau.trim();
 		if (matKhau != null && matKhau.length() >= 8
 				&& matKhau.matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$")) {
 			this.matKhau = matKhau;
