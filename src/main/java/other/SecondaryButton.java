@@ -6,12 +6,14 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Path2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 
 import constant.ColorConstants;
 import util.ColorUtils;
@@ -22,6 +24,49 @@ public class SecondaryButton extends RoundedButton {
 
 	private int borderThickness;
 
+	public SecondaryButton(String label) {
+		this(label, null);
+
+	}
+
+	public SecondaryButton(String label, String iconPath) {
+		super(label, iconPath, ColorConstants.PRIMARY_COLOR);
+
+		this.borderThickness = 2;
+		this.setForeground(ColorConstants.PRIMARY_COLOR);
+
+		if (iconPath != null) {
+			this.setIcon(iconPath);
+		}
+
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				setBackground(pressedColor);
+				setForeground(pressedColor);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				setBackground(normalColor);
+				setForeground(normalColor);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				setBackground(hoveredColor);
+				setForeground(hoveredColor);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				setBackground(normalColor);
+				setForeground(normalColor);
+			}
+		});
+
+	}
+
 	public int getBorderThickness() {
 		return borderThickness;
 	}
@@ -30,6 +75,20 @@ public class SecondaryButton extends RoundedButton {
 		this.borderThickness = borderThickness;
 	}
 
+	@Override
+	public void setIcon(String iconPath) {
+		this.icon = new ImageIcon(getClass().getResource(iconPath));
+		this.iconWidth = icon.getIconWidth();
+		this.iconHeight = icon.getIconHeight();
+
+		BufferedImage bufferedIcon = ColorUtils.copyImageIconToBufferedImage(icon);
+		BufferedImage changedColorBufferedIcon = ColorUtils.changeColorToColor(bufferedIcon, Color.WHITE,
+				getForeground());
+
+		super.setIcon(new ImageIcon(changedColorBufferedIcon));
+	}
+
+	@Override
 	public void setIconSize(int width, int height) {
 		this.iconWidth = width;
 		this.iconHeight = height;
@@ -40,32 +99,6 @@ public class SecondaryButton extends RoundedButton {
 
 		Image scaledIcon = changedColorBufferedIcon.getScaledInstance(width, height, Image.SCALE_SMOOTH);
 		setIcon(new ImageIcon(scaledIcon));
-	}
-
-	public SecondaryButton(String label) {
-		super(label, ColorConstants.PRIMARY_COLOR);
-
-		this.borderThickness = 2;
-		this.setForeground(ColorConstants.PRIMARY_COLOR);
-	}
-
-//	public SecondaryButton(ImageIcon icon) {
-//		super(icon, ColorConstants.PRIMARY_COLOR);
-//	}
-
-	public SecondaryButton(String label, String iconPath) {
-		super(label, iconPath, ColorConstants.DANGER_COLOR);
-
-		this.borderThickness = 2;
-		this.setForeground(ColorConstants.PRIMARY_COLOR);
-
-		BufferedImage bufferedIcon = ColorUtils.copyImageIconToBufferedImage(icon);
-		BufferedImage changedColorBufferedIcon = ColorUtils.changeColorToColor(bufferedIcon, Color.WHITE,
-				getForeground());
-
-		setIcon(new ImageIcon(changedColorBufferedIcon));
-		setIconTextGap(8);
-
 	}
 
 	@Override
@@ -84,32 +117,12 @@ public class SecondaryButton extends RoundedButton {
 		g2d.fill(path);
 	}
 
-	@Override
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	@Override
-	public void mousePressed(MouseEvent e) {
-		setBackground(pressedColor);
-		setForeground(pressedColor);
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent e) {
-		setBackground(normalColor);
-		setForeground(normalColor);
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent e) {
-		setBackground(hoveredColor);
-		setForeground(hoveredColor);
-	}
-
-	@Override
-	public void mouseExited(MouseEvent e) {
-		setBackground(normalColor);
-		setForeground(normalColor);
+	public static void main(String[] args) {
+		JFrame frame = new JFrame();
+		frame.setSize(500, 500);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(new SecondaryButton("Secondary"));
+		frame.setVisible(true);
 	}
 
 }

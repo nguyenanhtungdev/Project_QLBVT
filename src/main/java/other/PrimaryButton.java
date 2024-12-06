@@ -3,25 +3,43 @@ package other;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import constant.ColorConstants;
-
-//import javax.swing.ImageIcon;
 
 public class PrimaryButton extends RoundedButton {
 
 	private static final long serialVersionUID = 8626192094139620401L;
 
 	public PrimaryButton(String label) {
-		super(label, ColorConstants.PRIMARY_COLOR);
+		this(label, null);
 	}
-
-//	public PrimaryButton(ImageIcon icon) {
-//		super(icon, ColorConstants.PRIMARY_COLOR);
-//	}
 
 	public PrimaryButton(String label, String iconPath) {
 		super(label, iconPath, ColorConstants.PRIMARY_COLOR);
+
+		addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				setBackground(pressedColor);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				setBackground(normalColor);
+			}
+
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				setBackground(hoveredColor);
+			}
+
+			@Override
+			public void mouseExited(MouseEvent e) {
+				setBackground(normalColor);
+			}
+		});
 	}
 
 	@Override
