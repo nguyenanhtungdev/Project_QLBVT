@@ -13,7 +13,6 @@ import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 
 import constant.ColorConstants;
 import util.ColorUtils;
@@ -115,14 +114,6 @@ public class SecondaryButton extends RoundedButton {
 		path.append(outer, false);
 		path.append(inner, false);
 		g2d.fill(path);
-	}
-
-	public static void main(String[] args) {
-		JFrame frame = new JFrame();
-		frame.setSize(500, 500);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(new SecondaryButton("Secondary"));
-		frame.setVisible(true);
 	}
 
 }

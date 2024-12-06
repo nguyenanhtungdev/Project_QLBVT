@@ -13,7 +13,6 @@ public class ChuyenTau {
 	private LocalDateTime thoiGianDuKien;
 	private String ghiChu;
 
-	private Tau tau;
 	private GiaVe giaVe;
 
 	public ChuyenTau() {
@@ -24,7 +23,7 @@ public class ChuyenTau {
 	}
 
 	public ChuyenTau(String maChuyenTau, String gaKhoiHanh, String gaDen, LocalDateTime thoiGianKhoiHanh,
-			LocalDateTime thoiGianDuKien, String ghiChu, Tau tau, GiaVe giaVe) {
+			LocalDateTime thoiGianDuKien, String ghiChu, GiaVe giaVe) {
 		setMaChuyenTau(maChuyenTau);
 		setGaKhoiHanh(gaKhoiHanh);
 		setGaDen(gaDen);
@@ -32,7 +31,6 @@ public class ChuyenTau {
 		setThoiGianDuKien(thoiGianDuKien);
 		setGhiChu(ghiChu);
 		this.giaVe = giaVe;
-		this.tau = tau;
 	}
 
 	public String getMaChuyenTau() {
@@ -111,14 +109,6 @@ public class ChuyenTau {
 		this.giaVe = giaVe;
 	}
 
-	public Tau getTau() throws SQLException {
-		return tau.getTenTau() == null ? tau = Tau_DAO.getInstance().getByMaTau(tau.getMaTau()) : tau;
-	}
-
-	public void setTau(Tau tau) {
-		this.tau = tau;
-	}
-
 	@Override
 	public int hashCode() {
 		return Objects.hash(maChuyenTau);
@@ -138,7 +128,7 @@ public class ChuyenTau {
 	public String toString() {
 		return "ChuyenTau {maChuyenTau: " + maChuyenTau + ", gaKhoiHanh: " + gaKhoiHanh + ", gaDen: " + gaDen
 				+ ", thoiGianKhoiHanh: " + thoiGianKhoiHanh + ", thoiGianDuKien: " + thoiGianDuKien + ", ghiChu: "
-				+ ghiChu + ", tau: " + tau + ", giaVe: " + giaVe + "}";
+				+ ghiChu + ", giaVe: " + giaVe + "}";
 	}
 
 }

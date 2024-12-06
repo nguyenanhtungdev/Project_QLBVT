@@ -40,7 +40,10 @@ public class Tau_DAO {
 			TrangThaiTau trangThai = TrangThaiTau.fromInt(resultSet.getInt("trangThai"));
 			String ghiChu = resultSet.getString("ghiChu");
 
-			list.add(new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu));
+			ChuyenTau chuyenTau = new ChuyenTau(resultSet.getString("maChuyenTau"));
+
+			list.add(new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu,
+					chuyenTau));
 		}
 		return list;
 	}
@@ -63,7 +66,10 @@ public class Tau_DAO {
 			TrangThaiTau trangThai = TrangThaiTau.fromInt(resultSet.getInt("trangThai"));
 			String ghiChu = resultSet.getString("ghiChu");
 
-			return new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu);
+			ChuyenTau chuyenTau = new ChuyenTau(resultSet.getString("maChuyenTau"));
+
+			return new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu,
+					chuyenTau);
 		}
 
 		return null;
@@ -140,27 +146,29 @@ public class Tau_DAO {
 	// Lấy thông tin tàu theo mã tàu
 	public Tau layTTTauTheoMa(String maTau) throws SQLException {
 		String sql = "SELECT * FROM Tau WHERE maTau = ?";
-		Connection con;
 
-		try {
-			con = Database.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement(sql);
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement stmt = con.prepareStatement(sql);
 
-			stmt.setString(1, maTau);
-			ResultSet resultSet = stmt.executeQuery();
+		stmt.setString(1, maTau);
+		ResultSet resultSet = stmt.executeQuery();
 
-			if (resultSet.next()) {
-				return new Tau(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3),
-						resultSet.getDate(4).toLocalDate(), resultSet.getString(5), resultSet.getFloat(6),
-						resultSet.getFloat(7), TrangThaiTau.fromInt(resultSet.getInt(8)), // Chuyển đổi từ số thành enum
-						resultSet.getString(9));
-			} else {
-				return null;
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
+		if (resultSet.next()) {
+			String tenTau = resultSet.getString("tenTau");
+			int soToa = resultSet.getInt("soToa");
+			LocalDate namSanXuat = resultSet.getDate("namSanXuat").toLocalDate();
+			String nhaSanXuat = resultSet.getString("nhaSanXuat");
+			float tocDoTB = resultSet.getFloat("tocDoTB");
+			float tocDoToiDa = resultSet.getFloat("tocDoToiDa");
+			TrangThaiTau trangThai = TrangThaiTau.fromInt(resultSet.getInt("trangThai"));
+			String ghiChu = resultSet.getString("ghiChu");
+
+			ChuyenTau chuyenTau = new ChuyenTau(resultSet.getString("maChuyenTau"));
+
+			return new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu,
+					chuyenTau);
 		}
+		return null;
 	}
 
 	public List<Tau> layTTTauTheoTrangThai(TrangThaiTau trangThai) throws SQLException {
@@ -174,12 +182,22 @@ public class Tau_DAO {
 			ResultSet resultSet = stmt.executeQuery();
 
 			while (resultSet.next()) {
-				Tau tau = new Tau(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3),
-						resultSet.getDate(4).toLocalDate(), resultSet.getString(5), resultSet.getFloat(6),
-						resultSet.getFloat(7), TrangThaiTau.fromInt(resultSet.getInt(8)), resultSet.getString(9));
-				tauList.add(tau);
+				String maTau = resultSet.getString("maTau");
+				String tenTau = resultSet.getString("tenTau");
+				int soToa = resultSet.getInt("soToa");
+				LocalDate namSanXuat = resultSet.getDate("namSanXuat").toLocalDate();
+				String nhaSanXuat = resultSet.getString("nhaSanXuat");
+				float tocDoTB = resultSet.getFloat("tocDoTB");
+				float tocDoToiDa = resultSet.getFloat("tocDoToiDa");
+				String ghiChu = resultSet.getString("ghiChu");
+
+				ChuyenTau chuyenTau = new ChuyenTau(resultSet.getString("maChuyenTau"));
+
+				tauList.add(new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai,
+						ghiChu, chuyenTau));
 			}
 		}
+
 		return tauList;
 	}
 

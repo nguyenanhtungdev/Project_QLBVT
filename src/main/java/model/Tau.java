@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class Tau {
@@ -13,6 +14,8 @@ public class Tau {
 	private float tocDoToiDa;
 	private String ghiChu;
 	private TrangThaiTau trangThai;
+
+	private ChuyenTau chuyenTau;
 
 	public enum TrangThaiTau {
 		HOAT_DONG(0), BAO_TRI(1), DUNG_HOAT_DONG(2);
@@ -45,7 +48,7 @@ public class Tau {
 	}
 
 	public Tau(String maTau, String tenTau, int soToa, LocalDate namSanXuat, String nhaSanXuat, float tocDoTB,
-			float tocDoToiDa, TrangThaiTau trangThai, String ghiChu) {
+			float tocDoToiDa, TrangThaiTau trangThai, String ghiChu, ChuyenTau chuyenTau) {
 		this.maTau = maTau;
 		this.tenTau = tenTau;
 		this.soToa = soToa;
@@ -55,6 +58,7 @@ public class Tau {
 		this.tocDoToiDa = tocDoToiDa;
 		this.trangThai = trangThai;
 		this.ghiChu = ghiChu;
+		this.chuyenTau = chuyenTau;
 	}
 
 	public String getMaTau() {
@@ -152,6 +156,16 @@ public class Tau {
 
 	public void setGhiChu(String ghiChu) {
 		this.ghiChu = ghiChu;
+	}
+
+	public ChuyenTau getChuyenTau() throws SQLException {
+		return chuyenTau.getGaKhoiHanh() == null
+				? ChuyenTau_DAO.getInstance().getByMaChuyenTau(chuyenTau.getMaChuyenTau())
+				: chuyenTau;
+	}
+
+	public void setChuyenTau(ChuyenTau chuyenTau) {
+		this.chuyenTau = chuyenTau;
 	}
 
 	@Override
