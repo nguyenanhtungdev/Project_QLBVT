@@ -5,50 +5,36 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import connectDB.ConnectDB;
+import connectDB.Database;
 
 public class ThongTinTram_DAO {
-	
-    private static ThongTinTram_DAO instance;
 
-    public static ThongTinTram_DAO getInstance() {
-        if (instance == null)
-            instance = new ThongTinTram_DAO();
-        return instance;
-    }
-    
-    public ThongTinTram layThongTinTramTheoMa(String maNhaGa) {
-        ThongTinTram thongTinTram = null;
-        Connection con = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
+	private static ThongTinTram_DAO instance;
 
-        try {
-            ConnectDB.getInstance();
-            con = ConnectDB.getInstance().getConnection();
+	public static ThongTinTram_DAO getInstance() {
+		return instance == null ? instance = new ThongTinTram_DAO() : instance;
+	}
 
-            String sql = "SELECT maNhaGa, tenNhaGa, diaChi, dienThoai, email, tenNganHang, soTaiKhoan, maSoThue "
-                       + "FROM ThongTinTram WHERE maNhaGa = ?";
-            ps = con.prepareStatement(sql);
-            ps.setString(1, maNhaGa);
+	public ThongTinTram getByMaNhaGa(String maNhaGa) throws SQLException {
+		String sql = "SELECT* FROM ThongTinTram WHERE maNhaGa = ?";
+		Connection con = Database.getInstance().getConnection();
 
-            rs = ps.executeQuery();
-            
-            if (rs.next()) {
-                String tenNhaGa = rs.getString("tenNhaGa");
-                String diaChi = rs.getString("diaChi");
-                String dienThoai = rs.getString("dienThoai");
-                String email = rs.getString("email");
-                String tenNganHang = rs.getString("tenNganHang");
-                String soTaiKhoan = rs.getString("soTaiKhoan");
-                String maSoThue = rs.getString("maSoThue");
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, maNhaGa);
+		ResultSet resultSet = statement.executeQuery();
 
-                thongTinTram = new ThongTinTram(maNhaGa, tenNhaGa, diaChi, dienThoai, email, tenNganHang, soTaiKhoan, maSoThue);
-            }
+		if (resultSet.next()) {
+			String tenNhaGa = resultSet.getString("tenNhaGa");
+			String diaChi = resultSet.getString("diaChi");
+			String dienThoai = resultSet.getString("dienThoai");
+			String email = resultSet.getString("email");
+			String tenNganHang = resultSet.getString("tenNganHang");
+			String soTaiKhoan = resultSet.getString("soTaiKhoan");
+			String maSoThue = resultSet.getString("maSoThue");
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return thongTinTram;
-    }
+			return new ThongTinTram(maNhaGa, tenNhaGa, diaChi, dienThoai, email, tenNganHang, soTaiKhoan, maSoThue);
+		}
+
+		return null;
+	}
 }

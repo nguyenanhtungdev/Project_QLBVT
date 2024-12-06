@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import connectDB.ConnectDB;
+import connectDB.Database;
 import model.KhachHang.LoaiKhachHang;
 
 public class HoaDon_DAO {
@@ -22,9 +22,7 @@ public class HoaDon_DAO {
 	private static HoaDon_DAO instance;
 
 	public static HoaDon_DAO getInstance() {
-		if (instance == null)
-			instance = new HoaDon_DAO();
-		return instance;
+		return instance == null ? instance = new HoaDon_DAO() : instance;
 	}
 
 	// Lấy hóa đơn theo số điện thoại hoặc CCCD
@@ -35,7 +33,7 @@ public class HoaDon_DAO {
 		ResultSet rs = null;
 
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			String sql = "SELECT hd.*, kh.hoTen, kh.soDienThoai " + "FROM HoaDon hd "
 					+ "JOIN KhachHang kh ON hd.maKH = kh.maKH " + "WHERE kh.soDienThoai = ? OR kh.CCCD = ?";
 			ps = con.prepareStatement(sql);
@@ -83,48 +81,70 @@ public class HoaDon_DAO {
 		return hoaDons;
 	}
 
-	public ArrayList<HoaDon> getalltbHD() {
-		ArrayList<HoaDon> hoaDons = new ArrayList<>();
-		Connection con = null;
-		Statement statement = null;
-		ResultSet resultSet = null;
+	public List<HoaDon> getAll() throws SQLException {
+		String sql = "SELECT * FROM HoaDon";
 
-		try {
-			ConnectDB.getInstance();
-			con = ConnectDB.getInstance().getConnection();
-			String sql = "SELECT * FROM HoaDon";
-			statement = con.createStatement();
-			resultSet = statement.executeQuery(sql);
+		Connection con = Database.getInstance().getConnection();
+		Statement statement = con.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
 
-			while (resultSet.next()) {
-				String maHoaDon = resultSet.getString(1);
-				Timestamp timestamp = resultSet.getTimestamp(2);
-				LocalDateTime ngayLapHoaDon = timestamp.toLocalDateTime();
-				String ghiChu = resultSet.getString(3);
-				float thueVAT = resultSet.getFloat(4);
-				String phuongThucThanhToan = resultSet.getString(5);
-				String loaiHoaDon = resultSet.getString(6);
-				String maKH = resultSet.getString(7);
-				String maNhaGa = resultSet.getString(8);
-				String maNV = resultSet.getString(9);
-				String maThongTinGiuCho = resultSet.getString(10);
+		List<HoaDon> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maHoaDon = resultSet.getString(1);
+			Timestamp timestamp = resultSet.getTimestamp(2);
+			LocalDateTime ngayLapHoaDon = timestamp.toLocalDateTime();
+			String ghiChu = resultSet.getString(3);
+			float thueVAT = resultSet.getFloat(4);
+			String phuongThucThanhToan = resultSet.getString(5);
+			String loaiHoaDon = resultSet.getString(6);
+			String maKH = resultSet.getString(7);
+			String maNhaGa = resultSet.getString(8);
+			String maNV = resultSet.getString(9);
+			String maThongTinGiuCho = resultSet.getString(10);
 
-				KhachHang khachHang = new KhachHang(maKH);
-				ThongTinTram thongTinTram = new ThongTinTram(maNhaGa);
-				NhanVien nhanVien = new NhanVien(maNV);
-				ThongTinGiuCho thongTinGiuCho = new ThongTinGiuCho(maThongTinGiuCho);
+			KhachHang khachHang = new KhachHang(maKH);
+			ThongTinTram thongTinTram = new ThongTinTram(maNhaGa);
+			NhanVien nhanVien = new NhanVien(maNV);
+			ThongTinGiuCho thongTinGiuCho = new ThongTinGiuCho(maThongTinGiuCho);
 
-				HoaDon hoaDon = new HoaDon(maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon,
-						khachHang, thongTinTram, nhanVien, thongTinGiuCho);
-				hoaDons.add(hoaDon);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
+			list.add(new HoaDon(maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon, khachHang,
+					thongTinTram, nhanVien, thongTinGiuCho));
 		}
-		return hoaDons;
+
+		return list;
 	}
-	
+
+	public HoaDon getByMaHoaDon(String maHoaDon) throws SQLException {
+		String sql = "SELECT * FROM HoaDon WHERE maHoaDon = ?";
+
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, maHoaDon);
+		ResultSet resultSet = statement.executeQuery();
+
+		if (resultSet.next()) {
+			LocalDateTime ngayLapHoaDon = resultSet.getTimestamp("ngayLapHoaDon").toLocalDateTime();
+			String ghiChu = resultSet.getString("ghiChu");
+			float thueVAT = resultSet.getFloat("thueVAT");
+			String phuongThucThanhToan = resultSet.getString("phuongThucThanhToan");
+			String loaiHoaDon = resultSet.getString("loaiHoaDon");
+			String maKhachHang = resultSet.getString("maKH");
+			String maNhaGa = resultSet.getString("maNhaGa");
+			String maNhanVien = resultSet.getString("maNV");
+			String maThongTinGiuCho = resultSet.getString("maThongTinGiuCho");
+
+			KhachHang khachHang = new KhachHang(maKhachHang);
+			ThongTinTram thongTinTram = new ThongTinTram(maNhaGa);
+			NhanVien nhanVien = new NhanVien(maNhanVien);
+			ThongTinGiuCho thongTinGiuCho = new ThongTinGiuCho(maThongTinGiuCho);
+
+			return new HoaDon(maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon, khachHang,
+					thongTinTram, nhanVien, thongTinGiuCho);
+		}
+
+		return null;
+	}
+
 	public ArrayList<HoaDon> getalltbHDKH() {
 		ArrayList<HoaDon> hoaDons = new ArrayList<>();
 		Connection con = null;
@@ -132,8 +152,8 @@ public class HoaDon_DAO {
 		ResultSet resultSet = null;
 
 		try {
-			ConnectDB.getInstance();
-			con = ConnectDB.getInstance().getConnection();
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 			String sql = "SELECT hd.*, kh.hoTen, kh.soDienThoai " + "FROM HoaDon hd "
 					+ "JOIN KhachHang kh ON hd.maKH = kh.maKH";
 			statement = con.createStatement();
@@ -188,8 +208,8 @@ public class HoaDon_DAO {
 		ResultSet resultSet = null;
 
 		try {
-			ConnectDB.getInstance();
-			con = ConnectDB.getInstance().getConnection();
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 			String sql = "SELECT hd.*, kh.hoTen, kh.soDienThoai " + "FROM HoaDon hd "
 					+ "JOIN KhachHang kh ON hd.maKH = kh.maKH " + "WHERE hd.maHoaDon = ?";
 			preparedStatement = con.prepareStatement(sql);
@@ -243,8 +263,8 @@ public class HoaDon_DAO {
 		ResultSet resultSet = null;
 
 		try {
-			ConnectDB.getInstance();
-			con = ConnectDB.getInstance().getConnection();
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 			String sql = "SELECT hd.*, kh.hoTen, kh.soDienThoai " + "FROM HoaDon hd "
 					+ "JOIN KhachHang kh ON hd.maKH = kh.maKH " + "WHERE kh.soDienThoai = ?";
 			preparedStatement = con.prepareStatement(sql);
@@ -298,8 +318,8 @@ public class HoaDon_DAO {
 		ResultSet resultSet = null;
 
 		try {
-			ConnectDB.getInstance();
-			con = ConnectDB.getInstance().getConnection();
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 
 			// Chuyển đổi LocalDateTime sang Timestamp
 			Timestamp sqlStartDate = Timestamp.valueOf(startDate);
@@ -358,8 +378,8 @@ public class HoaDon_DAO {
 		ResultSet resultSet = null;
 
 		try {
-			ConnectDB.getInstance();
-			con = ConnectDB.getInstance().getConnection();
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 
 			// Truy vấn SQL để lấy thông tin trạm
 			String sql = "SELECT * FROM ThongTinTram WHERE maNhaGa = ?";
@@ -383,7 +403,7 @@ public class HoaDon_DAO {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-		} 
+		}
 		return thongTinTram;
 	}
 
@@ -394,8 +414,8 @@ public class HoaDon_DAO {
 		ResultSet resultSet = null;
 
 		try {
-			ConnectDB.getInstance();
-			con = ConnectDB.getInstance().getConnection();
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 
 			String sql = "SELECT * FROM KhachHang WHERE maKH = ?";
 			preparedStatement = con.prepareStatement(sql);
@@ -428,112 +448,111 @@ public class HoaDon_DAO {
 		}
 		return khachHang;
 	}
+
 	public String getMaHoaDonMaxTrongThang() {
-        String sql = "SELECT MAX(maHoaDon) FROM HoaDon WHERE maHoaDon LIKE ?";
-        Connection con;
-        String maHoaDon = null;
-        try {
-            con = ConnectDB.getInstance().getConnection();
-            PreparedStatement preparedStatement = con.prepareStatement(sql);
-            LocalDate today = LocalDate.now();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMM"); 
-            String prefix = today.format(formatter);
+		String sql = "SELECT MAX(maHoaDon) FROM HoaDon WHERE maHoaDon LIKE ?";
+		Connection con;
+		String maHoaDon = null;
+		try {
+			con = Database.getInstance().getConnection();
+			PreparedStatement preparedStatement = con.prepareStatement(sql);
+			LocalDate today = LocalDate.now();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMM");
+			String prefix = today.format(formatter);
 
-            preparedStatement.setString(1, "HD" + prefix + "%");
+			preparedStatement.setString(1, "HD" + prefix + "%");
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            while (resultSet.next()) {
-                maHoaDon = resultSet.getString(1);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return maHoaDon;
-    }
-	
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				maHoaDon = resultSet.getString(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return maHoaDon;
+	}
+
 	public boolean addHoaDon(HoaDon hoaDon) {
-	    Connection con = null;
-	    PreparedStatement preparedStatement = null;
+		Connection con = null;
+		PreparedStatement preparedStatement = null;
 
-	    try {
-	        ConnectDB.getInstance();
-	        con = ConnectDB.getInstance().getConnection();
+		try {
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 
-	        String sql = "INSERT INTO HoaDon (maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon, maKH, maNhaGa, maNV, maThongTinGiuCho) "
-	                   + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+			String sql = "INSERT INTO HoaDon (maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon, maKH, maNhaGa, maNV, maThongTinGiuCho) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-	        preparedStatement = con.prepareStatement(sql); 
-	        preparedStatement.setString(1, hoaDon.getMaHoaDon());
-	        preparedStatement.setTimestamp(2, Timestamp.valueOf(hoaDon.getNgayLapHoaDon())); // Chuyển LocalDateTime thành Timestamp
-	        preparedStatement.setString(3, hoaDon.getGhiChu());
-	        preparedStatement.setFloat(4, hoaDon.getThueVAT());
-	        preparedStatement.setString(5, hoaDon.getPhuongThucThanhToan());
-	        preparedStatement.setString(6, hoaDon.getLoaiHoaDon());
-	        preparedStatement.setString(7, hoaDon.getKhachHang().getMaKhachHang());
-	        preparedStatement.setString(8, hoaDon.getThongTinTram().getMaNhaGa());
-	        preparedStatement.setString(9, hoaDon.getNhanVien().getMaNV());
+			preparedStatement = con.prepareStatement(sql);
+			preparedStatement.setString(1, hoaDon.getMaHoaDon());
+			preparedStatement.setTimestamp(2, Timestamp.valueOf(hoaDon.getNgayLapHoaDon())); // Chuyển LocalDateTime
+																								// thành Timestamp
+			preparedStatement.setString(3, hoaDon.getGhiChu());
+			preparedStatement.setFloat(4, hoaDon.getThueVAT());
+			preparedStatement.setString(5, hoaDon.getPhuongThucThanhToan());
+			preparedStatement.setString(6, hoaDon.getLoaiHoaDon());
+			preparedStatement.setString(7, hoaDon.getKhachHang().getMaKhachHang());
+			preparedStatement.setString(8, hoaDon.getThongTinTram().getMaNhaGa());
+			preparedStatement.setString(9, hoaDon.getNhanVien().getMaNV());
 
-	        if (hoaDon.getThongTinGiuCho() != null) {
-	            preparedStatement.setString(10, hoaDon.getThongTinGiuCho().getMaThongTinGiuCho());
-	        } else {
-	            preparedStatement.setNull(10, java.sql.Types.VARCHAR); 
-	        }
+			if (hoaDon.getThongTinGiuCho() != null) {
+				preparedStatement.setString(10, hoaDon.getThongTinGiuCho().getMaThongTinGiuCho());
+			} else {
+				preparedStatement.setNull(10, java.sql.Types.VARCHAR);
+			}
 
-	        int rowsInserted = preparedStatement.executeUpdate();
+			int rowsInserted = preparedStatement.executeUpdate();
 
-	        return rowsInserted > 0;
+			return rowsInserted > 0;
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } 
-	    
-	    return false;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
+
 	public Map<String, Object> getThongTinHoaDon(String maHoaDon) {
-	    Map<String, Object> thongTinHoaDon = new HashMap<>();
-	    Connection con = null;
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
+		Map<String, Object> thongTinHoaDon = new HashMap<>();
+		Connection con = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 
-	    try {
-	        ConnectDB.getInstance();
-	        con = ConnectDB.getInstance().getConnection();
+		try {
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 
-	        String sql = "SELECT " +
-	                     "ttt.tenNhaGa, ttt.dienThoai, ttt.diaChi, " +
-	                     "kh.hoTen, kh.soDienThoai, kh.CCCD, " +
-	                     "vt.maVeTau, vt.loaiVe, " +
-	                     "ct.gaKhoiHanh, ct.gaDen, ct.thoiGianKhoiHanh " +
-	                     "FROM HoaDon hd " +
-	                     "INNER JOIN KhachHang kh ON hd.maKH = kh.maKH " +
-	                     "INNER JOIN ThongTinTram ttt ON ttt.maNhaGa = hd.maNhaGa " +
-	                     "INNER JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon " +
-	                     "INNER JOIN VeTau vt ON cthd.maVeTau = vt.maVeTau " +
-	                     "INNER JOIN ChuyenTau ct ON ct.maChuyenTau = vt.maChuyenTau " +
-	                     "WHERE hd.maHoaDon = ?";
+			String sql = "SELECT " + "ttt.tenNhaGa, ttt.dienThoai, ttt.diaChi, " + "kh.hoTen, kh.soDienThoai, kh.CCCD, "
+					+ "vt.maVeTau, vt.loaiVe, " + "ct.gaKhoiHanh, ct.gaDen, ct.thoiGianKhoiHanh " + "FROM HoaDon hd "
+					+ "INNER JOIN KhachHang kh ON hd.maKH = kh.maKH "
+					+ "INNER JOIN ThongTinTram ttt ON ttt.maNhaGa = hd.maNhaGa "
+					+ "INNER JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon "
+					+ "INNER JOIN VeTau vt ON cthd.maVeTau = vt.maVeTau "
+					+ "INNER JOIN ChuyenTau ct ON ct.maChuyenTau = vt.maChuyenTau " + "WHERE hd.maHoaDon = ?";
 
-	        stmt = con.prepareStatement(sql);
-	        stmt.setString(1, maHoaDon);
+			stmt = con.prepareStatement(sql);
+			stmt.setString(1, maHoaDon);
 
-	        rs = stmt.executeQuery();
+			rs = stmt.executeQuery();
 
-	        if (rs.next()) {
-	            thongTinHoaDon.put("tenNhaGa", rs.getString("tenNhaGa"));
-	            thongTinHoaDon.put("dienThoaiNhaGa", rs.getString("dienThoai"));
-	            thongTinHoaDon.put("diaChiNhaGa", rs.getString("diaChi"));
-	            thongTinHoaDon.put("hoTenKhachHang", rs.getString("hoTen"));
-	            thongTinHoaDon.put("soDienThoaiKH", rs.getString("soDienThoai"));
-	            thongTinHoaDon.put("cccdKH", rs.getString("CCCD"));
-	            thongTinHoaDon.put("maVeTau", rs.getString("maVeTau"));
-	            thongTinHoaDon.put("loaiVe", rs.getString("loaiVe"));
-	            thongTinHoaDon.put("gaKhoiHanh", rs.getString("gaKhoiHanh"));
-	            thongTinHoaDon.put("gaDen", rs.getString("gaDen"));
-	            thongTinHoaDon.put("thoiGianKhoiHanh", rs.getString("thoiGianKhoiHanh"));
-	        }
+			if (rs.next()) {
+				thongTinHoaDon.put("tenNhaGa", rs.getString("tenNhaGa"));
+				thongTinHoaDon.put("dienThoaiNhaGa", rs.getString("dienThoai"));
+				thongTinHoaDon.put("diaChiNhaGa", rs.getString("diaChi"));
+				thongTinHoaDon.put("hoTenKhachHang", rs.getString("hoTen"));
+				thongTinHoaDon.put("soDienThoaiKH", rs.getString("soDienThoai"));
+				thongTinHoaDon.put("cccdKH", rs.getString("CCCD"));
+				thongTinHoaDon.put("maVeTau", rs.getString("maVeTau"));
+				thongTinHoaDon.put("loaiVe", rs.getString("loaiVe"));
+				thongTinHoaDon.put("gaKhoiHanh", rs.getString("gaKhoiHanh"));
+				thongTinHoaDon.put("gaDen", rs.getString("gaDen"));
+				thongTinHoaDon.put("thoiGianKhoiHanh", rs.getString("thoiGianKhoiHanh"));
+			}
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } 
-	    return thongTinHoaDon;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return thongTinHoaDon;
 	}
+
 }

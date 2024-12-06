@@ -6,42 +6,61 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
-import connectDB.ConnectDB;
+import connectDB.Database;
 
 public class GheTau_DAO {
 
 	private static GheTau_DAO instance;
 
 	public static GheTau_DAO getInstance() {
-		if (instance == null)
-			instance = new GheTau_DAO();
-		return instance;
+		return instance == null ? instance = new GheTau_DAO() : instance;
 	}
 
-	public ArrayList<GheTau> getalltbGheTau() {
-		ArrayList<GheTau> gheTaus = new ArrayList<>();
+	public List<GheTau> getAll() throws SQLException {
 		String sql = "Select * FROM GheTau";
-		Connection con;
 
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			Statement statement = con.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
-			while (resultSet.next()) {
-				String maGheTau = resultSet.getString(1);
-				String tenLoaiGheTau = resultSet.getString(2);
-				int soThuTuGhe = resultSet.getInt(3);
-				String trangThai = resultSet.getString(4);
-				String maToaTau = resultSet.getString(5);
-				ToaTau toatau = new ToaTau(maToaTau);
-				GheTau gheTau = new GheTau(maGheTau, tenLoaiGheTau, soThuTuGhe, trangThai, toatau);
-				gheTaus.add(gheTau);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		Connection con = Database.getInstance().getConnection();
+		Statement statement = con.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
+
+		List<GheTau> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maGheTau = resultSet.getString("maGheTau");
+			String tenLoaiGheTau = resultSet.getString("tenLoaiGheTau");
+			int soThuTuGhe = resultSet.getInt("soThuTuGhe");
+			String trangThai = resultSet.getString("trangThai");
+			String maToaTau = resultSet.getString("maToaTau");
+
+			ToaTau toatau = new ToaTau(maToaTau);
+
+			list.add(new GheTau(maGheTau, tenLoaiGheTau, soThuTuGhe, trangThai, toatau));
 		}
-		return gheTaus;
+
+		return list;
+	}
+
+	public GheTau getByMaGheTau(String maGheTau) throws SQLException {
+		String sql = "Select * FROM GheTau WHERE maGheTau = ?";
+
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, maGheTau);
+		ResultSet resultSet = statement.executeQuery();
+
+		if (resultSet.next()) {
+			String tenLoaiGheTau = resultSet.getString("tenLoaiGheTau");
+			int soThuTuGhe = resultSet.getInt("soThuTuGhe");
+			String trangThai = resultSet.getString("trangThai");
+			String maToaTau = resultSet.getString("maToaTau");
+
+			ToaTau toatau = new ToaTau(maToaTau);
+
+			return new GheTau(maGheTau, tenLoaiGheTau, soThuTuGhe, trangThai, toatau);
+		}
+
+		return null;
 	}
 
 	public ArrayList<GheTau> getDsGheTau(String maToaTau) {
@@ -50,7 +69,7 @@ public class GheTau_DAO {
 		Connection con;
 
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement statement = con.prepareStatement(sql);
 			statement.setString(1, maToaTau);
 
@@ -60,10 +79,10 @@ public class GheTau_DAO {
 				String tenLoaiGheTau = resultSet.getString(2);
 				int soThuTuGhe = resultSet.getInt(3);
 				String trangThai = resultSet.getString(4);
-				String maToaTauSQL = resultSet.getString(5);
+
 				ToaTau toatau = new ToaTau(maToaTau);
-				GheTau gheTau = new GheTau(maGheTau, tenLoaiGheTau, soThuTuGhe, trangThai, toatau);
-				gheTaus.add(gheTau);
+
+				gheTaus.add(new GheTau(maGheTau, tenLoaiGheTau, soThuTuGhe, trangThai, toatau));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -76,7 +95,7 @@ public class GheTau_DAO {
 		Connection con;
 
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement statement = con.prepareStatement(sql);
 			statement.setString(1, trangThaiMoi);
 			statement.setString(2, maGheTau);
@@ -91,31 +110,26 @@ public class GheTau_DAO {
 		}
 	}
 
-	// get toaTau theo maTau
-	public ArrayList<GheTau> getGheTauTheoMaToaTau(String maToaTau) {
-		ArrayList<GheTau> gheTaus = new ArrayList<>();
+	public List<GheTau> getGheTauTheoMaToaTau(String maToaTau) throws SQLException {
 		String sql = "SELECT * FROM GheTau WHERE maToaTau = ?";
-		Connection con;
 
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			PreparedStatement preparedStatement = con.prepareStatement(sql);
-			preparedStatement.setString(1, maToaTau);
-			ResultSet resultSet = preparedStatement.executeQuery();
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement preparedStatement = con.prepareStatement(sql);
+		preparedStatement.setString(1, maToaTau);
+		ResultSet resultSet = preparedStatement.executeQuery();
 
-			while (resultSet.next()) {
-				String maGheTau = resultSet.getString(1);
-				String tenLoaiGhe = resultSet.getString(2);
-				int soThuTuGhe = resultSet.getInt(3);
-				String trangThai = resultSet.getString(4);
+		List<GheTau> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maGheTau = resultSet.getString(1);
+			String tenLoaiGhe = resultSet.getString(2);
+			int soThuTuGhe = resultSet.getInt(3);
+			String trangThai = resultSet.getString(4);
 
-				ToaTau toaTau = new ToaTau(maToaTau);
-				GheTau gheTau = new GheTau(maGheTau, tenLoaiGhe, soThuTuGhe, trangThai, toaTau);
-				gheTaus.add(gheTau);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+			ToaTau toaTau = new ToaTau(maToaTau);
+
+			list.add(new GheTau(maGheTau, tenLoaiGhe, soThuTuGhe, trangThai, toaTau));
 		}
-		return gheTaus;
+
+		return list;
 	}
 }

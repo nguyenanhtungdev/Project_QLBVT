@@ -6,6 +6,7 @@ import java.time.Period;
 import javax.swing.JOptionPane;
 
 public class KhachHang {
+
 	private String maKhachHang;
 	private String hoTen;
 	private String soDienThoai;
@@ -28,53 +29,56 @@ public class KhachHang {
 		public double getDiscount() {
 			return discount;
 		}
+
 		public static LoaiKhachHang chuyenDoiLoaiKH(String loaiKH) {
-		    switch (loaiKH) {
-		        case "Trẻ em":
-		            return LoaiKhachHang.TRE_EM;
-		        case "Học sinh":
-		            return LoaiKhachHang.HOC_SINH;
-		        case "Sinh viên":
-		            return LoaiKhachHang.SINH_VIEN;
-		        case "Người già":
-		            return LoaiKhachHang.NGUOI_GIA;
-		        case "Khuyết tật":
-		            return LoaiKhachHang.NGUOI_KHUYET_TAT;
-		        case "Khách thường":
-		            return LoaiKhachHang.KHACH_THUONG;
-		        default:
-		        	showError("Loại khách hàng không hợp lệ: " + loaiKH);
-                    return null;
-		    }
+			switch (loaiKH) {
+			case "Trẻ em":
+				return LoaiKhachHang.TRE_EM;
+			case "Học sinh":
+				return LoaiKhachHang.HOC_SINH;
+			case "Sinh viên":
+				return LoaiKhachHang.SINH_VIEN;
+			case "Người già":
+				return LoaiKhachHang.NGUOI_GIA;
+			case "Khuyết tật":
+				return LoaiKhachHang.NGUOI_KHUYET_TAT;
+			case "Khách thường":
+				return LoaiKhachHang.KHACH_THUONG;
+			default:
+				showError("Loại khách hàng không hợp lệ: " + loaiKH);
+				return null;
+			}
 		}
+
 		public static String chuyenDoiTuEnumSangChuoi(LoaiKhachHang loaiKH) {
-		    switch (loaiKH) {
-		        case TRE_EM:
-		            return "Trẻ em";
-		        case HOC_SINH:
-		            return "Học sinh";
-		        case SINH_VIEN:
-		            return "Sinh viên";
-		        case NGUOI_GIA:
-		            return "Người già";
-		        case NGUOI_KHUYET_TAT:
-		            return "Khuyết tật";
-		        case KHACH_THUONG:
-		            return "Khách thường";
-		        default:
-                    showError("Loại khách hàng không hợp lệ: " + loaiKH);
-                    return null; 
-		    }
+			switch (loaiKH) {
+			case TRE_EM:
+				return "Trẻ em";
+			case HOC_SINH:
+				return "Học sinh";
+			case SINH_VIEN:
+				return "Sinh viên";
+			case NGUOI_GIA:
+				return "Người già";
+			case NGUOI_KHUYET_TAT:
+				return "Khuyết tật";
+			case KHACH_THUONG:
+				return "Khách thường";
+			default:
+				showError("Loại khách hàng không hợp lệ: " + loaiKH);
+				return null;
+			}
 		}
+
 		public static String chuyenDoiDiscountToString(double discount) {
-		    return String.format("%.0f%%", discount * 100);
+			return String.format("%.0f%%", discount * 100);
 		}
 	}
-	
-    // Phương thức hiển thị thông báo lỗi
-    private static void showError(String message) {
-        JOptionPane.showMessageDialog(null, message, "Lỗi", JOptionPane.ERROR_MESSAGE);
-    }
+
+	// Phương thức hiển thị thông báo lỗi
+	private static void showError(String message) {
+		JOptionPane.showMessageDialog(null, message, "Lỗi", JOptionPane.ERROR_MESSAGE);
+	}
 
 	public KhachHang(String maKhachHang, String hoTen, String soDienThoai, String email, boolean gioiTinh, String CCCD,
 			LocalDate ngaySinh, LoaiKhachHang loaiKH) {

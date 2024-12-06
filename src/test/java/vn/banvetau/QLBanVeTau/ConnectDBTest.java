@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 import org.junit.jupiter.api.Test;
 
-import connectDB.ConnectDB;
+import connectDB.Database;
 
 public class ConnectDBTest {
 
@@ -20,7 +20,7 @@ public class ConnectDBTest {
 
 	@Test
 	public void doesConnectionEstablishedSuccessfully() throws SQLException {
-		Connection connection = ConnectDB.getInstance().getConnection();
+		Connection connection = Database.getInstance().getConnection();
 
 		boolean connectionState = connection.isClosed();
 

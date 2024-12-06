@@ -1,38 +1,38 @@
 package model;
 
+import java.sql.SQLException;
+
 public class ToaTau {
+
 	private String maToaTau;
 	private String tenToaTau;
 	private int soThuTuToa;
 	private String loaiToa;
 	private int soLuongGhe;
 	private boolean trangThai = true;
-	private Tau tau; // Thuộc tính thêm vào
+
+	private Tau tau;
 
 	public ToaTau() {
-		super();
 	}
 
 	public ToaTau(String maToaTau, String tenToaTau, int soThuTuToa, String loaiToa, int soLuongGhe, boolean trangThai,
-			Tau tau) { // Thêm tau vào constructor
-		super();
+			Tau tau) {
 		this.maToaTau = maToaTau;
 		this.tenToaTau = tenToaTau;
 		this.soThuTuToa = soThuTuToa;
 		this.loaiToa = loaiToa;
 		this.soLuongGhe = soLuongGhe;
 		this.trangThai = trangThai;
-		this.tau = tau; // Gán giá trị cho tau
+		this.tau = tau;
 	}
 
 	public ToaTau(String maToaTau) {
-		super();
 		this.maToaTau = maToaTau;
 	}
 
-	// Getter và setter cho thuộc tính tau
-	public Tau getTau() {
-		return tau;
+	public Tau getTau() throws SQLException {
+		return tau.getTenTau() == null ? Tau_DAO.getInstance().getByMaTau(tau.getMaTau()) : tau;
 	}
 
 	public void setTau(Tau tau) {

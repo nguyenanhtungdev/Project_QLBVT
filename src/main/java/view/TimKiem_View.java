@@ -4,7 +4,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import other.ColorConstants;
 import other.DangerPrimaryButton;
 import other.PrimaryButton;
 
@@ -30,6 +29,7 @@ import java.awt.Component;
 import ca.odell.glazedlists.BasicEventList;
 import ca.odell.glazedlists.EventList;
 import ca.odell.glazedlists.swing.AutoCompleteSupport;
+import constant.ColorConstants;
 import model.TinhThanh;
 
 import javax.swing.JComboBox;

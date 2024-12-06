@@ -8,13 +8,14 @@ import javax.swing.SwingWorker;
 
 import com.formdev.flatlaf.FlatLightLaf;
 
+import constant.ColorConstants;
+
 import javax.swing.JLabel;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.concurrent.TimeUnit;
 import controller.HienThi_Controller;
-import other.ColorConstants;
 
 public class ChoDangNhap extends JFrame {
 

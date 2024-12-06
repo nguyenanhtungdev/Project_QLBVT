@@ -4,6 +4,7 @@ import java.awt.Font;
 
 import javax.swing.JLabel;
 
+import constant.ColorConstants;
 import constant.FontConstants;
 
 public class TrainTitle extends JLabel {
@@ -31,6 +32,7 @@ public class TrainTitle extends JLabel {
 		setText(value);
 		setFont(font);
 		setForeground(ColorConstants.PRIMARY_COLOR);
+		setAlignmentX(LEFT_ALIGNMENT);
 	}
 
 }

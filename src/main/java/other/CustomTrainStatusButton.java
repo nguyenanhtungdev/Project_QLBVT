@@ -1,6 +1,9 @@
 package other;
 
 import javax.swing.*;
+
+import constant.ColorConstants;
+
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

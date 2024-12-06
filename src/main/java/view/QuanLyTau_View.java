@@ -94,7 +94,7 @@ public class QuanLyTau_View extends View {
 		EventList<String> maTauList = new BasicEventList<>();
 		List<Tau> danhSachTau;
 		try {
-			danhSachTau = t_dao.getAllTau();
+			danhSachTau = t_dao.getAll();
 			for (Tau tau : danhSachTau) {
 				String maTau = tau.getMaTau();
 				maTauList.add(maTau);

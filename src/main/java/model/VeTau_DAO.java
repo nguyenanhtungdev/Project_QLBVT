@@ -5,52 +5,49 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
-import connectDB.ConnectDB;
+import connectDB.Database;
 
 public class VeTau_DAO {
 
 	private static VeTau_DAO instance;
 
 	public static VeTau_DAO getInstance() {
-		if (instance == null)
-			instance = new VeTau_DAO();
-		return instance;
+		return instance == null ? instance = new VeTau_DAO() : instance;
 	}
 
-	public ArrayList<VeTau> getalltbVT() {
-		ArrayList<VeTau> veTaus = new ArrayList<>();
+	public List<VeTau> getAll() throws SQLException {
 		String sql = "Select * FROM VeTau";
-		Connection con;
 
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			Statement statement = con.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
-			while (resultSet.next()) {
-				String maVeTau = resultSet.getString(1);
-				String maVach = resultSet.getString(2);
-				boolean loaiVe = resultSet.getBoolean(3);
-				TrangThaiVeTau trangThai = TrangThaiVeTau.values()[resultSet.getInt(4)];
-				ChuyenTau chuyenTau = new ChuyenTau(resultSet.getString(5));
+		Connection con = Database.getInstance().getConnection();
+		Statement statement = con.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
 
-				VeTau vetau = new VeTau(maVeTau, maVach, loaiVe, trangThai, chuyenTau);
-				veTaus.add(vetau);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		List<VeTau> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maVeTau = resultSet.getString("maVeTau");
+			boolean loaiVe = resultSet.getBoolean("loaiVe");
+			LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
+			boolean daHuy = resultSet.getBoolean("daHuy");
+
+			GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
+
+			list.add(new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau));
 		}
-		return veTaus;
+
+		return list;
 	}
 
 	public String getVeTauMax() {
-		ArrayList<VeTau> veTaus = new ArrayList<>();
 		String sql = "SELECT MAX(maVeTau) FROM VeTau";
 		Connection con;
 		String maVeTau = null;
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			Statement statement = con.createStatement();
 			ResultSet resultSet = statement.executeQuery(sql);
 			while (resultSet.next()) {
@@ -62,58 +59,44 @@ public class VeTau_DAO {
 		return maVeTau;
 	}
 
-	public VeTau getVeTauByMaVeTau(String maVeTau) {
-		VeTau veTau = null;
+	public VeTau getByMaVeTau(String maVeTau) throws SQLException {
 		String sql = "SELECT * FROM VeTau WHERE maVeTau = ?";
-		Connection con;
 
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			PreparedStatement preparedStatement = con.prepareStatement(sql);
-			preparedStatement.setString(1, maVeTau);
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement preparedStatement = con.prepareStatement(sql);
+		preparedStatement.setString(1, maVeTau);
 
-			ResultSet resultSet = preparedStatement.executeQuery();
-			if (resultSet.next()) {
-				String maVach = resultSet.getString(2);
-				boolean loaiVe = resultSet.getBoolean(3);
-				TrangThaiVeTau trangThai = TrangThaiVeTau.values()[resultSet.getInt(4)];
-				ChuyenTau chuyenTau = new ChuyenTau(resultSet.getString(5));
-				veTau = new VeTau(maVeTau, maVach, loaiVe, trangThai, chuyenTau);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		ResultSet resultSet = preparedStatement.executeQuery();
+		if (resultSet.next()) {
+			boolean loaiVe = resultSet.getBoolean("loaiVe");
+			LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
+			boolean daHuy = resultSet.getBoolean("daHuy");
+
+			GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
+
+			return new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau);
 		}
-		return veTau;
+
+		return null;
 	}
-	
-	public boolean addVeTau(VeTau veTau) {
-	    Connection con = null;
-	    PreparedStatement preparedStatement = null;
 
-	    try {
+	public boolean add(VeTau veTau) throws SQLException {
+		String sql = "INSERT INTO VeTau (maVeTau, loaiVe, ngayHetHan, daHuy, maGheTau) VALUES (?, ?, ?, ?, ?)";
 
-	        ConnectDB.getInstance();
-	        con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 
-	        String sql = "INSERT INTO VeTau (maVeTau, maVach, loaiVe, trangThai, maChuyenTau) "
-	                   + "VALUES (?, ?, ?, ?, ?)";
+		PreparedStatement statement = con.prepareStatement(sql);
 
-	        preparedStatement = con.prepareStatement(sql);
+		statement.setString(1, veTau.getMaVeTau());
+		statement.setBoolean(2, veTau.isLoaiVe());
+		statement.setTimestamp(3, Timestamp.valueOf(veTau.getNgayHetHan()));
+		statement.setBoolean(4, veTau.isDaHuy());
+		statement.setString(5, veTau.getGheTau().getMaGheTau());
 
-	        preparedStatement.setString(1, veTau.getMaVeTau());
-	        preparedStatement.setString(2, veTau.getMaVach());
-	        preparedStatement.setBoolean(3, veTau.isLoaiVe());
-	        preparedStatement.setInt(4, veTau.getTrangThai().ordinal()); // Chuyển trạng thái sang giá trị int
-	        preparedStatement.setString(5, veTau.getChuyenTau().getMaChuyenTau());
-	        
-	        int rowsInserted = preparedStatement.executeUpdate();
+		int count = statement.executeUpdate();
 
-	        return rowsInserted > 0;
+		return count == 1;
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    }
-	    return false;
 	}
 
 }

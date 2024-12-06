@@ -1,37 +1,30 @@
 package model;
 
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.time.Year;
 
 public class VeTau {
+
 	private String maVeTau;
-	private String maVach;
 	private boolean loaiVe;
-	private TrangThaiVeTau trangThai;
-	private ChuyenTau chuyenTau;
+	private LocalDateTime ngayHetHan;
+	private boolean daHuy;
+
+	private GheTau gheTau;
 
 	public VeTau() {
 	}
 
-	public VeTau(String maVeTau, String maVach, boolean loaiVe, TrangThaiVeTau trangThai, ChuyenTau chuyenTau) {
-		super();
+	public VeTau(String maVeTau, boolean loaiVe, LocalDateTime ngayHetHan, boolean daHuy, GheTau gheTau) {
 		setMaVeTau(maVeTau);
-		setMaVach(maVach);
 		this.loaiVe = loaiVe;
-		this.trangThai = trangThai;
-		this.chuyenTau = chuyenTau;
+		this.ngayHetHan = ngayHetHan;
+		this.daHuy = daHuy;
 	}
 
 	public VeTau(String maVeTau) {
-		super();
 		this.maVeTau = maVeTau;
-	}
-
-	public ChuyenTau getChuyenTau() {
-		return chuyenTau;
-	}
-
-	public void setChuyenTau(ChuyenTau chuyenTau) {
-		this.chuyenTau = chuyenTau;
 	}
 
 	public String getMaVeTau() {
@@ -50,18 +43,6 @@ public class VeTau {
 
 	}
 
-	public String getMaVach() {
-		return maVach;
-	}
-
-	public void setMaVach(String maVach) {
-		if (maVach != null) {
-			this.maVach = maVach;
-		} else {
-			throw new IllegalArgumentException("Mã vạch không hợp lệ");
-		}
-	}
-
 	public boolean isLoaiVe() {
 		return loaiVe;
 	}
@@ -70,17 +51,35 @@ public class VeTau {
 		this.loaiVe = loaiVe;
 	}
 
-	public TrangThaiVeTau getTrangThai() {
-		return trangThai;
+	public LocalDateTime getNgayHetHan() {
+		return ngayHetHan;
 	}
 
-	public void setTrangThai(TrangThaiVeTau trangThai) {
-		this.trangThai = trangThai;
+	public void setNgayHetHan(LocalDateTime ngayHetHan) {
+		this.ngayHetHan = ngayHetHan;
+	}
+
+	public boolean isDaHuy() {
+		return daHuy;
+	}
+
+	public void setDaHuy(boolean daHuy) {
+		this.daHuy = daHuy;
+	}
+
+	public GheTau getGheTau() throws SQLException {
+		return gheTau.getTenLoaiGheTau() == null ? GheTau_DAO.getInstance().getByMaGheTau(gheTau.getMaGheTau())
+				: gheTau;
+	}
+
+	public void setGheTau(GheTau gheTau) {
+		this.gheTau = gheTau;
 	}
 
 	@Override
 	public String toString() {
-		return "VeTau [maVeTau=" + maVeTau + ", maVach=" + maVach + ", loaiVe=" + loaiVe + ",trangThai=" + trangThai
-				+ "]";
+		return "VeTau {maVeTau: " + maVeTau + ", loaiVe: " + loaiVe + ", ngayHetHan: " + ngayHetHan + ", daHuy: "
+				+ daHuy + ", gheTau: " + gheTau + "}";
 	}
+
 }

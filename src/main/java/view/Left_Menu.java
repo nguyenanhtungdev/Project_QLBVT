@@ -3,7 +3,7 @@ package view;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import other.ColorConstants;
+import constant.ColorConstants;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;

@@ -1,30 +1,27 @@
 package model;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class TaiKhoan {
-	// Khai báo thuộc tính
+
 	private String maTaiKhoan;
 	private String tenDangNhap;
 	private String matKhau;
 	private boolean trangThai;
 	private LocalDateTime ngayTaoTaiKhoan;
+
 	private NhanVien nhanVien;
 
-	// Constructor không tham số
 	public TaiKhoan() {
 	}
 
-	// Constructor với đầy đủ tham số
-
-	// Constructor với mã tài khoản
 	public TaiKhoan(String maTaiKhoan) {
 		this.maTaiKhoan = maTaiKhoan;
 	}
 
 	public TaiKhoan(String maTaiKhoan, String tenDangNhap, String matKhau, boolean trangThai,
 			LocalDateTime ngayTaoTaiKhoan, NhanVien nhanVien) {
-		super();
 		this.setMaTaiKhoan(maTaiKhoan);
 		this.setTenDangNhap(tenDangNhap);
 		this.setMatKhau(matKhau);
@@ -33,7 +30,6 @@ public class TaiKhoan {
 		this.nhanVien = nhanVien;
 	}
 
-	// Getter và Setter cho các thuộc tính
 	public String getMaTaiKhoan() {
 		return maTaiKhoan;
 	}
@@ -93,12 +89,19 @@ public class TaiKhoan {
 		}
 	}
 
+	public NhanVien getNhanVien() throws SQLException {
+		return nhanVien.getHoTenNV() == null ? NhanVien_DAO.getInstance().getByMaNhanVien(nhanVien.getMaNV())
+				: nhanVien;
+	}
+
+	public void setNhanVien(NhanVien nhanVien) {
+		this.nhanVien = nhanVien;
+	}
+
 	@Override
 	public String toString() {
 		return "TaiKhoan [maTaiKhoan=" + maTaiKhoan + ", tenDangNhap=" + tenDangNhap + ", matKhau=" + matKhau
 				+ ", trangThai=" + trangThai + ", ngayTaoTaiKhoan=" + ngayTaoTaiKhoan + ", nhanVien=" + nhanVien + "]";
 	}
-
-	// Phương thức toString
 
 }

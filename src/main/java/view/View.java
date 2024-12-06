@@ -2,7 +2,7 @@ package view;
 
 import javax.swing.JFrame;
 
-import other.ColorConstants;
+import constant.ColorConstants;
 
 public class View extends JFrame {
 

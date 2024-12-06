@@ -1,6 +1,7 @@
 package model;
 
 public class ThongTinTram {
+
 	private String maNhaGa;
 	private String tenNhaGa;
 	private String diaChi;
@@ -9,10 +10,9 @@ public class ThongTinTram {
 	private String tenNganHang;
 	private String soTaiKhoản;
 	private String maSoThue;
-	
+
 	public ThongTinTram(String maNhaGa, String tenNhaGa, String diaChi, String dienThoai, String email,
 			String tenNganHang, String soTaiKhoản, String maSoThue) {
-		super();
 		this.maNhaGa = maNhaGa;
 		this.tenNhaGa = tenNhaGa;
 		this.diaChi = diaChi;
@@ -24,12 +24,10 @@ public class ThongTinTram {
 	}
 
 	public ThongTinTram(String maNhaGa) {
-		super();
 		this.maNhaGa = maNhaGa;
 	}
-	
+
 	public ThongTinTram() {
-		super();
 	}
 
 	public String getMaNhaGa() {
@@ -102,5 +100,5 @@ public class ThongTinTram {
 				+ dienThoai + ", email=" + email + ", tenNganHang=" + tenNganHang + ", soTaiKhoản=" + soTaiKhoản
 				+ ", maSoThue=" + maSoThue + "]";
 	}
-	
+
 }

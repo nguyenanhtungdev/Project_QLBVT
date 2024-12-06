@@ -34,6 +34,7 @@ import java.awt.event.FocusEvent;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.JScrollPane;
@@ -117,9 +118,14 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		EventList<String> soDienThoaiList = new BasicEventList<>();
 		List<HoaDon> danhSachKhachHang = hd_dao.getalltbHDKH();
 		for (HoaDon khachHang : danhSachKhachHang) {
-			String soDienThoai = khachHang.getKhachHang().getSoDienThoai();
-			soDienThoaiList.add(soDienThoai);
-			comboBox.addItem(soDienThoai);
+			try {
+				String soDienThoai = khachHang.getKhachHang().getSoDienThoai();
+				soDienThoaiList.add(soDienThoai);
+				comboBox.addItem(soDienThoai);
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		AutoCompleteSupport.install(comboBox, soDienThoaiList);
 		return comboBox;
@@ -128,14 +134,19 @@ public class QuanLyHoaDon_View extends View implements Printable {
 	public static JComboBox<String> timKiemMaHD() {
 		JComboBox<String> comboBox = new JComboBox<>();
 		EventList<String> maHDList = new BasicEventList<>();
-		List<HoaDon> danhSachHD = hd_dao.getalltbHD();
-		for (HoaDon hoaDon : danhSachHD) {
-			String maHD = hoaDon.getMaHoaDon();
-			maHDList.add(maHD);
-			comboBox.addItem(maHD);
+		try {
+			List<HoaDon> danhSachHD = hd_dao.getAll();
+			for (HoaDon hoaDon : danhSachHD) {
+				String maHD = hoaDon.getMaHoaDon();
+				maHDList.add(maHD);
+				comboBox.addItem(maHD);
+			}
+			AutoCompleteSupport.install(comboBox, maHDList);
+			comboBox.setEditable(true);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		AutoCompleteSupport.install(comboBox, maHDList);
-		comboBox.setEditable(true);
 		return comboBox;
 	}
 
@@ -378,14 +389,15 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		contentPane.add(headerPanel, BorderLayout.NORTH);
 
 		String[] header = { "STT", "Mã hoá đơn", "Loại hoá đơn", "Tên khách hàng", "Số điện thoại", "Ngày lập",
-		        "Thuế VAT", "Tổng tiền" };
+				"Thuế VAT", "Tổng tiền" };
 		Font headerFont = new Font("Arial", Font.BOLD, 18);
 		modelTableHD = new DefaultTableModel(header, 0) {
 			private static final long serialVersionUID = -5859507107413891521L;
+
 			@Override
-		    public boolean isCellEditable(int row, int column) {
-		        return false;
-		    }
+			public boolean isCellEditable(int row, int column) {
+				return false;
+			}
 		};
 
 		tableHD = new JTable(modelTableHD);

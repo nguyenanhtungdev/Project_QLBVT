@@ -6,10 +6,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import connectDB.ConnectDB;
+import connectDB.Database;
 import model.Tau.TrangThaiTau;
 
 public class Tau_DAO {
@@ -17,42 +18,62 @@ public class Tau_DAO {
 	private static Tau_DAO instance;
 
 	public static Tau_DAO getInstance() {
-		if (instance == null)
-			instance = new Tau_DAO();
-		return instance;
+		return instance == null ? instance = new Tau_DAO() : instance;
 	}
 
-	// Lấy danh sách tất cả các tàu
-	public ArrayList<Tau> getAllTau() throws SQLException {
-		ArrayList<Tau> dsTau = new ArrayList<>();
+	public List<Tau> getAll() throws SQLException {
 		String sql = "SELECT * FROM Tau";
-		Connection con;
 
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			Statement stmt = con.createStatement();
-			ResultSet resultSet = stmt.executeQuery(sql);
+		Connection con = Database.getInstance().getConnection();
+		Statement stmt = con.createStatement();
+		ResultSet resultSet = stmt.executeQuery(sql);
 
-			while (resultSet.next()) {
-				Tau tau = new Tau(resultSet.getString(1), resultSet.getString(2), resultSet.getInt(3),
-						resultSet.getDate(4).toLocalDate(), resultSet.getString(5), resultSet.getFloat(6),
-						resultSet.getFloat(7), TrangThaiTau.fromInt(resultSet.getInt(8)), // Sử dụng fromInt
-						resultSet.getString(9));
-				dsTau.add(tau);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		List<Tau> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maTau = resultSet.getString("maTau");
+			String tenTau = resultSet.getString("tenTau");
+			int soToa = resultSet.getInt("soToa");
+			LocalDate namSanXuat = resultSet.getDate("namSanXuat").toLocalDate();
+			String nhaSanXuat = resultSet.getString("nhaSanXuat");
+			float tocDoTB = resultSet.getFloat("tocDoTB");
+			float tocDoToiDa = resultSet.getFloat("tocDoToiDa");
+			TrangThaiTau trangThai = TrangThaiTau.fromInt(resultSet.getInt("trangThai"));
+			String ghiChu = resultSet.getString("ghiChu");
+
+			list.add(new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu));
+		}
+		return list;
+	}
+
+	public Tau getByMaTau(String maTau) throws SQLException {
+		String sql = "SELECT * FROM Tau WHERE maTau = ?";
+
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement stmt = con.prepareStatement(sql);
+		stmt.setString(1, maTau);
+		ResultSet resultSet = stmt.executeQuery();
+
+		if (resultSet.next()) {
+			String tenTau = resultSet.getString("tenTau");
+			int soToa = resultSet.getInt("soToa");
+			LocalDate namSanXuat = resultSet.getDate("namSanXuat").toLocalDate();
+			String nhaSanXuat = resultSet.getString("nhaSanXuat");
+			float tocDoTB = resultSet.getFloat("tocDoTB");
+			float tocDoToiDa = resultSet.getFloat("tocDoToiDa");
+			TrangThaiTau trangThai = TrangThaiTau.fromInt(resultSet.getInt("trangThai"));
+			String ghiChu = resultSet.getString("ghiChu");
+
+			return new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu);
 		}
 
-		return dsTau;
+		return null;
 	}
 
-	// Thêm thông tin tàu
-	public boolean themTau(Tau tau) throws SQLException {
+	public boolean add(Tau tau) throws SQLException {
 		String sql = "INSERT INTO Tau (maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		Connection con;
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(sql);
 
 			stmt.setString(1, tau.getMaTau());
@@ -72,13 +93,12 @@ public class Tau_DAO {
 		}
 	}
 
-	// Cập nhật thông tin tàu
-	public boolean capNhapTau(Tau tau) throws SQLException {
+	public boolean update(Tau tau) throws SQLException {
 		String sql = "UPDATE Tau SET tenTau = ?, soToa = ?, namSanXuat = ?, nhaSanXuat = ?, tocDoTB = ?, tocDoToiDa = ?, trangThai = ?, ghiChu = ? WHERE maTau = ?";
 		Connection con;
 
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(sql);
 
 			stmt.setString(1, tau.getTenTau());
@@ -104,7 +124,7 @@ public class Tau_DAO {
 		Connection con;
 
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(sql);
 
 			stmt.setInt(1, trangThaiMoi.getTrangThai());
@@ -123,7 +143,7 @@ public class Tau_DAO {
 		Connection con;
 
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(sql);
 
 			stmt.setString(1, maTau);
@@ -147,7 +167,7 @@ public class Tau_DAO {
 		String sql = "SELECT * FROM Tau WHERE trangThai = ?";
 		List<Tau> tauList = new ArrayList<>();
 
-		try (Connection con = ConnectDB.getInstance().getConnection();
+		try (Connection con = Database.getInstance().getConnection();
 				PreparedStatement stmt = con.prepareStatement(sql)) {
 
 			stmt.setInt(1, trangThai.getTrangThai());

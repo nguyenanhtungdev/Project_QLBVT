@@ -38,6 +38,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
+import constant.ColorConstants;
 import model.ChiTiet_HoaDon;
 import model.ChiTiet_HoaDon_DAO;
 import model.ChuyenTau;
@@ -51,17 +52,16 @@ import model.HoaDon_DAO;
 import model.KhachHang;
 import model.KhachHang.LoaiKhachHang;
 import model.KhuyenMai;
+import model.KhuyenMai.TinhTrangKhuyenMai;
 import model.KhuyenMai_DAO;
 import model.Tau;
 import model.Tau.TrangThaiTau;
 import model.Tau_DAO;
 import model.ThongTinTram;
-import model.TinhTrangKhuyenMai;
 import model.ToaTau;
 import model.ToaTau_DAO;
 import model.VeTau;
 import model.VeTau_DAO;
-import other.ColorConstants;
 import other.CustomTitleLable;
 import other.CustomTrainStatusButton;
 import other.SeatButton;
@@ -90,7 +90,7 @@ public class QuanLy_Controller {
 	private HoaDonChiTiet_View qlHoaDonChiTiet;
 	private int soTau;
 	private int soTrang = 1;
-	private ArrayList<Tau> danhSachTau;
+	private List<Tau> danhSachTau;
 	private int sttTT = 1;
 	private int sttGT = 1;
 	private static QuanLy_Controller instance;
@@ -126,7 +126,7 @@ public class QuanLy_Controller {
 		this.gheTau_DAO = new GheTau_DAO();
 		this.toaTau_DAO = new ToaTau_DAO();
 		this.tau_DAO = new Tau_DAO();
-		this.danhSachTau = tau_DAO.getAllTau();
+		this.danhSachTau = tau_DAO.getAll();
 		this.soTau = danhSachTau.size();
 		initControllerTau();
 
@@ -363,10 +363,15 @@ public class QuanLy_Controller {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		qLHoaDon_view.getModelHD()
-				.addRow(new Object[] { qLHoaDon_view.getModelHD().getRowCount() + 1, hd.getMaHoaDon(), loaiHoaDon,
-						hd.getKhachHang().getHoTen(), hd.getKhachHang().getSoDienThoai(), ngayLapHoaDonFormatted,
-						hd.getThueVAT() + "%", String.format("%,.0f", tongTienSauThue) + " VNĐ" });
+		try {
+			qLHoaDon_view.getModelHD()
+					.addRow(new Object[] { qLHoaDon_view.getModelHD().getRowCount() + 1, hd.getMaHoaDon(), loaiHoaDon,
+							hd.getKhachHang().getHoTen(), hd.getKhachHang().getSoDienThoai(), ngayLapHoaDonFormatted,
+							hd.getThueVAT() + "%", String.format("%,.0f", tongTienSauThue) + " VNĐ" });
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void xoaDuLieuTableHoaDon() {
@@ -399,22 +404,24 @@ public class QuanLy_Controller {
 
 		for (ChiTiet_HoaDon ctHD : chiTietHoaDons) {
 			// Tính tổng tiền từ các vé tàu
-			VeTau veTau = veTauDAO.getVeTauByMaVeTau(ctHD.getVeTau().getMaVeTau());
+			VeTau veTau = veTauDAO.getByMaVeTau(ctHD.getVeTau().getMaVeTau());
 			if (veTau == null) {
 				continue;
 			}
-			ChuyenTau chuyenTau = chuyenTauDAO.getById(veTau.getChuyenTau().getMaChuyenTau());
+
+			// TODO: Sửa lại đi nè
+			ChuyenTau chuyenTau = chuyenTauDAO.getByMaCa(veTau.getChuyenTau().getMaChuyenTau());
 			if (chuyenTau == null) {
 				continue;
 			}
-			GiaVe giaVe = giaVeDAO.findByMaGiaVe(chuyenTau.getGiaVe().getMaGiaVe());
+			GiaVe giaVe = giaVeDAO.getByMaGiaVe(chuyenTau.getGiaVe().getMaGiaVe());
 			if (giaVe == null) {
 				continue;
 			}
 			tongTien += giaVe.getGiaVe();
 			String maKhuyenMai = ctHD.getKhuyenMai().getMaKhuyenMai();
 			if (maKhuyenMai != null && !maKhuyenMai.isEmpty()) {
-				KhuyenMai khuyenMai = khuyenMaiDAO.getById1(maKhuyenMai);
+				KhuyenMai khuyenMai = khuyenMaiDAO.getByMaKhuyenMai(maKhuyenMai);
 				if (khuyenMai != null) {
 					double giamGia = khuyenMai.getGiamGia();
 					tongTienKhuyenMai += giamGia;
@@ -483,12 +490,14 @@ public class QuanLy_Controller {
 			xoaDuLieuTableHoaDonChiTiet();
 			for (int i = 0; i < ctHD1.size(); i++) {
 				ChiTiet_HoaDon ctHD = ctHD1.get(i);
-				VeTau veTau = veTau_DAO.getVeTauByMaVeTau(ctHD.getVeTau().getMaVeTau());
+				VeTau veTau = veTau_DAO.getByMaVeTau(ctHD.getVeTau().getMaVeTau());
 				if (veTau == null) {
 					continue;
 				}
-				ChuyenTau chuyenTau = chuyenTau_DAO.getById(veTau.getChuyenTau().getMaChuyenTau());
-				GiaVe giaVe = giaVe_DAO.findByMaGiaVe(chuyenTau.getGiaVe().getMaGiaVe());
+
+				// TODO: Sửa lại đi nè
+				ChuyenTau chuyenTau = chuyenTau_DAO.getByMaCa(veTau.getChuyenTau().getMaChuyenTau());
+				GiaVe giaVe = giaVe_DAO.getByMaGiaVe(chuyenTau.getGiaVe().getMaGiaVe());
 				if (giaVe == null) {
 					continue;
 				}
@@ -497,7 +506,7 @@ public class QuanLy_Controller {
 				double thanhTienTruocThue = donGia;
 				double giamGia = 0.0;
 				if (ctHD.getKhuyenMai() != null) {
-					KhuyenMai khuyenMai = kMai_DAO.getById1(ctHD.getKhuyenMai().getMaKhuyenMai());
+					KhuyenMai khuyenMai = kMai_DAO.getByMaKhuyenMai(ctHD.getKhuyenMai().getMaKhuyenMai());
 					if (khuyenMai != null) {
 						giamGia = khuyenMai.getGiamGia();
 					}
@@ -591,10 +600,11 @@ public class QuanLy_Controller {
 			try {
 				maKhuyenMaiCu = kMai_DAO.getMaxMaKhuyenMai();
 				String maKhuyenMai = generateNextMaKhuyenMai(maKhuyenMaiCu);
-				KhuyenMai khuyenMai = new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa,
-						hanSuDung, giamGia, TinhTrangKhuyenMai.CON); // Gán giá trị giamGia vào đối tượng KhuyenMai
+				KhuyenMai khuyenMai = new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, giamGia,
+						ngayBatDau, hanSuDung, TinhTrangKhuyenMai.CON); // Gán giá trị giamGia vào đối tượng
+																		// KhuyenMai
 
-				boolean result = kMai_DAO.them(khuyenMai);
+				boolean result = kMai_DAO.add(khuyenMai);
 
 				if (result) {
 					themKhuyenMaiVaoBang(khuyenMai);
@@ -687,7 +697,7 @@ public class QuanLy_Controller {
 		xoaDuLieuTableKM();
 		List<KhuyenMai> kmList;
 		try {
-			kmList = kMai_DAO.getAll1();
+			kmList = kMai_DAO.getAll();
 			for (KhuyenMai km : kmList) {
 				themKhuyenMaiVaoBang(km);
 			}
@@ -754,7 +764,7 @@ public class QuanLy_Controller {
 		if ("Hết số lượng".equals(currentTinhTrang)) {
 			int currentSoLuong;
 			try {
-				currentSoLuong = kMai_DAO.getById1(maKM).getSoLuongToiDa();
+				currentSoLuong = kMai_DAO.getByMaKhuyenMai(maKM).getSoLuongToiDa();
 				if (soLuong <= currentSoLuong) {
 					JOptionPane.showMessageDialog(null, "Số lượng mới không hợp lệ!");
 					return;
@@ -784,10 +794,11 @@ public class QuanLy_Controller {
 		kmEntity.setSoLuongToiDa(soLuong);
 		kmEntity.setHanSuDungKhuyenMai(hanSuDung);
 		kmEntity.setTinhTrangKhuyenMai(newTinhTrang);
-		kmEntity.setGiamGia(giamGia);
+		kmEntity.setGiamGia(giamGia); // TODO: Thiết kế là int
 
 		try {
-			boolean result = kMai_DAO.capNhat(kmEntity, maKM);
+//			boolean result = kMai_DAO.capNhat(kmEntity, maKM); KHÔNG CẦN ĐỂ MÃ DÔ ĐÂU ÔNG. NÓ LẤY TRONG OBJECT
+			boolean result = kMai_DAO.update(kmEntity);
 
 			if (result) {
 				JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
@@ -814,7 +825,7 @@ public class QuanLy_Controller {
 			List<KhuyenMai> danhSachKM = new ArrayList<>();
 
 			if (maKM != null && !maKM.isEmpty()) {
-				KhuyenMai km = kMai_DAO.getById1(maKM);
+				KhuyenMai km = kMai_DAO.getByMaKhuyenMai(maKM);
 				if (km != null) {
 					danhSachKM.add(km);
 				} else {
@@ -872,7 +883,7 @@ public class QuanLy_Controller {
 	public void DocDuLieuVaoTableKhuyenMai() {
 		List<KhuyenMai> list;
 		try {
-			list = kMai_DAO.getAll1();
+			list = kMai_DAO.getAll();
 			for (KhuyenMai km : list) {
 				themKhuyenMaiVaoBang(km);
 			}
@@ -931,7 +942,7 @@ public class QuanLy_Controller {
 		xoaDuLieuTableTau();
 		List<Tau> tauList;
 		try {
-			tauList = tau_DAO.getAllTau();
+			tauList = tau_DAO.getAll();
 			for (Tau tau : tauList) {
 				themTauVaoBang(tau);
 			}
@@ -1021,8 +1032,8 @@ public class QuanLy_Controller {
 
 	public void DocDuLieuVaoTableTau() throws SQLException {
 		qLTau_View.getModelTau().setRowCount(0);
-		ArrayList<Tau> dsTau;
-		dsTau = tau_DAO.getAllTau();
+		List<Tau> dsTau;
+		dsTau = tau_DAO.getAll();
 		for (Tau t : dsTau) {
 			themTauVaoBang(t);
 		}
@@ -1163,11 +1174,17 @@ public class QuanLy_Controller {
 		JLabel iconLabel = new JLabel(iconDT, JLabel.CENTER);
 		iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panelTrain.add(iconLabel, BorderLayout.CENTER);
-		JLabel labelMaTau = new JLabel(dsToaTau.get(0).getTau().getMaTau(), JLabel.CENTER);
-		labelMaTau.setFont(new Font("Arial", Font.BOLD, 12));
-		labelMaTau.setForeground(new Color(70, 130, 180));
-		labelMaTau.setHorizontalAlignment(SwingConstants.CENTER);
-		panelTrain.add(labelMaTau, BorderLayout.SOUTH);
+
+		try {
+			JLabel labelMaTau = new JLabel(dsToaTau.get(0).getTau().getMaTau(), JLabel.CENTER);
+			labelMaTau.setFont(new Font("Arial", Font.BOLD, 12));
+			labelMaTau.setForeground(new Color(70, 130, 180));
+			labelMaTau.setHorizontalAlignment(SwingConstants.CENTER);
+			panelTrain.add(labelMaTau, BorderLayout.SOUTH);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 		panelTrain.addMouseListener(new MouseAdapter() {
 			@Override
@@ -1212,34 +1229,39 @@ public class QuanLy_Controller {
 	}
 
 	private void updateGheTau(JPanel gheTauPanel, String maToaTau) {
-		ArrayList<GheTau> dsGheTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
+		try {
+			List<GheTau> dsGheTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
 
-		gheTauPanel.removeAll();
+			gheTauPanel.removeAll();
 
-		int numberOfSeats = dsGheTau.size();
-		int columns = 14;
-		int rows = (numberOfSeats + columns - 1) / columns;
+			int numberOfSeats = dsGheTau.size();
+			int columns = 14;
+			int rows = (numberOfSeats + columns - 1) / columns;
 
-		gheTauPanel.setLayout(new GridLayout(rows, columns, 10, 10));
+			gheTauPanel.setLayout(new GridLayout(rows, columns, 10, 10));
 
-		for (int i = 0; i < dsGheTau.size(); i++) {
-			GheTau gTau = dsGheTau.get(i);
-			JButton gheTauItem = createGheTau(gTau, i + 1, dsGheTau.size());
-			int rowIndex = i;
-			gheTauItem.addActionListener(e -> {
-				if (rowIndex >= 0 && rowIndex < qLTau_View.getTableGheTau().getRowCount()) {
-					qLTau_View.getTableGheTau().setRowSelectionInterval(rowIndex, rowIndex);
-					qLTau_View.getTableGheTau()
-							.scrollRectToVisible(qLTau_View.getTableGheTau().getCellRect(rowIndex, 0, true));
-				} else {
-					JOptionPane.showMessageDialog(null, "Không tìm thấy dòng để chọn.");
-				}
-			});
-			gheTauPanel.add(gheTauItem);
+			for (int i = 0; i < dsGheTau.size(); i++) {
+				GheTau gTau = dsGheTau.get(i);
+				JButton gheTauItem = createGheTau(gTau, i + 1, dsGheTau.size());
+				int rowIndex = i;
+				gheTauItem.addActionListener(e -> {
+					if (rowIndex >= 0 && rowIndex < qLTau_View.getTableGheTau().getRowCount()) {
+						qLTau_View.getTableGheTau().setRowSelectionInterval(rowIndex, rowIndex);
+						qLTau_View.getTableGheTau()
+								.scrollRectToVisible(qLTau_View.getTableGheTau().getCellRect(rowIndex, 0, true));
+					} else {
+						JOptionPane.showMessageDialog(null, "Không tìm thấy dòng để chọn.");
+					}
+				});
+				gheTauPanel.add(gheTauItem);
+			}
+
+			gheTauPanel.revalidate();
+			gheTauPanel.repaint();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
-		gheTauPanel.revalidate();
-		gheTauPanel.repaint();
 	}
 
 	private JButton createGheTau(GheTau gTau, int i, int size) {
@@ -1269,29 +1291,35 @@ public class QuanLy_Controller {
 	public void DocDuLieuVaoTableGheTau(String maToaTau) {
 		qLTau_View.getModelGheTau().setRowCount(0);
 
-		ArrayList<GheTau> dsGTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
-		for (GheTau gt : dsGTau) {
-			String trangThaiHienThi;
-			switch (gt.getTrangThai()) {
-			case "TRONG":
-				trangThaiHienThi = "Trống";
-				break;
-			case "DA_THANH_TOAN":
-				trangThaiHienThi = "Đã thanh toán";
-				break;
-			case "DANG_BAO_TRI":
-				trangThaiHienThi = "Đang bảo trì";
-				break;
-			case "DANG_GIU_CHO":
-				trangThaiHienThi = "Đang giữ chỗ";
-				break;
-			default:
-				trangThaiHienThi = "Không xác định";
-				break;
-			}
+		try {
+			List<GheTau> dsGTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
 
-			qLTau_View.getModelGheTau().addRow(new Object[] { sttGT++, gt.getMaGheTau(), gt.getTenLoaiGheTau(),
-					gt.getsoThuTuGhe(), trangThaiHienThi, });
+			for (GheTau gt : dsGTau) {
+				String trangThaiHienThi;
+				switch (gt.getTrangThai()) {
+				case "TRONG":
+					trangThaiHienThi = "Trống";
+					break;
+				case "DA_THANH_TOAN":
+					trangThaiHienThi = "Đã thanh toán";
+					break;
+				case "DANG_BAO_TRI":
+					trangThaiHienThi = "Đang bảo trì";
+					break;
+				case "DANG_GIU_CHO":
+					trangThaiHienThi = "Đang giữ chỗ";
+					break;
+				default:
+					trangThaiHienThi = "Không xác định";
+					break;
+				}
+
+				qLTau_View.getModelGheTau().addRow(new Object[] { sttGT++, gt.getMaGheTau(), gt.getTenLoaiGheTau(),
+						gt.getsoThuTuGhe(), trangThaiHienThi, });
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

@@ -20,7 +20,6 @@ import java.awt.Insets;
 
 import javax.swing.border.EmptyBorder;
 
-import other.ColorConstants;
 import other.PrimaryButton;
 import view.VeTau_View.MultiLineCellRenderer;
 
@@ -35,6 +34,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+
+import constant.ColorConstants;
+
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.Box;

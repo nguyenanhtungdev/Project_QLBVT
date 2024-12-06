@@ -14,9 +14,9 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
+import constant.ColorConstants;
 import controller.HienThi_Controller;
 import controller.DangNhap_Controller;
-import other.ColorConstants;
 import other.DangerPrimaryButton;
 import other.PrimaryButton;
 import other.RoundedButton;
@@ -32,7 +32,6 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
-import other.ColorConstants;
 import other.RoundedButton;
 import other.RoundField;
 import other.RoundPassField;

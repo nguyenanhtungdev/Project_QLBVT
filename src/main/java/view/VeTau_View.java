@@ -5,7 +5,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
 
-import other.ColorConstants;
 import other.DangerPrimaryButton;
 import other.PrimaryButton;
 
@@ -29,6 +28,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+
+import constant.ColorConstants;
+
 import javax.swing.border.CompoundBorder;
 import java.awt.Component;
 import javax.swing.Box;

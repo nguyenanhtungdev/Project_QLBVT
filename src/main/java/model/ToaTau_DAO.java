@@ -6,45 +6,65 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
-import connectDB.ConnectDB;
+import connectDB.Database;
 
 public class ToaTau_DAO {
 
 	private static ToaTau_DAO instance;
 
 	public static ToaTau_DAO getInstance() {
-		if (instance == null)
-			instance = new ToaTau_DAO();
-		return instance;
+		return instance == null ? instance = new ToaTau_DAO() : instance;
 	}
 
-	public ArrayList<ToaTau> getalltbTT() {
-		ArrayList<ToaTau> toaTaus = new ArrayList<>();
+	public List<ToaTau> getAll() throws SQLException {
 		String sql = "Select * FROM ToaTau";
-		Connection con;
 
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			Statement statement = con.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
-			while (resultSet.next()) {
-				String maToaTau = resultSet.getString(1);
-				String tenToaTau = resultSet.getString(2);
-				int soThuTuToa = resultSet.getInt(3);
-				String loaiToa = resultSet.getString(4);
-				int soLuongGhe = resultSet.getInt(5);
-				boolean trangThai = resultSet.getBoolean(6);
-				String maTau = resultSet.getString(7);
+		Connection con = Database.getInstance().getConnection();
+		Statement statement = con.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
 
-				Tau tau = new Tau(maTau);
-				ToaTau toatau = new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau);
-				toaTaus.add(toatau);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		List<ToaTau> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maToaTau = resultSet.getString(1);
+			String tenToaTau = resultSet.getString(2);
+			int soThuTuToa = resultSet.getInt(3);
+			String loaiToa = resultSet.getString(4);
+			int soLuongGhe = resultSet.getInt(5);
+			boolean trangThai = resultSet.getBoolean(6);
+			String maTau = resultSet.getString(7);
+
+			Tau tau = new Tau(maTau);
+
+			list.add(new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau));
 		}
-		return toaTaus;
+
+		return list;
+	}
+
+	public ToaTau getByMaToaTau(String maToaTau) throws SQLException {
+		String sql = "Select * FROM ToaTau WHERE maToaTau = ?";
+
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, maToaTau);
+		ResultSet resultSet = statement.executeQuery();
+
+		if (resultSet.next()) {
+			String tenToaTau = resultSet.getString(2);
+			int soThuTuToa = resultSet.getInt(3);
+			String loaiToa = resultSet.getString(4);
+			int soLuongGhe = resultSet.getInt(5);
+			boolean trangThai = resultSet.getBoolean(6);
+			String maTau = resultSet.getString(7);
+
+			Tau tau = new Tau(maTau);
+
+			return new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau);
+		}
+
+		return null;
 	}
 
 	public ArrayList<ToaTau> getDsToaTau(String maTau) {
@@ -53,7 +73,7 @@ public class ToaTau_DAO {
 		Connection con;
 
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement statement = con.prepareStatement(sql);
 			statement.setString(1, maTau);
 
@@ -84,7 +104,7 @@ public class ToaTau_DAO {
 		Connection con;
 
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement preparedStatement = con.prepareStatement(sql);
 			preparedStatement.setString(1, maTau); // Thiết lập giá trị cho tham số maTau
 			ResultSet resultSet = preparedStatement.executeQuery();

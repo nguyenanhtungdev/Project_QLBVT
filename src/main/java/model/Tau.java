@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDate;
 
 public class Tau {
+
 	private String maTau;
 	private String tenTau;
 	private int soToa;
@@ -10,8 +11,8 @@ public class Tau {
 	private String nhaSanXuat;
 	private float tocDoTB;
 	private float tocDoToiDa;
-	private TrangThaiTau trangThai;
 	private String ghiChu;
+	private TrangThaiTau trangThai;
 
 	public enum TrangThaiTau {
 		HOAT_DONG(0), BAO_TRI(1), DUNG_HOAT_DONG(2);
@@ -37,12 +38,14 @@ public class Tau {
 	}
 
 	public Tau() {
-		// TODO Auto-generated constructor stub
+	}
+
+	public Tau(String maTau) {
+		this.maTau = maTau;
 	}
 
 	public Tau(String maTau, String tenTau, int soToa, LocalDate namSanXuat, String nhaSanXuat, float tocDoTB,
 			float tocDoToiDa, TrangThaiTau trangThai, String ghiChu) {
-		super();
 		this.maTau = maTau;
 		this.tenTau = tenTau;
 		this.soToa = soToa;
@@ -54,21 +57,15 @@ public class Tau {
 		this.ghiChu = ghiChu;
 	}
 
-	public Tau(String maTau) {
-		super();
-		this.maTau = maTau;
-	}
-
 	public String getMaTau() {
 		return maTau;
 	}
 
 	public void setMaTau(String maTau) {
-		if (maTau.matches("[A-Z]{3}\\d{4}")) {
-			this.maTau = maTau;
-		} else {
+		if (!maTau.matches("[A-Z]{3}\\d{4}")) {
 			throw new IllegalArgumentException("Mã tàu phải theo định dạng AAAXXXX, với AAA là chữ và XXXX là dãy số.");
 		}
+		this.maTau = maTau;
 	}
 
 	public String getTenTau() {
@@ -159,9 +156,9 @@ public class Tau {
 
 	@Override
 	public String toString() {
-		return "Tau [maTau=" + maTau + ", tenTau=" + tenTau + ", soToa=" + soToa + ", namSanXuat=" + namSanXuat
-				+ ", nhaSanXuat=" + nhaSanXuat + ", tocDoTB=" + tocDoTB + ", tocDoToiDa=" + tocDoToiDa + ", trangThai="
-				+ trangThai + ", ghiChu=" + ghiChu + "]";
+		return "Tau {maTau: " + maTau + ", tenTau: " + tenTau + ", soToa: " + soToa + ", namSanXuat: " + namSanXuat
+				+ ", nhaSanXuat: " + nhaSanXuat + ", tocDoTB: " + tocDoTB + ", tocDoToiDa: " + tocDoToiDa + ", ghiChu: "
+				+ ghiChu + ", trangThai: " + trangThai + "}";
 	}
 
 }

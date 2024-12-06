@@ -10,8 +10,11 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
+
+import constant.ColorConstants;
+
 import javax.swing.table.DefaultTableCellRenderer;
-import other.ColorConstants;
+
 import other.PrimaryButton;
 
 public class DoiTraVe_View extends View {

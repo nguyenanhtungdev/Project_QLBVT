@@ -1,4 +1,4 @@
-package other;
+package constant;
 
 import java.awt.Color;
 

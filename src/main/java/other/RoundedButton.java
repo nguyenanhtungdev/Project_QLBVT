@@ -2,19 +2,16 @@ package other;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 
+import constant.ColorConstants;
 import util.ColorUtils;
 
 public class RoundedButton extends JButton implements MouseListener {
@@ -63,61 +60,24 @@ public class RoundedButton extends JButton implements MouseListener {
 	}
 
 	public RoundedButton(String label, Color normalColor) {
-		this.borderRadius = 8;
-		this.insets = new Insets(8, 16, 8, 16);
-		this.normalColor = normalColor;
-		this.hoveredColor = ColorUtils.darken(normalColor);
-		this.pressedColor = ColorUtils.brighten(normalColor);
-
-		setContentAreaFilled(false);
-		setFocusPainted(false);
-		setBackground(normalColor);
-		setBorder(null);
-
-		setFont(new Font("Arial", Font.BOLD, 16));
-		setForeground(ColorConstants.TEXT_COLOR);
-		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//		setMinimumSize(new Dimension(200, 44));
-		setText(label);
-
-		addMouseListener(this);
-	}
-
-	public RoundedButton(ImageIcon icon, Color normalColor) {
-		this.borderRadius = 50;
-		this.insets = new Insets(8, 8, 8, 8);
-		this.normalColor = normalColor;
-		this.hoveredColor = ColorUtils.darken(normalColor);
-		this.pressedColor = ColorUtils.brighten(normalColor);
-		this.icon = icon;
-		this.iconWidth = icon.getIconWidth();
-		this.iconHeight = icon.getIconHeight();
-
-		setContentAreaFilled(false);
-		setFocusPainted(false);
-		setBackground(normalColor);
-		setBorder(null);
-
-		setFont(new Font("Arial", Font.BOLD, 16));
-		setForeground(ColorConstants.TEXT_COLOR);
-		setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//		setMinimumSize(new Dimension(200, 44));
-
-		setIcon(icon);
-		setIconTextGap(8);
-
-		addMouseListener(this);
+		this(label, null, normalColor);
 	}
 
 	public RoundedButton(String label, String iconPath, Color normalColor) {
 		this.borderRadius = 8;
 		this.insets = new Insets(8, 16, 8, 16);
+
 		this.normalColor = normalColor;
 		this.hoveredColor = ColorUtils.darken(normalColor);
 		this.pressedColor = ColorUtils.brighten(normalColor);
-		this.icon = new ImageIcon(getClass().getResource(iconPath));
-		this.iconWidth = icon.getIconWidth();
-		this.iconHeight = icon.getIconHeight();
+
+		if (iconPath != null) {
+			this.icon = new ImageIcon(getClass().getResource(iconPath));
+			this.iconWidth = icon.getIconWidth();
+			this.iconHeight = icon.getIconHeight();
+
+			setIcon(icon);
+		}
 
 		setContentAreaFilled(false);
 		setFocusPainted(false);
@@ -142,18 +102,7 @@ public class RoundedButton extends JButton implements MouseListener {
 	}
 
 	@Override
-	protected void paintComponent(Graphics g) {
-		Graphics2D g2 = (Graphics2D) g.create();
-		g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g2.setColor(getBackground());
-		g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, borderRadius, borderRadius);
-
-		super.paintComponent(g);
-	}
-
-	@Override
 	public void mouseClicked(MouseEvent e) {
-
 	}
 
 	@Override
@@ -175,4 +124,5 @@ public class RoundedButton extends JButton implements MouseListener {
 	public void mouseExited(MouseEvent e) {
 		setBackground(normalColor);
 	}
+
 }

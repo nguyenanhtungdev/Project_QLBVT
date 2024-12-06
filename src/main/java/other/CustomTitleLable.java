@@ -1,6 +1,9 @@
 package other; 
 
 import javax.swing.*;
+
+import constant.ColorConstants;
+
 import java.awt.*;
 
 public class CustomTitleLable extends JLabel {

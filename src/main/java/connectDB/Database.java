@@ -4,9 +4,9 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class ConnectDB {
+public class Database {
 
-	private static ConnectDB connectDB;
+	private static Database connectDB;
 	private final String url = "jdbc:sqlserver://localhost:1433;databaseName=QuanLyBanVeTau";
 	private String user;
 	private String password;
@@ -15,7 +15,7 @@ public class ConnectDB {
 	/**
 	 * Tạo một instance đến database với password được lấy từ biến môi trường
 	 */
-	public ConnectDB() {
+	public Database() {
 		this.user = "sa";
 		this.password = System.getenv("MSSQL_PASSWORD");
 	}
@@ -26,7 +26,7 @@ public class ConnectDB {
 	 * @param user     người dùng
 	 * @param password mật khẩu
 	 */
-	public ConnectDB(String user, String password) {
+	public Database(String user, String password) {
 		this.user = user;
 		this.password = password;
 	}
@@ -40,9 +40,9 @@ public class ConnectDB {
 	 * @throws SQLException if a database access error occurs
 	 */
 	public Connection getConnection() throws SQLException {
-		if (connection == null || connection.isClosed())
-			connection = DriverManager.getConnection(url, user, password);
-		return connection;
+		return (connection == null || connection.isClosed())
+				? connection = DriverManager.getConnection(url, user, password)
+				: connection;
 	}
 
 	/**
@@ -57,10 +57,8 @@ public class ConnectDB {
 			connection.close();
 	}
 
-	public static ConnectDB getInstance() {
-		if (connectDB == null)
-			connectDB = new ConnectDB();
-		return connectDB;
+	public static Database getInstance() {
+		return connectDB == null ? connectDB = new Database() : connectDB;
 	}
 
 }

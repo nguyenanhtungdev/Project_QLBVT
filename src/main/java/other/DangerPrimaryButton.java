@@ -1,6 +1,8 @@
 package other;
 
-import javax.swing.ImageIcon;
+import constant.ColorConstants;
+
+//import javax.swing.ImageIcon;
 
 public class DangerPrimaryButton extends RoundedButton {
 
@@ -10,9 +12,9 @@ public class DangerPrimaryButton extends RoundedButton {
 		super(label, ColorConstants.DANGER_COLOR);
 	}
 
-	public DangerPrimaryButton(ImageIcon icon) {
-		super(icon, ColorConstants.DANGER_COLOR);
-	}
+//	public DangerPrimaryButton(ImageIcon icon) {
+//		super(icon, ColorConstants.DANGER_COLOR);
+//	}
 
 	public DangerPrimaryButton(String label, String iconPath) {
 		super(label, iconPath, ColorConstants.DANGER_COLOR);

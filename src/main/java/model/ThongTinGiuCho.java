@@ -1,24 +1,27 @@
 package model;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class ThongTinGiuCho {
+
 	private String maThongTinGiuCho;
 	private LocalDateTime ngayDatGiuCho;
 	private LocalDateTime ngayHetHanGiuCho;
 	private String ghiChu;
-	
+
+	private KhachHang khachHang;
+
 	public ThongTinGiuCho(String maThongTinGiuCho, LocalDateTime ngayDatGiuCho, LocalDateTime ngayHetHanGiuCho,
-			String ghiChu) {
-		super();
+			String ghiChu, KhachHang khachHang) {
 		this.maThongTinGiuCho = maThongTinGiuCho;
 		this.ngayDatGiuCho = ngayDatGiuCho;
 		this.ngayHetHanGiuCho = ngayHetHanGiuCho;
 		this.ghiChu = ghiChu;
+		this.khachHang = khachHang;
 	}
-	
+
 	public ThongTinGiuCho(String maThongTinGiuCho) {
-		super();
 		this.maThongTinGiuCho = maThongTinGiuCho;
 	}
 
@@ -54,9 +57,20 @@ public class ThongTinGiuCho {
 		this.ghiChu = ghiChu;
 	}
 
+	public KhachHang getKhachHang() throws SQLException {
+		return khachHang.getSoDienThoai() == null
+				? KhachHang_DAO.getInstance().getByMaKhachHang(khachHang.getMaKhachHang())
+				: khachHang;
+	}
+
+	public void setKhachHang(KhachHang khachHang) {
+		this.khachHang = khachHang;
+	}
+
 	@Override
 	public String toString() {
-		return "ThongTinGiuCho [maThongTinGiuCho=" + maThongTinGiuCho + ", ngayDatGiuCho=" + ngayDatGiuCho
-				+ ", ngayHetHanGiuCho=" + ngayHetHanGiuCho + ", ghiChu=" + ghiChu + "]";
+		return "ThongTinGiuCho {maThongTinGiuCho: " + maThongTinGiuCho + ", ngayDatGiuCho: " + ngayDatGiuCho
+				+ ", ngayHetHanGiuCho: " + ngayHetHanGiuCho + ", ghiChu: " + ghiChu + ", khachHang: " + khachHang + "}";
 	}
+
 }

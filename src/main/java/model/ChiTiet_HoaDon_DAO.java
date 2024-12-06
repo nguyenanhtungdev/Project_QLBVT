@@ -5,35 +5,30 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.OperationNotSupportedException;
-
-import connectDB.ConnectDB;
+import connectDB.Database;
 
 public class ChiTiet_HoaDon_DAO {
 
 	private static ChiTiet_HoaDon_DAO instance;
 
 	public static ChiTiet_HoaDon_DAO getInstance() {
-		if (instance == null)
-			instance = new ChiTiet_HoaDon_DAO();
-		return instance;
+		return instance == null ? instance = new ChiTiet_HoaDon_DAO() : instance;
 	}
 
 	public List<ChiTiet_HoaDon> getAll() throws SQLException {
 		String sql = "SELECT * FROM ChiTiet_HoaDon";
 
-		Connection con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 		Statement statement = con.createStatement();
 		ResultSet resultSet = statement.executeQuery(sql);
 
 		List<ChiTiet_HoaDon> list = new ArrayList<>();
 		while (resultSet.next()) {
-			int soLuong = resultSet.getInt(1);
+			int soLuong = resultSet.getInt("soLuong");
+
 			HoaDon hoaDon = new HoaDon(resultSet.getString(2));
 			KhuyenMai khuyenMai = new KhuyenMai(resultSet.getString(3));
 			VeTau veTau = new VeTau(resultSet.getString(4));
@@ -41,91 +36,52 @@ public class ChiTiet_HoaDon_DAO {
 			list.add(new ChiTiet_HoaDon(soLuong, hoaDon, khuyenMai, veTau));
 		}
 
+		resultSet.close();
+		statement.close();
 		return list;
 	}
 
-	public boolean them(ChiTiet_HoaDon entity) throws SQLException {
+	public boolean add(ChiTiet_HoaDon ct) throws SQLException {
 		String sql = "INSERT INTO ChiTiet_HoaDon(soLuong, maHoaDon, maKhuyenMai, maVeTau) VALUES(?, ?, ?, ?)";
 
-		Connection con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setInt(0, entity.getSoLuong());
-		statement.setString(1, entity.getHoaDon().getMaHoaDon());
-		statement.setString(2, entity.getKhuyenMai().getMaKhuyenMai());
-		statement.setString(3, entity.getVeTau().getMaVeTau());
+		statement.setInt(0, ct.getSoLuong());
+		statement.setString(1, ct.getHoaDon().getMaHoaDon());
+		statement.setString(2, ct.getKhuyenMai().getMaKhuyenMai());
+		statement.setString(3, ct.getVeTau().getMaVeTau());
 		int count = statement.executeUpdate();
 
-		return count > 0;
+		statement.close();
+		return count == 1;
 	}
 
-	public ArrayList<ChiTiet_HoaDon> layChiTietHDTheoMaHD(String maHD) {
-		ArrayList<ChiTiet_HoaDon> cthoaDons = new ArrayList<>();
-		Connection con = null;
-		PreparedStatement preparedStatement = null;
-		ResultSet resultSet = null;
+	public List<ChiTiet_HoaDon> getByMaHoaDon(String maHoaDon) throws SQLException {
+		String sql = "SELECT * FROM ChiTiet_HoaDon WHERE maHoaDon = ?";
 
-		try {
-			ConnectDB.getInstance();
-			con = ConnectDB.getInstance().getConnection();
-			String sql = "SELECT * FROM ChiTiet_HoaDon WHERE maHoaDon = ?";
-			preparedStatement = con.prepareStatement(sql);
-			preparedStatement.setString(1, maHD);
-			resultSet = preparedStatement.executeQuery();
+		Connection con = Database.getInstance().getConnection();
 
-			while (resultSet.next()) {
-				int soLuong = resultSet.getInt("soLuong"); // Giả sử bạn đã định nghĩa cột này trong CSDL
-				String maKhuyenMai = resultSet.getString("maKhuyenMai");
-				String maVeTau = resultSet.getString("maVeTau");
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, maHoaDon);
+		ResultSet resultSet = statement.executeQuery();
 
-				// Tạo các đối tượng cần thiết
-				HoaDon hd = new HoaDon(maHD);
-				KhuyenMai km = new KhuyenMai(maKhuyenMai);
-				VeTau vt = new VeTau(maVeTau);
+		List<ChiTiet_HoaDon> list = new ArrayList<>();
+		while (resultSet.next()) {
+			int soLuong = resultSet.getInt("soLuong");
 
-				// Tạo đối tượng ChiTiet_HoaDon và thêm vào danh sách
-				ChiTiet_HoaDon cthd = new ChiTiet_HoaDon(soLuong, hd, km, vt);
-				cthoaDons.add(cthd);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (resultSet != null)
-					resultSet.close();
-				if (preparedStatement != null)
-					preparedStatement.close();
-				if (con != null)
-					con.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			String maKhuyenMai = resultSet.getString("maKhuyenMai");
+			String maVeTau = resultSet.getString("maVeTau");
+
+			HoaDon hoaDon = new HoaDon(maHoaDon);
+			KhuyenMai khuyenMai = new KhuyenMai(maKhuyenMai);
+			VeTau veTau = new VeTau(maVeTau);
+
+			list.add(new ChiTiet_HoaDon(soLuong, hoaDon, khuyenMai, veTau));
 		}
-		return cthoaDons;
-	}
-	public boolean addChiTietHoaDon(ChiTiet_HoaDon chiTietHoaDon) {
-	    Connection con = null;
-	    PreparedStatement preparedStatement = null;
 
-	    try {
-	        ConnectDB.getInstance();
-	        con = ConnectDB.getInstance().getConnection();
-	        String sql = "INSERT INTO ChiTiet_HoaDon (soLuong, maHoaDon, maKhuyenMai, maVeTau) "
-	                   + "VALUES (?, ?, ?, ?)";
-
-	        preparedStatement = con.prepareStatement(sql);
-
-	        preparedStatement.setInt(1, chiTietHoaDon.getSoLuong());
-	        preparedStatement.setString(2, chiTietHoaDon.getHoaDon().getMaHoaDon());
-	        preparedStatement.setString(3, chiTietHoaDon.getKhuyenMai().getMaKhuyenMai());
-	        preparedStatement.setString(4, chiTietHoaDon.getVeTau().getMaVeTau());
-
-	        int rowsInserted = preparedStatement.executeUpdate();
-	        return rowsInserted > 0;
-
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } 
-	    return false; 
+		resultSet.close();
+		statement.close();
+		return list;
 	}
 
 }

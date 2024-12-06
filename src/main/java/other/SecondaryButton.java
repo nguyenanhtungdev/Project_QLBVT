@@ -13,6 +13,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.ImageIcon;
 
+import constant.ColorConstants;
 import util.ColorUtils;
 
 public class SecondaryButton extends RoundedButton {
@@ -29,13 +30,28 @@ public class SecondaryButton extends RoundedButton {
 		this.borderThickness = borderThickness;
 	}
 
-	public SecondaryButton(String label) {
-		super(label, ColorConstants.PRIMARY_COLOR);
+	public void setIconSize(int width, int height) {
+		this.iconWidth = width;
+		this.iconHeight = height;
+
+		BufferedImage bufferedIcon = ColorUtils.copyImageIconToBufferedImage(icon);
+		BufferedImage changedColorBufferedIcon = ColorUtils.changeColorToColor(bufferedIcon, Color.WHITE,
+				getForeground());
+
+		Image scaledIcon = changedColorBufferedIcon.getScaledInstance(width, height, Image.SCALE_SMOOTH);
+		setIcon(new ImageIcon(scaledIcon));
 	}
 
-	public SecondaryButton(ImageIcon icon) {
-		super(icon, ColorConstants.PRIMARY_COLOR);
+	public SecondaryButton(String label) {
+		super(label, ColorConstants.PRIMARY_COLOR);
+
+		this.borderThickness = 2;
+		this.setForeground(ColorConstants.PRIMARY_COLOR);
 	}
+
+//	public SecondaryButton(ImageIcon icon) {
+//		super(icon, ColorConstants.PRIMARY_COLOR);
+//	}
 
 	public SecondaryButton(String label, String iconPath) {
 		super(label, iconPath, ColorConstants.DANGER_COLOR);
@@ -47,8 +63,7 @@ public class SecondaryButton extends RoundedButton {
 		BufferedImage changedColorBufferedIcon = ColorUtils.changeColorToColor(bufferedIcon, Color.WHITE,
 				getForeground());
 
-		Image scaledIcon = changedColorBufferedIcon.getScaledInstance(iconWidth, iconHeight, Image.SCALE_SMOOTH);
-		setIcon(new ImageIcon(scaledIcon));
+		setIcon(new ImageIcon(changedColorBufferedIcon));
 		setIconTextGap(8);
 
 	}
@@ -59,12 +74,9 @@ public class SecondaryButton extends RoundedButton {
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		g2d.setColor(getBackground());
 
-		Shape outer;
-		Shape inner;
-
-		outer = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), borderRadius, borderRadius);
-		inner = new RoundRectangle2D.Float(borderThickness, borderThickness, getWidth() - borderThickness * 2,
-				getHeight() - borderThickness * 2, borderRadius, borderRadius);
+		Shape outer = new RoundRectangle2D.Float(0, 0, getWidth(), getHeight(), borderRadius, borderRadius);
+		Shape inner = new RoundRectangle2D.Float(borderThickness, borderThickness, getWidth() - borderThickness * 2,
+				getHeight() - borderThickness * 2, borderRadius / 2, borderRadius / 2);
 
 		Path2D path = new Path2D.Float(Path2D.WIND_EVEN_ODD);
 		path.append(outer, false);

@@ -1,6 +1,8 @@
 package other;
 
-import javax.swing.ImageIcon;
+import constant.ColorConstants;
+
+//import javax.swing.ImageIcon;
 
 public class DangerSecondaryButton extends SecondaryButton {
 
@@ -11,10 +13,10 @@ public class DangerSecondaryButton extends SecondaryButton {
 		setForeground(ColorConstants.DANGER_COLOR);
 	}
 
-	public DangerSecondaryButton(ImageIcon icon) {
-		super(icon);
-		setForeground(ColorConstants.DANGER_COLOR);
-	}
+//	public DangerSecondaryButton(ImageIcon icon) {
+//		super(icon);
+//		setForeground(ColorConstants.DANGER_COLOR);
+//	}
 
 	public DangerSecondaryButton(String label, String iconPath) {
 		super(label, iconPath);

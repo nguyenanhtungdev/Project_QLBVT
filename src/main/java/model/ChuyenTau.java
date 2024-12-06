@@ -1,5 +1,6 @@
 package model;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -11,8 +12,28 @@ public class ChuyenTau {
 	private LocalDateTime thoiGianKhoiHanh;
 	private LocalDateTime thoiGianDuKien;
 	private String ghiChu;
-	private GiaVe giaVe;
+
 	private Tau tau;
+	private GiaVe giaVe;
+
+	public ChuyenTau() {
+	}
+
+	public ChuyenTau(String maChuyenTau) {
+		setMaChuyenTau(maChuyenTau);
+	}
+
+	public ChuyenTau(String maChuyenTau, String gaKhoiHanh, String gaDen, LocalDateTime thoiGianKhoiHanh,
+			LocalDateTime thoiGianDuKien, String ghiChu, Tau tau, GiaVe giaVe) {
+		setMaChuyenTau(maChuyenTau);
+		setGaKhoiHanh(gaKhoiHanh);
+		setGaDen(gaDen);
+		this.thoiGianKhoiHanh = thoiGianKhoiHanh;
+		setThoiGianDuKien(thoiGianDuKien);
+		setGhiChu(ghiChu);
+		this.giaVe = giaVe;
+		this.tau = tau;
+	}
 
 	public String getMaChuyenTau() {
 		return maChuyenTau;
@@ -20,8 +41,7 @@ public class ChuyenTau {
 
 	private void setMaChuyenTau(String maChuyenTau) {
 		if (!maChuyenTau.matches("^CT\\d{4}$")) {
-			throw new IllegalArgumentException(
-					"Mã chuyến tàu bắt đầu bằng CT và theo sau là bốn ký số ngẫu nhiên (CTXXXX)");
+			throw new IllegalArgumentException("Mã chuyến tàu phải bắt đầu bằng CT và theo sau là bốn ký số");
 		}
 
 		this.maChuyenTau = maChuyenTau;
@@ -57,7 +77,7 @@ public class ChuyenTau {
 
 	public void setThoiGianKhoiHanh(LocalDateTime thoiGianKhoiHanh) {
 		if (thoiGianKhoiHanh.isAfter(thoiGianDuKien)) {
-			throw new IllegalArgumentException("Thời gian khởi hành phải trước thời gian dự kiến");
+			throw new IllegalArgumentException("Thời gian khởi hành phải trước thời gian đến dự kiến");
 		}
 
 		this.thoiGianKhoiHanh = thoiGianKhoiHanh;
@@ -69,7 +89,7 @@ public class ChuyenTau {
 
 	public void setThoiGianDuKien(LocalDateTime thoiGianDuKien) {
 		if (thoiGianDuKien.isBefore(thoiGianKhoiHanh)) {
-			throw new IllegalArgumentException("Thời gian dự kiến phải sau thời gian khởi hành");
+			throw new IllegalArgumentException("Thời gian đến dự kiến phải sau thời gian khởi hành");
 		}
 
 		this.thoiGianDuKien = thoiGianDuKien;
@@ -83,51 +103,19 @@ public class ChuyenTau {
 		this.ghiChu = ghiChu;
 	}
 
-	public GiaVe getGiaVe() {
-		return giaVe;
+	public GiaVe getGiaVe() throws SQLException {
+		return giaVe.getGiaVe() == 0 ? giaVe = GiaVe_DAO.getInstance().getByMaGiaVe(giaVe.getMaGiaVe()) : giaVe;
 	}
 
 	public void setGiaVe(GiaVe giaVe) {
 		this.giaVe = giaVe;
 	}
 
-	public Tau getTau() {
-		return tau;
+	public Tau getTau() throws SQLException {
+		return tau.getTenTau() == null ? tau = Tau_DAO.getInstance().getByMaTau(tau.getMaTau()) : tau;
 	}
 
 	public void setTau(Tau tau) {
-		this.tau = tau;
-	}
-
-	public ChuyenTau() {
-
-	}
-
-	public ChuyenTau(String maChuyenTau) {
-		setMaChuyenTau(maChuyenTau);
-	}
-
-	public ChuyenTau(String maChuyenTau, String gaKhoiHanh, String gaDen, LocalDateTime thoiGianKhoiHanh,
-			LocalDateTime thoiGianDuKien, String ghiChu, GiaVe giaVe) {
-		super();
-		this.maChuyenTau = maChuyenTau;
-		this.gaKhoiHanh = gaKhoiHanh;
-		this.gaDen = gaDen;
-		this.thoiGianKhoiHanh = thoiGianKhoiHanh;
-		this.thoiGianDuKien = thoiGianDuKien;
-		this.ghiChu = ghiChu;
-		this.giaVe = giaVe;
-	}
-
-	public ChuyenTau(String maChuyenTau, String gaKhoiHanh, String gaDen, LocalDateTime thoiGianKhoiHanh,
-			LocalDateTime thoiGianDuKien, String ghiChu, GiaVe giaVe, Tau tau) {
-		setMaChuyenTau(maChuyenTau);
-		setGaKhoiHanh(gaKhoiHanh);
-		setGaDen(gaDen);
-		this.thoiGianKhoiHanh = thoiGianKhoiHanh;
-		setThoiGianDuKien(thoiGianDuKien);
-		setGhiChu(ghiChu);
-		this.giaVe = giaVe;
 		this.tau = tau;
 	}
 
@@ -150,7 +138,7 @@ public class ChuyenTau {
 	public String toString() {
 		return "ChuyenTau {maChuyenTau: " + maChuyenTau + ", gaKhoiHanh: " + gaKhoiHanh + ", gaDen: " + gaDen
 				+ ", thoiGianKhoiHanh: " + thoiGianKhoiHanh + ", thoiGianDuKien: " + thoiGianDuKien + ", ghiChu: "
-				+ ghiChu + ", giaVe: " + giaVe + ", tau: " + tau + "}";
+				+ ghiChu + ", tau: " + tau + ", giaVe: " + giaVe + "}";
 	}
 
 }

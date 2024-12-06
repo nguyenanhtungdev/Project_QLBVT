@@ -5,72 +5,60 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
-import connectDB.ConnectDB;
+import connectDB.Database;
 
 public class GiaVe_DAO {
 
 	private static GiaVe_DAO instance;
 
 	public static GiaVe_DAO getInstance() {
-		if (instance == null)
-			instance = new GiaVe_DAO();
-		return instance;
+		return instance == null ? instance = new GiaVe_DAO() : instance;
 	}
 
-	public ArrayList<GiaVe> getAllGiaVe() {
-		ArrayList<GiaVe> dsGiaVe = new ArrayList<>();
+	public List<GiaVe> getAll() throws SQLException {
 		String sql = "SELECT * FROM GiaVe";
-		Connection con;
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			Statement statement = con.createStatement();
-			ResultSet resultSet = statement.executeQuery(sql);
 
-			while (resultSet.next()) {
-				String maGiaVe = resultSet.getString(1);
-				double giaVe = resultSet.getDouble(2);
-				float tiLeTangGia = resultSet.getFloat(3);
-				LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
-				String ghiChu = resultSet.getString(5);
+		Connection con = Database.getInstance().getConnection();
+		Statement statement = con.createStatement();
+		ResultSet resultSet = statement.executeQuery(sql);
 
-				GiaVe giave = new GiaVe(maGiaVe, giaVe, tiLeTangGia, ngayCapNhap, ghiChu);
-				dsGiaVe.add(giave);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		List<GiaVe> list = new ArrayList<>();
+		while (resultSet.next()) {
+			String maGiaVe = resultSet.getString(1);
+			double giaVe = resultSet.getDouble(2);
+			float tiLeTangGia = resultSet.getFloat(3);
+			LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
+			String ghiChu = resultSet.getString(5);
+
+			list.add(new GiaVe(maGiaVe, giaVe, tiLeTangGia, ngayCapNhap, ghiChu));
 		}
-		return dsGiaVe;
+
+		return list;
 	}
 
-	public GiaVe findByMaGiaVe(String maGiaVe) {
-		GiaVe giaVe = null;
+	public GiaVe getByMaGiaVe(String maGiaVe) throws SQLException {
 		String sql = "SELECT * FROM GiaVe WHERE maGiaVe = ?";
-		Connection con;
 
-		try {
-			con = ConnectDB.getInstance().getConnection();
-			PreparedStatement preparedStatement = con.prepareStatement(sql);
-			preparedStatement.setString(1, maGiaVe);
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement preparedStatement = con.prepareStatement(sql);
+		preparedStatement.setString(1, maGiaVe);
+		ResultSet resultSet = preparedStatement.executeQuery();
 
-			ResultSet resultSet = preparedStatement.executeQuery();
-			if (resultSet.next()) {
-				String maGiaVeResult = resultSet.getString(1);
-				double giaVeResult = resultSet.getDouble(2);
-				float tiLeTangGia = resultSet.getFloat(3);
-				LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
-				String ghiChu = resultSet.getString(5);
+		if (resultSet.next()) {
+			String maGiaVeResult = resultSet.getString(1);
+			double giaVeResult = resultSet.getDouble(2);
+			float tiLeTangGia = resultSet.getFloat(3);
+			LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
+			String ghiChu = resultSet.getString(5);
 
-				giaVe = new GiaVe(maGiaVeResult, giaVeResult, tiLeTangGia, ngayCapNhap, ghiChu);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+			return new GiaVe(maGiaVeResult, giaVeResult, tiLeTangGia, ngayCapNhap, ghiChu);
 		}
-		return giaVe;
+
+		return null;
 	}
 
 	public GiaVe getGiaVeTheoChuyenTau(String maGheTau, String maChuyenTau) {
@@ -81,7 +69,7 @@ public class GiaVe_DAO {
 				+ "WHERE GT.maGheTau = ? AND CT.maChuyenTau = ?";
 		Connection con;
 		try {
-			con = ConnectDB.getInstance().getConnection();
+			con = Database.getInstance().getConnection();
 			PreparedStatement stmt = con.prepareStatement(sql);
 
 			// Thiết lập các tham số cho câu truy vấn
@@ -106,4 +94,5 @@ public class GiaVe_DAO {
 		}
 		return gv;
 	}
+
 }

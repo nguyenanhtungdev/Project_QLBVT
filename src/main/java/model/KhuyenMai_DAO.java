@@ -10,79 +10,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.naming.OperationNotSupportedException;
-
-import connectDB.ConnectDB;
+import connectDB.Database;
+import model.KhuyenMai.TinhTrangKhuyenMai;
 
 public class KhuyenMai_DAO {
 
 	private static KhuyenMai_DAO instance;
 
 	public static KhuyenMai_DAO getInstance() {
-		if (instance == null)
-			instance = new KhuyenMai_DAO();
-		return instance;
+		return instance == null ? instance = new KhuyenMai_DAO() : instance;
 	}
 
-	public KhuyenMai getById(String maKhuyenMai) throws SQLException {
-		String sql = "SELECT * FROM KhuyenMai WHERE maKhuyenMai = ?";
-
-		Connection con = ConnectDB.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, maKhuyenMai);
-		ResultSet resultSet = statement.executeQuery();
-
-		if (resultSet.next()) {
-			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
-			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
-			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
-			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
-					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-
-			return new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-					tinhTrangKhuyenMai);
-		}
-
-		return null;
-	}
-
-	public KhuyenMai getById1(String id) throws SQLException {
-		String sql = "SELECT * FROM KhuyenMai WHERE maKhuyenMai = ?";
-
-		Connection con = ConnectDB.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, id);
-		ResultSet resultSet = statement.executeQuery();
-
-		if (resultSet.next()) {
-			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
-			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
-			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-
-			Timestamp timestamp = resultSet.getTimestamp("hanSuDungKhuyenMai");
-			LocalDateTime hanSuDungKhuyenMai = null;
-
-			if (timestamp != null) {
-				hanSuDungKhuyenMai = timestamp.toLocalDateTime();
-			} else {
-				hanSuDungKhuyenMai = LocalDateTime.now();
-			}
-			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
-					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-			double giamGia = resultSet.getDouble("giamGia");
-
-			return new KhuyenMai(id, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai, giamGia,
-					tinhTrangKhuyenMai);
-		}
-
-		return null;
-	}
-
-	public List<KhuyenMai> getAll1() throws SQLException {
+	public List<KhuyenMai> getAll() throws SQLException {
 		String sql = "SELECT * FROM KhuyenMai";
 
-		Connection con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 		Statement statement = con.createStatement();
 		ResultSet resultSet = statement.executeQuery(sql);
 
@@ -91,27 +33,49 @@ public class KhuyenMai_DAO {
 			String maKhuyenMai = resultSet.getString("maKhuyenMai");
 			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
 			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int giamGia = resultSet.getInt("giamGia");
 			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
-					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
-					: null;
+			LocalDateTime thoiGianBatDau = resultSet.getTimestamp("thoiGianBatDau").toLocalDateTime();
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
+			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
 
-			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
-				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
-						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-				double giamGia = resultSet.getDouble("giamGia");
-				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-						giamGia, tinhTrangKhuyenMai));
-			}
+			list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, giamGia, soLuongToiDa, thoiGianBatDau,
+					hanSuDungKhuyenMai, tinhTrangKhuyenMai));
 		}
 
 		return list;
 	}
 
-	public boolean them(KhuyenMai entity) throws SQLException {
+	public KhuyenMai getByMaKhuyenMai(String maKhuyenMai) throws SQLException {
+		String sql = "SELECT * FROM KhuyenMai WHERE maKhuyenMai = ?";
+
+		Connection con = Database.getInstance().getConnection();
+		PreparedStatement statement = con.prepareStatement(sql);
+		statement.setString(1, maKhuyenMai);
+		ResultSet resultSet = statement.executeQuery();
+
+		if (resultSet.next()) {
+			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
+			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int giamGia = resultSet.getInt("giamGia");
+			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
+			LocalDateTime thoiGianBatDau = resultSet.getTimestamp("thoiGianBatDau").toLocalDateTime();
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
+			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
+
+			return new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, giamGia, soLuongToiDa, thoiGianBatDau,
+					hanSuDungKhuyenMai, tinhTrangKhuyenMai);
+		}
+
+		return null;
+	}
+
+	public boolean add(KhuyenMai entity) throws SQLException {
 		String sql = "INSERT INTO KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai, tinhTrangKhuyenMai, giamGia) VALUES(?, ?, ?, ?, ?, ?, ?)";
 
-		Connection con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
 		statement.setString(1, entity.getMaKhuyenMai());
 		statement.setNString(2, entity.getTenKhuyenMai());
@@ -122,13 +86,13 @@ public class KhuyenMai_DAO {
 		int count = statement.executeUpdate();
 		statement.setDouble(7, entity.getGiamGia());
 
-		return count > 0;
+		return count == 1;
 	}
 
-	public boolean capNhat(KhuyenMai entity) throws SQLException {
+	public boolean update(KhuyenMai entity) throws SQLException {
 		String sql = "UPDATE KhuyenMai SET tenKhuyenMai = ?, noiDungKhuyenMai = ?, soLuongToiDa = ?, hanSuDungKhuyenMai = ?, tinhTrangKhuyenMai = ? WHERE maCa = ?";
 
-		Connection con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
 		statement.setNString(1, entity.getTenKhuyenMai());
 		statement.setNString(2, entity.getNoiDungKhuyenMai());
@@ -138,43 +102,13 @@ public class KhuyenMai_DAO {
 		statement.setString(6, entity.getMaKhuyenMai());
 		int count = statement.executeUpdate();
 
-		return count == 0;
-	}
-
-	public List<KhuyenMai> getAll() throws SQLException {
-		String sql = "SELECT * FROM KhuyenMai";
-
-		Connection con = ConnectDB.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
-
-		List<KhuyenMai> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maKhuyenMai = resultSet.getString("maKhuyenMai");
-			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
-			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
-			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
-					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
-					: null;
-
-			// Kiểm tra hạn sử dụng khuyến mãi
-			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
-				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
-						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-
-				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-						tinhTrangKhuyenMai));
-			}
-		}
-
-		return list;
+		return count == 1;
 	}
 
 	public List<KhuyenMai> getKhuyenMaiTheoTrangThai(TinhTrangKhuyenMai tinhTrang) throws SQLException {
 		String sql = "SELECT * FROM KhuyenMai WHERE tinhTrangKhuyenMai = ?";
 
-		Connection con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
 		statement.setInt(1, tinhTrang.getValue()); // Sử dụng phương thức lấy giá trị int của trạng thái nếu có
 
@@ -185,19 +119,15 @@ public class KhuyenMai_DAO {
 			String maKhuyenMai = resultSet.getString("maKhuyenMai");
 			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
 			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int giamGia = resultSet.getInt("giamGia");
 			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
-					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
-					: null;
+			LocalDateTime thoiGianBatDau = resultSet.getTimestamp("thoiGianBatDau").toLocalDateTime();
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
+			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
 
-			// Kiểm tra hạn sử dụng khuyến mãi
-			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
-				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
-						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-
-				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-						tinhTrangKhuyenMai));
-			}
+			list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, giamGia, soLuongToiDa, thoiGianBatDau,
+					hanSuDungKhuyenMai, tinhTrangKhuyenMai));
 		}
 
 		return list;
@@ -206,7 +136,7 @@ public class KhuyenMai_DAO {
 	public String getMaxMaKhuyenMai() throws SQLException {
 		String sql = "SELECT MAX(maKhuyenMai) AS maxMaKhuyenMai FROM KhuyenMai";
 
-		Connection con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 		PreparedStatement statement = con.prepareStatement(sql);
 		ResultSet resultSet = statement.executeQuery();
 
@@ -220,7 +150,7 @@ public class KhuyenMai_DAO {
 	public List<KhuyenMai> getKhuyenMaiHetHanTrong7Ngay() throws SQLException {
 		String sql = "SELECT * FROM KhuyenMai WHERE DATEDIFF(DAY, GETDATE(), hanSuDungKhuyenMai) <= 7 AND DATEDIFF(DAY, GETDATE(), hanSuDungKhuyenMai) >= 0";
 
-		Connection con = ConnectDB.getInstance().getConnection();
+		Connection con = Database.getInstance().getConnection();
 		Statement statement = con.createStatement();
 		ResultSet resultSet = statement.executeQuery(sql);
 
@@ -229,18 +159,15 @@ public class KhuyenMai_DAO {
 			String maKhuyenMai = resultSet.getString("maKhuyenMai");
 			String tenKhuyenMai = resultSet.getNString("tenKhuyenMai");
 			String noiDungKhuyenMai = resultSet.getNString("noiDungKhuyenMai");
+			int giamGia = resultSet.getInt("giamGia");
 			int soLuongToiDa = resultSet.getInt("soLuongToiDa");
-			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai") != null
-					? resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime()
-					: null;
+			LocalDateTime thoiGianBatDau = resultSet.getTimestamp("thoiGianBatDau").toLocalDateTime();
+			LocalDateTime hanSuDungKhuyenMai = resultSet.getTimestamp("hanSuDungKhuyenMai").toLocalDateTime();
+			TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
+					.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
 
-			if (hanSuDungKhuyenMai != null && hanSuDungKhuyenMai.isAfter(LocalDateTime.now())) {
-				TinhTrangKhuyenMai tinhTrangKhuyenMai = TinhTrangKhuyenMai
-						.fromValue(resultSet.getInt("tinhTrangKhuyenMai"));
-				double giamGia = resultSet.getDouble("giamGia");
-				list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, hanSuDungKhuyenMai,
-						giamGia, tinhTrangKhuyenMai));
-			}
+			list.add(new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, giamGia, soLuongToiDa, thoiGianBatDau,
+					hanSuDungKhuyenMai, tinhTrangKhuyenMai));
 		}
 
 		return list;
