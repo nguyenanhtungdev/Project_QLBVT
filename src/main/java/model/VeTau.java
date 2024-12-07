@@ -1,6 +1,5 @@
 package model;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.Year;
 
@@ -67,7 +66,7 @@ public class VeTau {
 		this.daHuy = daHuy;
 	}
 
-	public GheTau getGheTau() throws SQLException {
+	public GheTau getGheTau() {
 		return gheTau.getTenLoaiGheTau() == null ? GheTau_DAO.getInstance().getByMaGheTau(gheTau.getMaGheTau())
 				: gheTau;
 	}

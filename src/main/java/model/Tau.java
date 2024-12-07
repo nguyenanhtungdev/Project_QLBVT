@@ -1,6 +1,5 @@
 package model;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 
 public class Tau {
@@ -158,7 +157,7 @@ public class Tau {
 		this.ghiChu = ghiChu;
 	}
 
-	public ChuyenTau getChuyenTau() throws SQLException {
+	public ChuyenTau getChuyenTau() {
 		return chuyenTau.getGaKhoiHanh() == null
 				? ChuyenTau_DAO.getInstance().getByMaChuyenTau(chuyenTau.getMaChuyenTau())
 				: chuyenTau;

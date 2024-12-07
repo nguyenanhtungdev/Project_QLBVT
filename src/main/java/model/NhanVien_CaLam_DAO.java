@@ -18,26 +18,44 @@ public class NhanVien_CaLam_DAO {
 		return instance == null ? instance = new NhanVien_CaLam_DAO() : instance;
 	}
 
-	public List<NhanVien_CaLam> getAll() throws SQLException {
+	public List<NhanVien_CaLam> getAll() {
 		String sql = "Select * FROM NhanVien_CaLam";
 
-		Connection con = Database.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-		List<NhanVien_CaLam> list = new ArrayList<>();
-		while (resultSet.next()) {
-			LocalDateTime thoiGianNhanCa = resultSet.getTimestamp("thoiGianNhanCa").toLocalDateTime();
-			LocalDateTime thoiGianKetThucCa = resultSet.getTimestamp("thoiGianKetThucCa").toLocalDateTime();
-			String maNhanVien = resultSet.getString("maNV");
-			String maCaLam = resultSet.getString("maCa");
+			List<NhanVien_CaLam> list = new ArrayList<>();
+			while (resultSet.next()) {
+				LocalDateTime thoiGianNhanCa = resultSet.getTimestamp("thoiGianNhanCa").toLocalDateTime();
+				LocalDateTime thoiGianKetThucCa = resultSet.getTimestamp("thoiGianKetThucCa").toLocalDateTime();
+				String maNhanVien = resultSet.getString("maNV");
+				String maCaLam = resultSet.getString("maCa");
 
-			NhanVien nhanVien = new NhanVien(maNhanVien);
-			CaLam caLam = new CaLam(maCaLam);
+				NhanVien nhanVien = new NhanVien(maNhanVien);
+				CaLam caLam = new CaLam(maCaLam);
 
-			list.add(new NhanVien_CaLam(thoiGianNhanCa, thoiGianKetThucCa, nhanVien, caLam));
+				list.add(new NhanVien_CaLam(thoiGianNhanCa, thoiGianKetThucCa, nhanVien, caLam));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return list;
+		return null;
 	}
 }

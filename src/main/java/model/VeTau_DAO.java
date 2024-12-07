@@ -20,26 +20,44 @@ public class VeTau_DAO {
 		return instance == null ? instance = new VeTau_DAO() : instance;
 	}
 
-	public List<VeTau> getAll() throws SQLException {
+	public List<VeTau> getAll() {
 		String sql = "Select * FROM VeTau";
 
-		Connection con = Database.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-		List<VeTau> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maVeTau = resultSet.getString("maVeTau");
-			boolean loaiVe = resultSet.getBoolean("loaiVe");
-			LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
-			boolean daHuy = resultSet.getBoolean("daHuy");
+			List<VeTau> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maVeTau = resultSet.getString("maVeTau");
+				boolean loaiVe = resultSet.getBoolean("loaiVe");
+				LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
+				boolean daHuy = resultSet.getBoolean("daHuy");
 
-			GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
+				GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
 
-			list.add(new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau));
+				list.add(new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return list;
+		return null;
 	}
 
 	public String getVeTauMax() {
@@ -59,44 +77,71 @@ public class VeTau_DAO {
 		return maVeTau;
 	}
 
-	public VeTau getByMaVeTau(String maVeTau) throws SQLException {
+	public VeTau getByMaVeTau(String maVeTau) {
 		String sql = "SELECT * FROM VeTau WHERE maVeTau = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement preparedStatement = con.prepareStatement(sql);
-		preparedStatement.setString(1, maVeTau);
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maVeTau);
+			resultSet = statement.executeQuery();
 
-		ResultSet resultSet = preparedStatement.executeQuery();
-		if (resultSet.next()) {
-			boolean loaiVe = resultSet.getBoolean("loaiVe");
-			LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
-			boolean daHuy = resultSet.getBoolean("daHuy");
+			if (resultSet.next()) {
+				boolean loaiVe = resultSet.getBoolean("loaiVe");
+				LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
+				boolean daHuy = resultSet.getBoolean("daHuy");
 
-			GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
+				GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
 
-			return new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau);
+				return new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;
 	}
 
-	public boolean add(VeTau veTau) throws SQLException {
+	public boolean add(VeTau veTau) {
 		String sql = "INSERT INTO VeTau (maVeTau, loaiVe, ngayHetHan, daHuy, maGheTau) VALUES (?, ?, ?, ?, ?)";
 
-		Connection con = Database.getInstance().getConnection();
+		Connection con = null;
+		PreparedStatement statement = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, veTau.getMaVeTau());
+			statement.setBoolean(2, veTau.isLoaiVe());
+			statement.setTimestamp(3, Timestamp.valueOf(veTau.getNgayHetHan()));
+			statement.setBoolean(4, veTau.isDaHuy());
+			statement.setString(5, veTau.getGheTau().getMaGheTau());
+			int count = statement.executeUpdate();
 
-		PreparedStatement statement = con.prepareStatement(sql);
+			return count == 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 
-		statement.setString(1, veTau.getMaVeTau());
-		statement.setBoolean(2, veTau.isLoaiVe());
-		statement.setTimestamp(3, Timestamp.valueOf(veTau.getNgayHetHan()));
-		statement.setBoolean(4, veTau.isDaHuy());
-		statement.setString(5, veTau.getGheTau().getMaGheTau());
-
-		int count = statement.executeUpdate();
-
-		return count == 1;
-
+		return false;
 	}
 
 }

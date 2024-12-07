@@ -1,7 +1,5 @@
 package model;
 
-import java.sql.SQLException;
-
 public class ToaTau {
 
 	private String maToaTau;
@@ -31,7 +29,7 @@ public class ToaTau {
 		this.maToaTau = maToaTau;
 	}
 
-	public Tau getTau() throws SQLException {
+	public Tau getTau() {
 		return tau.getTenTau() == null ? Tau_DAO.getInstance().getByMaTau(tau.getMaTau()) : tau;
 	}
 

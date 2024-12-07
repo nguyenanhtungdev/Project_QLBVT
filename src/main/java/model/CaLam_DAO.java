@@ -20,93 +20,138 @@ public class CaLam_DAO {
 		return instance == null ? instance = new CaLam_DAO() : instance;
 	}
 
-	public List<CaLam> getAll() throws SQLException {
+	public List<CaLam> getAll() {
 		String sql = "SELECT * FROM CaLam";
 
-		Connection con = Database.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-		List<CaLam> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maCa = resultSet.getString("maCa");
-			String tenCa = resultSet.getNString("tenCa");
-			LocalTime thoiGianBatDau = resultSet.getTime("thoiGianBatDau").toLocalTime();
-			LocalTime thoiGianKetThuc = resultSet.getTime("thoiGianKetThuc").toLocalTime();
-			String ghiChu = resultSet.getNString("ghiChu");
+			List<CaLam> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maCa = resultSet.getString("maCa");
+				String tenCa = resultSet.getNString("tenCa");
+				LocalTime thoiGianBatDau = resultSet.getTime("thoiGianBatDau").toLocalTime();
+				LocalTime thoiGianKetThuc = resultSet.getTime("thoiGianKetThuc").toLocalTime();
+				String ghiChu = resultSet.getNString("ghiChu");
 
-			list.add(new CaLam(maCa, tenCa, thoiGianBatDau, thoiGianKetThuc, ghiChu));
+				list.add(new CaLam(maCa, tenCa, thoiGianBatDau, thoiGianKetThuc, ghiChu));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-
-		resultSet.close();
-		statement.close();
-		return list;
-	}
-
-	public CaLam getByMaCa(String maCaLam) throws SQLException {
-		String sql = "SELECT * FROM CaLam WHERE maCa = ?";
-
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, maCaLam);
-		ResultSet resultSet = statement.executeQuery();
-
-		if (resultSet.next()) {
-			String tenCa = resultSet.getNString("tenCa");
-			LocalTime thoiGianBatDau = resultSet.getTime("thoiGianBatDau").toLocalTime();
-			LocalTime thoiGianKetThuc = resultSet.getTime("thoiGianKetThuc").toLocalTime();
-			String ghiChu = resultSet.getNString("ghiChu");
-
-			return new CaLam(maCaLam, tenCa, thoiGianBatDau, thoiGianKetThuc, ghiChu);
-		}
-
-		resultSet.close();
-		statement.close();
 		return null;
 	}
 
-	public boolean add(CaLam entity) throws SQLException {
+	public CaLam getByMaCa(String maCaLam) {
+		String sql = "SELECT * FROM CaLam WHERE maCa = ?";
+
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maCaLam);
+			resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				String tenCa = resultSet.getNString("tenCa");
+				LocalTime thoiGianBatDau = resultSet.getTime("thoiGianBatDau").toLocalTime();
+				LocalTime thoiGianKetThuc = resultSet.getTime("thoiGianKetThuc").toLocalTime();
+				String ghiChu = resultSet.getNString("ghiChu");
+
+				return new CaLam(maCaLam, tenCa, thoiGianBatDau, thoiGianKetThuc, ghiChu);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return null;
+	}
+
+	public boolean add(CaLam entity) {
 		String sql = "INSERT INTO CaLam(maCa, tenCa, thoiGianBatDau, thoiGianKetThuc, ghiChu) VALUES(?, ?, ?, ?, ?)";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, entity.getMaCa());
-		statement.setNString(2, entity.getTenCa());
-		statement.setTime(3, Time.valueOf(entity.getThoiGianBatDau()));
-		statement.setTime(4, Time.valueOf(entity.getThoiGianKetThuc()));
-		statement.setNString(5, entity.getGhiChu());
-		int count = statement.executeUpdate();
+		Connection con = null;
+		PreparedStatement statement = null;
 
-		statement.close();
-		return count == 1;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, entity.getMaCa());
+			statement.setNString(2, entity.getTenCa());
+			statement.setTime(3, Time.valueOf(entity.getThoiGianBatDau()));
+			statement.setTime(4, Time.valueOf(entity.getThoiGianKetThuc()));
+			statement.setNString(5, entity.getGhiChu());
+			int count = statement.executeUpdate();
+
+			return count == 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return false;
 	}
 
-	public boolean update(CaLam entity) throws SQLException {
+	public boolean update(CaLam entity) {
 		String sql = "UPDATE CaLam SET tenCa = ?, thoiGianBatDau = ?, thoiGianKetThuc = ?, ghiChu = ? WHERE maCa = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setNString(1, entity.getTenCa());
-		statement.setTime(2, Time.valueOf(entity.getThoiGianBatDau()));
-		statement.setTime(3, Time.valueOf(entity.getThoiGianKetThuc()));
-		statement.setNString(4, entity.getGhiChu());
-		statement.setString(5, entity.getMaCa());
-		int count = statement.executeUpdate();
+		Connection con = null;
+		PreparedStatement statement = null;
 
-		statement.close();
-		return count == 1;
-	}
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setNString(1, entity.getTenCa());
+			statement.setTime(2, Time.valueOf(entity.getThoiGianBatDau()));
+			statement.setTime(3, Time.valueOf(entity.getThoiGianKetThuc()));
+			statement.setNString(4, entity.getGhiChu());
+			statement.setString(5, entity.getMaCa());
+			int count = statement.executeUpdate();
 
-	public boolean delete(CaLam entity) throws SQLException {
-		String sql = "DELETE FROM CaLam WHERE maCa = ?";
+			return count > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, entity.getMaCa());
-		int count = statement.executeUpdate();
-
-		statement.close();
-		return count == 1;
+		return false;
 	}
 
 }

@@ -81,65 +81,99 @@ public class HoaDon_DAO {
 		return hoaDons;
 	}
 
-	public List<HoaDon> getAll() throws SQLException {
+	public List<HoaDon> getAll() {
 		String sql = "SELECT * FROM HoaDon";
 
-		Connection con = Database.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-		List<HoaDon> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maHoaDon = resultSet.getString(1);
-			Timestamp timestamp = resultSet.getTimestamp(2);
-			LocalDateTime ngayLapHoaDon = timestamp.toLocalDateTime();
-			String ghiChu = resultSet.getString(3);
-			float thueVAT = resultSet.getFloat(4);
-			String phuongThucThanhToan = resultSet.getString(5);
-			String loaiHoaDon = resultSet.getString(6);
-			String maKH = resultSet.getString(7);
-			String maNhaGa = resultSet.getString(8);
-			String maNV = resultSet.getString(9);
-			String maThongTinGiuCho = resultSet.getString(10);
+			List<HoaDon> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maHoaDon = resultSet.getString(1);
+				Timestamp timestamp = resultSet.getTimestamp(2);
+				LocalDateTime ngayLapHoaDon = timestamp.toLocalDateTime();
+				String ghiChu = resultSet.getString(3);
+				float thueVAT = resultSet.getFloat(4);
+				String phuongThucThanhToan = resultSet.getString(5);
+				String loaiHoaDon = resultSet.getString(6);
+				String maKH = resultSet.getString(7);
+				String maNhaGa = resultSet.getString(8);
+				String maNV = resultSet.getString(9);
+				String maThongTinGiuCho = resultSet.getString(10);
 
-			KhachHang khachHang = new KhachHang(maKH);
-			ThongTinTram thongTinTram = new ThongTinTram(maNhaGa);
-			NhanVien nhanVien = new NhanVien(maNV);
-			ThongTinGiuCho thongTinGiuCho = new ThongTinGiuCho(maThongTinGiuCho);
+				KhachHang khachHang = new KhachHang(maKH);
+				ThongTinTram thongTinTram = new ThongTinTram(maNhaGa);
+				NhanVien nhanVien = new NhanVien(maNV);
+				ThongTinGiuCho thongTinGiuCho = new ThongTinGiuCho(maThongTinGiuCho);
 
-			list.add(new HoaDon(maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon, khachHang,
-					thongTinTram, nhanVien, thongTinGiuCho));
+				list.add(new HoaDon(maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon,
+						khachHang, thongTinTram, nhanVien, thongTinGiuCho));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return list;
+		return null;
 	}
 
-	public HoaDon getByMaHoaDon(String maHoaDon) throws SQLException {
+	public HoaDon getByMaHoaDon(String maHoaDon) {
 		String sql = "SELECT * FROM HoaDon WHERE maHoaDon = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, maHoaDon);
-		ResultSet resultSet = statement.executeQuery();
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maHoaDon);
+			resultSet = statement.executeQuery();
 
-		if (resultSet.next()) {
-			LocalDateTime ngayLapHoaDon = resultSet.getTimestamp("ngayLapHoaDon").toLocalDateTime();
-			String ghiChu = resultSet.getString("ghiChu");
-			float thueVAT = resultSet.getFloat("thueVAT");
-			String phuongThucThanhToan = resultSet.getString("phuongThucThanhToan");
-			String loaiHoaDon = resultSet.getString("loaiHoaDon");
-			String maKhachHang = resultSet.getString("maKH");
-			String maNhaGa = resultSet.getString("maNhaGa");
-			String maNhanVien = resultSet.getString("maNV");
-			String maThongTinGiuCho = resultSet.getString("maThongTinGiuCho");
+			if (resultSet.next()) {
+				LocalDateTime ngayLapHoaDon = resultSet.getTimestamp("ngayLapHoaDon").toLocalDateTime();
+				String ghiChu = resultSet.getString("ghiChu");
+				float thueVAT = resultSet.getFloat("thueVAT");
+				String phuongThucThanhToan = resultSet.getString("phuongThucThanhToan");
+				String loaiHoaDon = resultSet.getString("loaiHoaDon");
+				String maKhachHang = resultSet.getString("maKH");
+				String maNhaGa = resultSet.getString("maNhaGa");
+				String maNhanVien = resultSet.getString("maNV");
+				String maThongTinGiuCho = resultSet.getString("maThongTinGiuCho");
 
-			KhachHang khachHang = new KhachHang(maKhachHang);
-			ThongTinTram thongTinTram = new ThongTinTram(maNhaGa);
-			NhanVien nhanVien = new NhanVien(maNhanVien);
-			ThongTinGiuCho thongTinGiuCho = new ThongTinGiuCho(maThongTinGiuCho);
+				KhachHang khachHang = new KhachHang(maKhachHang);
+				ThongTinTram thongTinTram = new ThongTinTram(maNhaGa);
+				NhanVien nhanVien = new NhanVien(maNhanVien);
+				ThongTinGiuCho thongTinGiuCho = new ThongTinGiuCho(maThongTinGiuCho);
 
-			return new HoaDon(maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon, khachHang,
-					thongTinTram, nhanVien, thongTinGiuCho);
+				return new HoaDon(maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon, khachHang,
+						thongTinTram, nhanVien, thongTinGiuCho);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;
@@ -311,7 +345,7 @@ public class HoaDon_DAO {
 		return hoaDons;
 	}
 
-	public List<HoaDon> layTTHoaDonTheoDate(LocalDateTime startDate, LocalDateTime endDate) throws SQLException {
+	public List<HoaDon> layTTHoaDonTheoDate(LocalDateTime startDate, LocalDateTime endDate) {
 		List<HoaDon> hoaDons = new ArrayList<>();
 		Connection con = null;
 		PreparedStatement preparedStatement = null;
@@ -358,15 +392,18 @@ public class HoaDon_DAO {
 				hoaDons.add(hoaDon);
 			}
 		} catch (SQLException e) {
-			throw e;
+			e.printStackTrace();
 		} finally {
-			// Đóng kết nối và giải phóng tài nguyên
-			if (resultSet != null)
-				resultSet.close();
-			if (preparedStatement != null)
-				preparedStatement.close();
-			if (con != null)
-				con.close();
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (preparedStatement != null)
+					preparedStatement.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 		return hoaDons;
 	}
@@ -553,6 +590,77 @@ public class HoaDon_DAO {
 			e.printStackTrace();
 		}
 		return thongTinHoaDon;
+	}
+
+	public List<HoaDon> getByFilters(LocalDateTime start, LocalDateTime end, String loaiHoaDon) {
+		String sql = "SELECT * FROM HoaDon";
+		List<Object> values = new ArrayList<>();
+
+		if (start != null && end != null) {
+			sql += " WHERE ngayLapHoaDon BETWEEN ? AND ?";
+			values.add(start);
+			values.add(end);
+		} else if (start != null) {
+			sql += " WHERE ngayLapHoaDon >= ?";
+			values.add(start);
+		} else if (end != null) {
+			sql += " WHERE ngayLapHoaDon <= ?";
+			values.add(end);
+		}
+
+		if (loaiHoaDon != null) {
+			sql += " AND loaiHoaDon = ?";
+			values.add(loaiHoaDon);
+		}
+
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			for (int i = 0; i < values.size(); i++) {
+				statement.setObject(i + 1, values.get(i));
+			}
+			resultSet = statement.executeQuery();
+
+			List<HoaDon> list = new ArrayList<>();
+			if (resultSet.next()) {
+				String maHoaDon = resultSet.getString("maHoaDon");
+				LocalDateTime ngayLapHoaDon = resultSet.getTimestamp("ngayLapHoaDon").toLocalDateTime();
+				String ghiChu = resultSet.getString("ghiChu");
+				float thueVAT = resultSet.getFloat("thueVAT");
+				String phuongThucThanhToan = resultSet.getString("phuongThucThanhToan");
+				loaiHoaDon = resultSet.getString("loaiHoaDon");
+				String maKhachHang = resultSet.getString("maKH");
+				String maNhaGa = resultSet.getString("maNhaGa");
+				String maNhanVien = resultSet.getString("maNV");
+				String maThongTinGiuCho = resultSet.getString("maThongTinGiuCho");
+
+				KhachHang khachHang = new KhachHang(maKhachHang);
+				ThongTinTram thongTinTram = new ThongTinTram(maNhaGa);
+				NhanVien nhanVien = new NhanVien(maNhanVien);
+				ThongTinGiuCho thongTinGiuCho = new ThongTinGiuCho(maThongTinGiuCho);
+
+				list.add(new HoaDon(maHoaDon, ngayLapHoaDon, ghiChu, thueVAT, phuongThucThanhToan, loaiHoaDon,
+						khachHang, thongTinTram, nhanVien, thongTinGiuCho));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return null;
 	}
 
 }

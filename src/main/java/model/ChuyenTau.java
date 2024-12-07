@@ -1,6 +1,5 @@
 package model;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -101,7 +100,7 @@ public class ChuyenTau {
 		this.ghiChu = ghiChu;
 	}
 
-	public GiaVe getGiaVe() throws SQLException {
+	public GiaVe getGiaVe() {
 		return giaVe.getGiaVe() == 0 ? giaVe = GiaVe_DAO.getInstance().getByMaGiaVe(giaVe.getMaGiaVe()) : giaVe;
 	}
 

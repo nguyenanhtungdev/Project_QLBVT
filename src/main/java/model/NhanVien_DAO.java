@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,109 +20,137 @@ public class NhanVien_DAO {
 		return instance == null ? instance = new NhanVien_DAO() : instance;
 	}
 
-	public List<NhanVien> getAll() throws SQLException {
+	public List<NhanVien> getAll() {
 		String sql = "SELECT * FROM NhanVien";
 
-		Connection con = Database.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-		List<NhanVien> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maNV = resultSet.getString(1);
-			String hoTenNV = resultSet.getString(2);
-			LocalDate ngaySinh = resultSet.getDate(3).toLocalDate();
-			String soDienThoai = resultSet.getString(4);
-			String email = resultSet.getString(5);
-			String diaChi = resultSet.getString(6);
-			boolean gioiTinh = resultSet.getBoolean(7);
-			String CCCD = resultSet.getString(8);
-			float heSoLuong = resultSet.getFloat(9);
-			boolean trangThai = resultSet.getBoolean(10);
-			String tenChucVu = resultSet.getString("tenChucVu");
-			LocalDate ngayVaoLam = resultSet.getDate("ngayVaoLam").toLocalDate();
+			List<NhanVien> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maNV = resultSet.getString(1);
+				String hoTenNV = resultSet.getString(2);
+				LocalDate ngaySinh = resultSet.getDate(3).toLocalDate();
+				String soDienThoai = resultSet.getString(4);
+				String email = resultSet.getString(5);
+				String diaChi = resultSet.getString(6);
+				boolean gioiTinh = resultSet.getBoolean(7);
+				String CCCD = resultSet.getString(8);
+				float heSoLuong = resultSet.getFloat(9);
+				boolean trangThai = resultSet.getBoolean(10);
+				String tenChucVu = resultSet.getString("tenChucVu");
+				LocalDate ngayVaoLam = resultSet.getDate("ngayVaoLam").toLocalDate();
 
-			list.add(new NhanVien(maNV, hoTenNV, ngaySinh, soDienThoai, email, diaChi, gioiTinh, CCCD, heSoLuong,
-					trangThai, tenChucVu, ngayVaoLam));
+				list.add(new NhanVien(maNV, hoTenNV, ngaySinh, soDienThoai, email, diaChi, gioiTinh, CCCD, heSoLuong,
+						trangThai, tenChucVu, ngayVaoLam));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return list;
+		return null;
 	}
 
-	public NhanVien getByMaNhanVien(String maNhanVien) throws SQLException {
+	public NhanVien getByMaNhanVien(String maNhanVien) {
 		String sql = "SELECT * FROM NhanVien WHERE maNV = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, maNhanVien);
-		ResultSet resultSet = statement.executeQuery();
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maNhanVien);
+			resultSet = statement.executeQuery();
 
-		if (resultSet.next()) {
-			String maNV = resultSet.getString(1);
-			String hoTenNV = resultSet.getString(2);
-			LocalDate ngaySinh = resultSet.getDate(3).toLocalDate();
-			String soDienThoai = resultSet.getString(4);
-			String email = resultSet.getString(5);
-			String diaChi = resultSet.getString(6);
-			boolean gioiTinh = resultSet.getBoolean(7);
-			String CCCD = resultSet.getString(8);
-			float heSoLuong = resultSet.getFloat(9);
-			boolean trangThai = resultSet.getBoolean(10);
-			String tenChucVu = resultSet.getString("tenChucVu");
-			LocalDate ngayVaoLam = resultSet.getDate("ngayVaoLam").toLocalDate();
+			if (resultSet.next()) {
+				String maNV = resultSet.getString(1);
+				String hoTenNV = resultSet.getString(2);
+				LocalDate ngaySinh = resultSet.getDate(3).toLocalDate();
+				String soDienThoai = resultSet.getString(4);
+				String email = resultSet.getString(5);
+				String diaChi = resultSet.getString(6);
+				boolean gioiTinh = resultSet.getBoolean(7);
+				String CCCD = resultSet.getString(8);
+				float heSoLuong = resultSet.getFloat(9);
+				boolean trangThai = resultSet.getBoolean(10);
+				String tenChucVu = resultSet.getString("tenChucVu");
+				LocalDate ngayVaoLam = resultSet.getDate("ngayVaoLam").toLocalDate();
 
-			return new NhanVien(maNV, hoTenNV, ngaySinh, soDienThoai, email, diaChi, gioiTinh, CCCD, heSoLuong,
-					trangThai, tenChucVu, ngayVaoLam);
+				return new NhanVien(maNV, hoTenNV, ngaySinh, soDienThoai, email, diaChi, gioiTinh, CCCD, heSoLuong,
+						trangThai, tenChucVu, ngayVaoLam);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;
 	}
 
 	public boolean update(NhanVien nhanVien) {
-		System.err.println("UPDATE LẠI HÀM UPDATE TRONG NHANVIEN_DAO");
-		throw new UnsupportedOperationException();
+		String sql = "UPDATE NhanVien SET hoTenNV = ?, ngaySinh = ?, soDienThoai = ?, email = ?, diaChi = ?, gioiTinh = ?, CCCD = ?, heSoLuong = ?, trangThai = ?, tenChucVu = ?, ngayVaoLam = ? WHERE maNV = ?";
 
-//		Connection con = null;
-//		PreparedStatement preparedStatement = null;
-//		String sql = "UPDATE NhanVien SET hoTenNV = ?, ngaySinh = ?, soDienThoai = ?, email = ?, diaChi = ?, gioiTinh = ?, CCCD = ?, heSoLuong = ?, trangThai = ?, maChucVu = ? WHERE maNV = ?";
-//
-//		try {
-//			Database.getInstance();
-//			con = Database.getInstance().getConnection();
-//			preparedStatement = con.prepareStatement(sql);
-//
-//			// Thiết lập các giá trị cho câu lệnh SQL
-//			preparedStatement.setString(1, nhanVien.getHoTenNV());
-//			preparedStatement.setDate(2, java.sql.Date.valueOf(nhanVien.getNgaySinh()));
-//			preparedStatement.setString(3, nhanVien.getSoDienThoai());
-//			preparedStatement.setString(4, nhanVien.getEmail());
-//			preparedStatement.setString(5, nhanVien.getDiaChi());
-//			preparedStatement.setBoolean(6, nhanVien.isGioiTinh());
-//			preparedStatement.setString(7, nhanVien.getCCCD());
-//			preparedStatement.setFloat(8, nhanVien.getHeSoLuong());
-//			preparedStatement.setBoolean(9, nhanVien.isTrangThai());
-//			preparedStatement.setString(10, nhanVien.getChucVu().getMaChucVu());
-//			preparedStatement.setString(11, nhanVien.getMaNV());
-//
-//			// Thực thi câu lệnh SQL
-//			int rowsUpdated = preparedStatement.executeUpdate();
-//
-//			// Trả về true nếu có hàng được cập nhật
-//			return rowsUpdated > 0;
-//
-//		} catch (SQLException e) {
-//			e.printStackTrace();
-//			return false;
-//		} finally {
-//			try {
-//				if (preparedStatement != null)
-//					preparedStatement.close();
-//				if (con != null)
-//					con.close();
-//			} catch (SQLException e) {
-//				e.printStackTrace();
-//			}
-//		}
+		Connection con = null;
+		PreparedStatement statement = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+
+			statement.setString(1, nhanVien.getHoTenNV());
+			statement.setDate(2, java.sql.Date.valueOf(nhanVien.getNgaySinh()));
+			statement.setString(3, nhanVien.getSoDienThoai());
+			statement.setString(4, nhanVien.getEmail());
+			statement.setString(5, nhanVien.getDiaChi());
+			statement.setBoolean(6, nhanVien.isGioiTinh());
+			statement.setString(7, nhanVien.getCCCD());
+			statement.setFloat(8, nhanVien.getHeSoLuong());
+			statement.setBoolean(9, nhanVien.isTrangThai());
+			statement.setString(10, nhanVien.getTenChucVu());
+			statement.setDate(11, Date.valueOf(nhanVien.getNgayVaoLam()));
+			statement.setString(12, nhanVien.getMaNV());
+			int rowsUpdated = statement.executeUpdate();
+
+			return rowsUpdated > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null)
+					statement.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return false;
 	}
 
 }

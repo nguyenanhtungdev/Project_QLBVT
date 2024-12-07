@@ -1,6 +1,5 @@
 package model;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class TaiKhoan {
@@ -89,7 +88,7 @@ public class TaiKhoan {
 		}
 	}
 
-	public NhanVien getNhanVien() throws SQLException {
+	public NhanVien getNhanVien() {
 		return nhanVien.getHoTenNV() == null ? NhanVien_DAO.getInstance().getByMaNhanVien(nhanVien.getMaNV())
 				: nhanVien;
 	}

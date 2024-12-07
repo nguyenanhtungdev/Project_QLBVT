@@ -1,7 +1,5 @@
 package model;
 
-import java.sql.SQLException;
-
 public class GheTau {
 
 	private String maGheTau;
@@ -77,7 +75,7 @@ public class GheTau {
 		}
 	}
 
-	public ToaTau getToaTau() throws SQLException {
+	public ToaTau getToaTau() {
 		return toaTau.getLoaiToa() == null ? ToaTau_DAO.getInstance().getByMaToaTau(toaTau.getMaToaTau()) : toaTau;
 	}
 

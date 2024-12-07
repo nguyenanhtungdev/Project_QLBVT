@@ -1,6 +1,5 @@
 package model;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -111,7 +110,7 @@ public class HoaDon {
 		this.loaiHoaDon = loaiHoaDon;
 	}
 
-	public KhachHang getKhachHang() throws SQLException {
+	public KhachHang getKhachHang() {
 		return khachHang.getHoTen() == null ? KhachHang_DAO.getInstance().getByMaKhachHang(khachHang.getMaKhachHang())
 				: khachHang;
 	}
@@ -120,7 +119,7 @@ public class HoaDon {
 		this.khachHang = khachHang;
 	}
 
-	public ThongTinTram getThongTinTram() throws SQLException {
+	public ThongTinTram getThongTinTram() {
 		return thongTinTram.getTenNhaGa() == null
 				? ThongTinTram_DAO.getInstance().getByMaNhaGa(thongTinTram.getMaNhaGa())
 				: thongTinTram;
@@ -130,7 +129,7 @@ public class HoaDon {
 		this.thongTinTram = thongTinTram;
 	}
 
-	public NhanVien getNhanVien() throws SQLException {
+	public NhanVien getNhanVien() {
 		return nhanVien;
 	}
 
@@ -138,7 +137,7 @@ public class HoaDon {
 		this.nhanVien = nhanVien;
 	}
 
-	public ThongTinGiuCho getThongTinGiuCho() throws SQLException {
+	public ThongTinGiuCho getThongTinGiuCho() {
 		// TODO implement DAO for ThongTinGiuCho
 		return thongTinGiuCho;
 	}

@@ -1,6 +1,5 @@
 package model;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class NhanVien_CaLam {
@@ -44,7 +43,7 @@ public class NhanVien_CaLam {
 		this.thoiGianKetThucCa = thoiGianKetThucCa;
 	}
 
-	public NhanVien getNhanVien() throws SQLException {
+	public NhanVien getNhanVien() {
 		return nhanVien.getHoTenNV() == null ? NhanVien_DAO.getInstance().getByMaNhanVien(nhanVien.getMaNV())
 				: nhanVien;
 	}
@@ -53,7 +52,7 @@ public class NhanVien_CaLam {
 		this.nhanVien = nhanVien;
 	}
 
-	public CaLam getCaLam() throws SQLException {
+	public CaLam getCaLam() {
 		return caLam.getTenCa() == null ? CaLam_DAO.getInstance().getByMaCa(caLam.getMaCa()) : caLam;
 	}
 

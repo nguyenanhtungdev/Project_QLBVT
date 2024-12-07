@@ -1,7 +1,5 @@
 package model;
 
-import java.sql.SQLException;
-
 public class ChiTiet_HoaDon {
 
 	private int soLuong;
@@ -38,7 +36,7 @@ public class ChiTiet_HoaDon {
 		this.soLuong = soLuong;
 	}
 
-	public HoaDon getHoaDon() throws SQLException {
+	public HoaDon getHoaDon() {
 		return hoaDon.getKhachHang() == null ? hoaDon = HoaDon_DAO.getInstance().getByMaHoaDon(hoaDon.getMaHoaDon())
 				: hoaDon;
 	}
@@ -47,7 +45,7 @@ public class ChiTiet_HoaDon {
 		this.hoaDon = hoaDon;
 	}
 
-	public VeTau getVeTau() throws SQLException {
+	public VeTau getVeTau() {
 		return veTau.getGheTau() == null ? veTau = VeTau_DAO.getInstance().getByMaVeTau(veTau.getMaVeTau()) : veTau;
 	}
 
@@ -55,7 +53,7 @@ public class ChiTiet_HoaDon {
 		this.veTau = veTau;
 	}
 
-	public KhuyenMai getKhuyenMai() throws SQLException {
+	public KhuyenMai getKhuyenMai() {
 		return (khuyenMai != null && khuyenMai.getTenKhuyenMai() == null)
 				? khuyenMai = KhuyenMai_DAO.getInstance().getByMaKhuyenMai(khuyenMai.getMaKhuyenMai())
 				: khuyenMai;

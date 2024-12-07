@@ -18,50 +18,84 @@ public class ToaTau_DAO {
 		return instance == null ? instance = new ToaTau_DAO() : instance;
 	}
 
-	public List<ToaTau> getAll() throws SQLException {
+	public List<ToaTau> getAll() {
 		String sql = "Select * FROM ToaTau";
 
-		Connection con = Database.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-		List<ToaTau> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maToaTau = resultSet.getString(1);
-			String tenToaTau = resultSet.getString(2);
-			int soThuTuToa = resultSet.getInt(3);
-			String loaiToa = resultSet.getString(4);
-			int soLuongGhe = resultSet.getInt(5);
-			boolean trangThai = resultSet.getBoolean(6);
-			String maTau = resultSet.getString(7);
+			List<ToaTau> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maToaTau = resultSet.getString(1);
+				String tenToaTau = resultSet.getString(2);
+				int soThuTuToa = resultSet.getInt(3);
+				String loaiToa = resultSet.getString(4);
+				int soLuongGhe = resultSet.getInt(5);
+				boolean trangThai = resultSet.getBoolean(6);
+				String maTau = resultSet.getString(7);
 
-			Tau tau = new Tau(maTau);
+				Tau tau = new Tau(maTau);
 
-			list.add(new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau));
+				list.add(new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return list;
+		return null;
 	}
 
-	public ToaTau getByMaToaTau(String maToaTau) throws SQLException {
+	public ToaTau getByMaToaTau(String maToaTau) {
 		String sql = "Select * FROM ToaTau WHERE maToaTau = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, maToaTau);
-		ResultSet resultSet = statement.executeQuery();
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maToaTau);
+			resultSet = statement.executeQuery();
 
-		if (resultSet.next()) {
-			String tenToaTau = resultSet.getString(2);
-			int soThuTuToa = resultSet.getInt(3);
-			String loaiToa = resultSet.getString(4);
-			int soLuongGhe = resultSet.getInt(5);
-			boolean trangThai = resultSet.getBoolean(6);
-			String maTau = resultSet.getString(7);
+			if (resultSet.next()) {
+				String tenToaTau = resultSet.getString(2);
+				int soThuTuToa = resultSet.getInt(3);
+				String loaiToa = resultSet.getString(4);
+				int soLuongGhe = resultSet.getInt(5);
+				boolean trangThai = resultSet.getBoolean(6);
+				String maTau = resultSet.getString(7);
 
-			Tau tau = new Tau(maTau);
+				Tau tau = new Tau(maTau);
 
-			return new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau);
+				return new ToaTau(maToaTau, tenToaTau, soThuTuToa, loaiToa, soLuongGhe, trangThai, tau);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;

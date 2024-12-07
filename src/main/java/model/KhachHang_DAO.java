@@ -19,48 +19,83 @@ public class KhachHang_DAO {
 		return instance == null ? instance = new KhachHang_DAO() : instance;
 	}
 
-	public List<KhachHang> getAll() throws SQLException {
-		Connection con = Database.getInstance().getConnection();
+	public List<KhachHang> getAll() {
 		String sql = "SELECT * FROM KhachHang";
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
 
-		List<KhachHang> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maKhachHang = resultSet.getString(1);
-			String hoTen = resultSet.getString(2);
-			String soDienThoai = resultSet.getString(3);
-			String email = resultSet.getString(4);
-			boolean gioiTinh = resultSet.getBoolean(5);
-			String CCCD = resultSet.getString(6);
-			LocalDate ngaySinh = resultSet.getDate(7).toLocalDate();
-			String loaiKHStr = resultSet.getString(8);
-			KhachHang.LoaiKhachHang loaiKH = KhachHang.LoaiKhachHang.valueOf(loaiKHStr);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-			list.add(new KhachHang(maKhachHang, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKH));
+			List<KhachHang> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maKhachHang = resultSet.getString(1);
+				String hoTen = resultSet.getString(2);
+				String soDienThoai = resultSet.getString(3);
+				String email = resultSet.getString(4);
+				boolean gioiTinh = resultSet.getBoolean(5);
+				String CCCD = resultSet.getString(6);
+				LocalDate ngaySinh = resultSet.getDate(7).toLocalDate();
+				String loaiKHStr = resultSet.getString(8);
+				KhachHang.LoaiKhachHang loaiKH = KhachHang.LoaiKhachHang.valueOf(loaiKHStr);
+
+				list.add(new KhachHang(maKhachHang, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKH));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null)
+					statement.close();
+				if (resultSet != null)
+					resultSet.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return list;
+		return null;
 	}
 
-	public KhachHang getByMaKhachHang(String maKhachHang) throws SQLException {
+	public KhachHang getByMaKhachHang(String maKhachHang) {
 		String sql = "SELECT * FROM KhachHang WHERE maKhachHang = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, maKhachHang);
-		ResultSet resultSet = statement.executeQuery();
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maKhachHang);
+			resultSet = statement.executeQuery();
 
-		if (resultSet.next()) {
-			String hoTen = resultSet.getString("hoTen");
-			String soDienThoai = resultSet.getString("soDienThoai");
-			String email = resultSet.getString("email");
-			boolean gioiTinh = resultSet.getBoolean("gioiTinh");
-			String CCCD = resultSet.getString("CCCD");
-			LocalDate ngaySinh = resultSet.getDate("ngaySinh").toLocalDate();
-			KhachHang.LoaiKhachHang loaiKH = KhachHang.LoaiKhachHang.valueOf(resultSet.getString("loaiKH"));
+			if (resultSet.next()) {
+				String hoTen = resultSet.getString("hoTen");
+				String soDienThoai = resultSet.getString("soDienThoai");
+				String email = resultSet.getString("email");
+				boolean gioiTinh = resultSet.getBoolean("gioiTinh");
+				String CCCD = resultSet.getString("CCCD");
+				LocalDate ngaySinh = resultSet.getDate("ngaySinh").toLocalDate();
+				KhachHang.LoaiKhachHang loaiKH = KhachHang.LoaiKhachHang.valueOf(resultSet.getString("loaiKH"));
 
-			return new KhachHang(maKhachHang, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKH);
+				return new KhachHang(maKhachHang, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKH);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null)
+					statement.close();
+				if (resultSet != null)
+					resultSet.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;

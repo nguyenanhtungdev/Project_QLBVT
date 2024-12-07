@@ -19,43 +19,77 @@ public class GiaVe_DAO {
 		return instance == null ? instance = new GiaVe_DAO() : instance;
 	}
 
-	public List<GiaVe> getAll() throws SQLException {
+	public List<GiaVe> getAll() {
 		String sql = "SELECT * FROM GiaVe";
 
-		Connection con = Database.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-		List<GiaVe> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maGiaVe = resultSet.getString(1);
-			double giaVe = resultSet.getDouble(2);
-			float tiLeTangGia = resultSet.getFloat(3);
-			LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
-			String ghiChu = resultSet.getString(5);
+			List<GiaVe> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maGiaVe = resultSet.getString(1);
+				double giaVe = resultSet.getDouble(2);
+				float tiLeTangGia = resultSet.getFloat(3);
+				LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
+				String ghiChu = resultSet.getString(5);
 
-			list.add(new GiaVe(maGiaVe, giaVe, tiLeTangGia, ngayCapNhap, ghiChu));
+				list.add(new GiaVe(maGiaVe, giaVe, tiLeTangGia, ngayCapNhap, ghiChu));
+			}
+
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		return list;
+		return null;
 	}
 
-	public GiaVe getByMaGiaVe(String maGiaVe) throws SQLException {
+	public GiaVe getByMaGiaVe(String maGiaVe) {
 		String sql = "SELECT * FROM GiaVe WHERE maGiaVe = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement preparedStatement = con.prepareStatement(sql);
-		preparedStatement.setString(1, maGiaVe);
-		ResultSet resultSet = preparedStatement.executeQuery();
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maGiaVe);
+			resultSet = statement.executeQuery();
 
-		if (resultSet.next()) {
-			String maGiaVeResult = resultSet.getString(1);
-			double giaVeResult = resultSet.getDouble(2);
-			float tiLeTangGia = resultSet.getFloat(3);
-			LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
-			String ghiChu = resultSet.getString(5);
+			if (resultSet.next()) {
+				String maGiaVeResult = resultSet.getString(1);
+				double giaVeResult = resultSet.getDouble(2);
+				float tiLeTangGia = resultSet.getFloat(3);
+				LocalDateTime ngayCapNhap = resultSet.getTimestamp(4).toLocalDateTime();
+				String ghiChu = resultSet.getString(5);
 
-			return new GiaVe(maGiaVeResult, giaVeResult, tiLeTangGia, ngayCapNhap, ghiChu);
+				return new GiaVe(maGiaVeResult, giaVeResult, tiLeTangGia, ngayCapNhap, ghiChu);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;

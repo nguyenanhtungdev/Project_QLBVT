@@ -22,115 +22,191 @@ public class ChuyenTau_DAO {
 		return instance == null ? instance = new ChuyenTau_DAO() : instance;
 	}
 
-	public List<ChuyenTau> getAll() throws SQLException {
+	public List<ChuyenTau> getAll() {
 		String sql = "SELECT * FROM ChuyenTau";
 
-		Connection con = Database.getInstance().getConnection();
-		Statement statement = con.createStatement();
-		ResultSet resultSet = statement.executeQuery(sql);
+		Connection con = null;
+		Statement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.createStatement();
+			resultSet = statement.executeQuery(sql);
 
-		List<ChuyenTau> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maChuyenTau = resultSet.getString("maChuyenTau");
-			String gaKhoiHanh = resultSet.getNString("gaKhoiHanh");
-			String gaDen = resultSet.getNString("gaDen");
-			LocalDateTime thoiGianKhoiHanh = resultSet.getTimestamp("thoiGianKhoiHanh").toLocalDateTime();
-			LocalDateTime thoiGianDuKien = resultSet.getTimestamp("thoiGianDuKien").toLocalDateTime();
-			String ghiChu = resultSet.getNString("ghiChu");
+			List<ChuyenTau> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maChuyenTau = resultSet.getString("maChuyenTau");
+				String gaKhoiHanh = resultSet.getNString("gaKhoiHanh");
+				String gaDen = resultSet.getNString("gaDen");
+				LocalDateTime thoiGianKhoiHanh = resultSet.getTimestamp("thoiGianKhoiHanh").toLocalDateTime();
+				LocalDateTime thoiGianDuKien = resultSet.getTimestamp("thoiGianDuKien").toLocalDateTime();
+				String ghiChu = resultSet.getNString("ghiChu");
 
-			GiaVe giaVe = new GiaVe(resultSet.getString("maGiaVe"));
+				GiaVe giaVe = new GiaVe(resultSet.getString("maGiaVe"));
 
-			list.add(new ChuyenTau(maChuyenTau, gaKhoiHanh, gaDen, thoiGianKhoiHanh, thoiGianDuKien, ghiChu, giaVe));
-		}
+				list.add(
+						new ChuyenTau(maChuyenTau, gaKhoiHanh, gaDen, thoiGianKhoiHanh, thoiGianDuKien, ghiChu, giaVe));
+			}
 
-		return list;
-	}
-
-	public ChuyenTau getByMaChuyenTau(String id) throws SQLException {
-		String sql = "SELECT * FROM ChuyenTau WHERE maChuyenTau = ?";
-
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, id);
-		ResultSet resultSet = statement.executeQuery();
-
-		if (resultSet.next()) {
-			String maChuyenTau = resultSet.getString("maChuyenTau");
-			String gaKhoiHanh = resultSet.getNString("gaKhoiHanh");
-			String gaDen = resultSet.getNString("gaDen");
-			LocalDateTime thoiGianKhoiHanh = resultSet.getTimestamp("thoiGianKhoiHanh").toLocalDateTime();
-			LocalDateTime thoiGianDuKien = resultSet.getTimestamp("thoiGianDuKien").toLocalDateTime();
-			String ghiChu = resultSet.getNString("ghiChu");
-
-			GiaVe giaVe = new GiaVe(resultSet.getString("maGiaVe"));
-
-			return new ChuyenTau(maChuyenTau, gaKhoiHanh, gaDen, thoiGianKhoiHanh, thoiGianDuKien, ghiChu, giaVe);
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;
 	}
 
-	public boolean add(ChuyenTau entity) throws SQLException {
+	public ChuyenTau getByMaChuyenTau(String id) {
+		String sql = "SELECT * FROM ChuyenTau WHERE maChuyenTau = ?";
+
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, id);
+			resultSet = statement.executeQuery();
+
+			if (resultSet.next()) {
+				String maChuyenTau = resultSet.getString("maChuyenTau");
+				String gaKhoiHanh = resultSet.getNString("gaKhoiHanh");
+				String gaDen = resultSet.getNString("gaDen");
+				LocalDateTime thoiGianKhoiHanh = resultSet.getTimestamp("thoiGianKhoiHanh").toLocalDateTime();
+				LocalDateTime thoiGianDuKien = resultSet.getTimestamp("thoiGianDuKien").toLocalDateTime();
+				String ghiChu = resultSet.getNString("ghiChu");
+
+				GiaVe giaVe = new GiaVe(resultSet.getString("maGiaVe"));
+
+				return new ChuyenTau(maChuyenTau, gaKhoiHanh, gaDen, thoiGianKhoiHanh, thoiGianDuKien, ghiChu, giaVe);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return null;
+	}
+
+	public boolean add(ChuyenTau entity) {
 		String sql = "INSERT INTO ChuyenTau(maChuyenTau, gaKhoiHanh, gaDen, thoiGianKhoiHanh, thoiGianDuKien, ghiChu, maGiaVe) VALUES(?, ?, ?, ?, ?, ?, ?)";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setString(1, entity.getMaChuyenTau());
-		statement.setNString(2, entity.getGaKhoiHanh());
-		statement.setNString(3, entity.getGaDen());
-		statement.setTimestamp(4, Timestamp.valueOf(entity.getThoiGianKhoiHanh()));
-		statement.setTimestamp(5, Timestamp.valueOf(entity.getThoiGianDuKien()));
-		statement.setNString(6, entity.getGhiChu());
-		statement.setString(7, entity.getGiaVe().getMaGiaVe());
-		int count = statement.executeUpdate();
+		Connection con = null;
+		PreparedStatement statement = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, entity.getMaChuyenTau());
+			statement.setNString(2, entity.getGaKhoiHanh());
+			statement.setNString(3, entity.getGaDen());
+			statement.setTimestamp(4, Timestamp.valueOf(entity.getThoiGianKhoiHanh()));
+			statement.setTimestamp(5, Timestamp.valueOf(entity.getThoiGianDuKien()));
+			statement.setNString(6, entity.getGhiChu());
+			statement.setString(7, entity.getGiaVe().getMaGiaVe());
+			int count = statement.executeUpdate();
 
-		return count == 0;
+			return count == 1;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return false;
 	}
 
-	public boolean update(ChuyenTau entity) throws SQLException {
+	public boolean update(ChuyenTau entity) {
 		String sql = "UPDATE ChuyenTau SET gaKhoiHanh = ?, gaDen = ?, thoiGianKhoiHanh = ?, thoiGianDuKien = ?, ghiChu = ?, maGiaVe = ? WHERE maChuyenTau = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement statement = con.prepareStatement(sql);
-		statement.setNString(1, entity.getGaKhoiHanh());
-		statement.setNString(2, entity.getGaDen());
-		statement.setTimestamp(3, Timestamp.valueOf(entity.getThoiGianKhoiHanh()));
-		statement.setTimestamp(4, Timestamp.valueOf(entity.getThoiGianDuKien()));
-		statement.setNString(5, entity.getGhiChu());
-		statement.setNString(6, entity.getGiaVe().getMaGiaVe());
-		statement.setString(8, entity.getMaChuyenTau());
-		int count = statement.executeUpdate();
+		Connection con = null;
+		PreparedStatement statement = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setNString(1, entity.getGaKhoiHanh());
+			statement.setNString(2, entity.getGaDen());
+			statement.setTimestamp(3, Timestamp.valueOf(entity.getThoiGianKhoiHanh()));
+			statement.setTimestamp(4, Timestamp.valueOf(entity.getThoiGianDuKien()));
+			statement.setNString(5, entity.getGhiChu());
+			statement.setNString(6, entity.getGiaVe().getMaGiaVe());
+			statement.setString(8, entity.getMaChuyenTau());
+			int count = statement.executeUpdate();
 
-		return count == 1;
+			return count > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return false;
 	}
 
-	public ArrayList<ChuyenTau> timKiemChuyenTau(String gaDi, String gaDen, String ngayDi) throws SQLException {
+	public ArrayList<ChuyenTau> timKiemChuyenTau(String gaDi, String gaDen, String ngayDi) {
 		String sql = "SELECT * FROM ChuyenTau WHERE gaKhoiHanh = ? AND gaDen = ? AND CONVERT(date, thoiGianKhoiHanh) = ?";
 
-		Connection con = Database.getInstance().getConnection();
-		PreparedStatement preparedStatement = con.prepareStatement(sql);
-		preparedStatement.setString(1, gaDi);
-		preparedStatement.setString(2, gaDen);
-		preparedStatement.setString(3, ngayDi);
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, gaDi);
+			statement.setString(2, gaDen);
+			statement.setString(3, ngayDi);
+			resultSet = statement.executeQuery();
 
-		ResultSet resultSet = preparedStatement.executeQuery();
+			ArrayList<ChuyenTau> list = new ArrayList<>();
+			while (resultSet.next()) {
+				String maChuyenTau = resultSet.getString("maChuyenTau");
+				String gaKhoiHanh = resultSet.getNString("gaKhoiHanh");
+				String gaDenResult = resultSet.getNString("gaDen");
+				LocalDateTime thoiGianKhoiHanh = resultSet.getTimestamp("thoiGianKhoiHanh").toLocalDateTime();
+				LocalDateTime thoiGianDuKien = resultSet.getTimestamp("thoiGianDuKien").toLocalDateTime();
+				String ghiChu = resultSet.getNString("ghiChu");
+				String maGiaVe = resultSet.getString("maGiaVe");
 
-		ArrayList<ChuyenTau> list = new ArrayList<>();
-		while (resultSet.next()) {
-			String maChuyenTau = resultSet.getString("maChuyenTau");
-			String gaKhoiHanh = resultSet.getNString("gaKhoiHanh");
-			String gaDenResult = resultSet.getNString("gaDen");
-			LocalDateTime thoiGianKhoiHanh = resultSet.getTimestamp("thoiGianKhoiHanh").toLocalDateTime();
-			LocalDateTime thoiGianDuKien = resultSet.getTimestamp("thoiGianDuKien").toLocalDateTime();
-			String ghiChu = resultSet.getNString("ghiChu");
-			String maGiaVe = resultSet.getString("maGiaVe");
+				GiaVe giaVe = new GiaVe(maGiaVe);
 
-			GiaVe giaVe = new GiaVe(maGiaVe);
-
-			list.add(new ChuyenTau(maChuyenTau, gaKhoiHanh, gaDenResult, thoiGianKhoiHanh, thoiGianDuKien, ghiChu,
-					giaVe));
+				list.add(new ChuyenTau(maChuyenTau, gaKhoiHanh, gaDenResult, thoiGianKhoiHanh, thoiGianDuKien, ghiChu,
+						giaVe));
+			}
+			return list;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
-		return list;
+
+		return null;
+
 	}
 
 	public Map<String, Integer> layThongTinGhe(String maChuyenTau) {
