@@ -35,7 +35,8 @@ public class ChiTiet_HoaDon_DAO {
 				int soLuong = resultSet.getInt("soLuong");
 
 				HoaDon hoaDon = new HoaDon(resultSet.getString(2));
-				KhuyenMai khuyenMai = new KhuyenMai(resultSet.getString(3));
+				String maKhuyenMai = resultSet.getString(3);
+				KhuyenMai khuyenMai = maKhuyenMai != null ? new KhuyenMai(maKhuyenMai) : null;
 				VeTau veTau = new VeTau(resultSet.getString(4));
 
 				list.add(new ChiTiet_HoaDon(soLuong, hoaDon, khuyenMai, veTau));

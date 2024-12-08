@@ -413,14 +413,18 @@ public class QuanLy_Controller {
 				continue;
 			}
 			tongTien += giaVe.getGiaVe();
-			String maKhuyenMai = ctHD.getKhuyenMai().getMaKhuyenMai();
-			if (maKhuyenMai != null && !maKhuyenMai.isEmpty()) {
-				KhuyenMai khuyenMai = khuyenMaiDAO.getByMaKhuyenMai(maKhuyenMai);
-				if (khuyenMai != null) {
-					double giamGia = khuyenMai.getGiamGia();
-					tongTienKhuyenMai += giamGia;
-				}
+			KhuyenMai khuyenMai = ctHD.getKhuyenMai();
+			if (khuyenMai != null) {
+			    String maKhuyenMai = khuyenMai.getMaKhuyenMai();
+			    if (maKhuyenMai != null && !maKhuyenMai.isEmpty()) {
+			        KhuyenMai khuyenMaiInfo = khuyenMaiDAO.getByMaKhuyenMai(maKhuyenMai);
+			        if (khuyenMaiInfo != null) {
+			            double giamGia = khuyenMaiInfo.getGiamGia();
+			            tongTienKhuyenMai += giamGia;
+			        }
+			    }
 			}
+
 		}
 		HoaDon hoaDon = hoaDonDAO.layTTHoaDonTheoMa(maHD);
 		double thueVAT = hoaDon.getThueVAT();
