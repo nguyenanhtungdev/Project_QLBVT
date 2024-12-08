@@ -290,16 +290,19 @@ public class QuanLyTau_View extends View {
 		tableTau.setShowGrid(true);
 		tableTau.setGridColor(new Color(225, 225, 225));
 		tableTau.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+		tableTau.getTableHeader().setFont(new Font("Arial", Font.BOLD, 13));
+		Font font = new Font("Arial", Font.PLAIN, 13); 
+		tableTau.setFont(font);
 		tableTau.getColumnModel().getColumn(0).setPreferredWidth(20);
 		tableTau.getColumnModel().getColumn(1).setPreferredWidth(50);
-		tableTau.getColumnModel().getColumn(2).setPreferredWidth(200);
-		tableTau.getColumnModel().getColumn(3).setPreferredWidth(20);
-		tableTau.getColumnModel().getColumn(4).setPreferredWidth(70);
-		tableTau.getColumnModel().getColumn(5).setPreferredWidth(150);
-		tableTau.getColumnModel().getColumn(6).setPreferredWidth(80);
+		tableTau.getColumnModel().getColumn(2).setPreferredWidth(170);
+		tableTau.getColumnModel().getColumn(3).setPreferredWidth(30);
+		tableTau.getColumnModel().getColumn(4).setPreferredWidth(80);
+		tableTau.getColumnModel().getColumn(5).setPreferredWidth(165);
+		tableTau.getColumnModel().getColumn(6).setPreferredWidth(100);
 		tableTau.getColumnModel().getColumn(7).setPreferredWidth(70);
-		tableTau.getColumnModel().getColumn(8).setPreferredWidth(90);
-		tableTau.getColumnModel().getColumn(9).setPreferredWidth(200);
+		tableTau.getColumnModel().getColumn(8).setPreferredWidth(50);
+		tableTau.getColumnModel().getColumn(9).setPreferredWidth(170);
 		tablePanelTau = new JScrollPane(tableTau);
 		tableTau.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableTau.getTableHeader().setReorderingAllowed(false);
@@ -323,6 +326,9 @@ public class QuanLyTau_View extends View {
 		tableTau.getColumnModel().getColumn(0).setPreferredWidth(20); // STT
 		tablePanelTTau = new JScrollPane(tableTTau);
 		tableTTau.setRowHeight(30);
+		tableTTau.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+		Font font1 = new Font("Arial", Font.PLAIN, 16); 
+		tableTTau.setFont(font1);
 		tableTTau.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableTTau.getTableHeader().setReorderingAllowed(false);
 
@@ -453,6 +459,8 @@ public class QuanLyTau_View extends View {
 		tableTGhe.getColumnModel().getColumn(0).setPreferredWidth(20); // STT
 		tablePanelGhe = new JScrollPane(tableTGhe);
 		tableTGhe.setRowHeight(30);
+		tableTGhe.getTableHeader().setFont(new Font("Arial", Font.BOLD, 16));
+		tableTGhe.setFont(font1);
 		tableTGhe.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableTGhe.getTableHeader().setReorderingAllowed(false);
 		panel_TableGhe.add(tablePanelGhe);
