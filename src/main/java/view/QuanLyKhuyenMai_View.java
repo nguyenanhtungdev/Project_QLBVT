@@ -414,6 +414,9 @@ public class QuanLyKhuyenMai_View extends View {
 		tableKM.setGridColor(new Color(225, 225, 225));
 		tableKM.getTableHeader().setFont(headerFont);
 		tableKM.setFont(new Font("Arial", Font.PLAIN, 16));
+		tableKM.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
+		Font font1 = new Font("Arial", Font.PLAIN, 14); 
+		tableKM.setFont(font1);
 		tableKM.getColumnModel().getColumn(0).setPreferredWidth(5);
 		tableKM.getColumnModel().getColumn(1).setPreferredWidth(90);
 		tableKM.getColumnModel().getColumn(2).setPreferredWidth(150);
