@@ -15,16 +15,13 @@ public class HienThi_Controller {
 	private static HienThi_Controller instance;
 
 	public static HienThi_Controller getInstance() {
-		if (instance == null)
-			instance = new HienThi_Controller();
-		return instance;
+		return instance == null ? instance = new HienThi_Controller() : instance;
 	}
 
 	private HomeView view = new HomeView();
 
 	public HienThi_Controller() {
 		ArrayList<View> dsViewBanVe = BanVeTau_Controller.getInstance().getViewList();
-
 		ArrayList<View> dsViewQuanLy = QuanLy_Controller.getInstance().getViewList();
 		ArrayList<View> dsViewThongKe = ThongKe_Controller.getInstance().getViewList();
 
@@ -61,7 +58,7 @@ public class HienThi_Controller {
 				} else if (obj == view.getLbl_ThongKe()) {
 					view.showView(dsViewThongKe.get(0).getName());
 					view.showLeft_Menu("ThongKe");
-					ThongKe_Controller.getInstance().loadThongKe();
+					ThongKe_Controller.getInstance().refreshData();
 				}
 			}
 		});
