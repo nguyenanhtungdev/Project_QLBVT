@@ -1,121 +1,104 @@
 package controller;
 
-import java.awt.event.ActionEvent;
-import java.sql.SQLException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.stream.Stream;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+import javax.swing.Timer;
 
 import model.ChiTiet_HoaDon;
 import model.ChiTiet_HoaDon_DAO;
-import model.ChuyenTau;
-import model.ChuyenTau_DAO;
-import model.GiaVe;
-import model.GiaVe_DAO;
 import model.HoaDon;
 import model.HoaDon_DAO;
-import model.KhuyenMai;
-import model.KhuyenMai_DAO;
-import model.ThongKeNgay;
-import model.ThongKeTuan;
-import model.TrangThaiVeTau;
-import model.VeTau;
-import model.VeTau_DAO;
+import model.StatisticData;
+import model.TieuChiThongKe;
+import model.TieuChiThongKe.StatisticType;
 import util.PrinterUtils;
-import view.KetQuaThongKe_View;
 import view.View;
-import view.TaoMoi_View;
-import view.TongQuan_View;
+import view.ThongKeTaoMoi_View;
+import view.ThongKeTongQuan_View;
 
 public class ThongKe_Controller {
 
 	private static ThongKe_Controller instance;
+	private ArrayList<View> viewList;
+	private ThongKeTongQuan_View tongQuanView;
+	private Timer timerToday;
 
 	public static ThongKe_Controller getInstance() {
-		if (instance == null)
-			instance = new ThongKe_Controller();
-		return instance;
-	}
-
-	private ArrayList<View> pageList;
-	private TongQuan_View tongQuanPage;
-	private TaoMoi_View taoMoiPage;
-	private KetQuaThongKe_View ketQuaThongKePage;
-
-	public ArrayList<View> getViewList() {
-		return pageList;
+		return instance == null ? instance = new ThongKe_Controller() : instance;
 	}
 
 	public ThongKe_Controller() {
-		pageList = new ArrayList<>();
-		pageList.add(tongQuanPage = new TongQuan_View("Tổng quan", "/Image/tabler-icon-report-analytics.png"));
-		pageList.add(taoMoiPage = new TaoMoi_View("Tạo mới", "/Image/tabler-icon-report-medical.png"));
-//		pageList.add(ketQuaThongKePage = new KetQuaThongKePage("Kết quả", "/Image/tabler-icon-report-medical.png"));
+		viewList = new ArrayList<>();
+		viewList.add(tongQuanView = new ThongKeTongQuan_View("Tổng quan", "/Image/tabler-icon-report-analytics.png"));
 
-		tongQuanPage.addInActionListener(this::inTongQuan);
+//		timerToday = new Timer(1000, e -> refreshTodayStatistic());
+		tongQuanView.addInActionListener(e -> PrinterUtils.print(tongQuanView, "In thống kê tổng quan"));
 	}
 
-	public void loadThongKe() {
-		tongQuanPage.loadThongKe(taoThongKeNgay(LocalDate.of(2024, 10, 20)),
-				taoThongKeTuan(LocalDate.of(2024, 10, 19), 7));
+	public void refreshData() {
+		TieuChiThongKe tieuChiTuan = new TieuChiThongKe(StatisticType.DOANH_THU, null, null, null, false, null, null,
+				null, null, LocalDateTime.of(2024, 10, 1, 0, 0, 0), LocalDateTime.of(2024, 10, 7, 0, 0, 0));
+		tongQuanView.loadWeekStatistic(taoThongKeTheoTieuChi(tieuChiTuan), tieuChiTuan);
+
+		refreshTodayStatistic();
+//		timerToday.start();
 	}
 
-	private ThongKeNgay taoThongKeNgay(LocalDate date) {
-		try {
-			List<HoaDon> hoaDons = HoaDon_DAO.getInstance().getalltbHD().stream()
-					.filter(p -> LocalDate.from(p.getNgayLapHoaDon()).isEqual(date)).toList();
-
-			List<ChiTiet_HoaDon> chiTietHoaDons = ChiTiet_HoaDon_DAO.getInstance().getAll().stream()
-					.filter(p -> hoaDons.stream().anyMatch(p1 -> p1.getMaHoaDon().equals(p.getHoaDon().getMaHoaDon())))
-					.toList();
-
-			List<VeTau> veTaus = VeTau_DAO.getInstance().getalltbVT().stream().filter(
-					p -> chiTietHoaDons.stream().anyMatch(p1 -> p1.getVeTau().getMaVeTau().equals(p.getMaVeTau())))
-					.toList();
-
-			List<ChuyenTau> chuyenTaus = ChuyenTau_DAO.getInstance().getAll().stream().filter(
-					p -> veTaus.stream().anyMatch(p1 -> p1.getChuyenTau().getMaChuyenTau().equals(p.getMaChuyenTau())))
-					.toList();
-
-			List<GiaVe> giaVes = GiaVe_DAO.getInstance().getAllGiaVe().stream()
-					.filter(p -> chuyenTaus.stream().anyMatch(p1 -> p1.getGiaVe().getMaGiaVe().equals(p.getMaGiaVe())))
-					.toList();
-
-			List<KhuyenMai> khuyenMais = KhuyenMai_DAO.getInstance().getAll().stream().filter(p -> chiTietHoaDons
-					.stream().anyMatch(p1 -> p1.getKhuyenMai().getMaKhuyenMai().equals(p.getMaKhuyenMai()))).toList();
-
-			double doanhThu = giaVes.stream().map(m -> m.getGiaVe()).reduce(0D, (acc, curr) -> acc + curr);
-			int soLuongHoaDon = (int) hoaDons.size();
-			int soLuongVeBanRa = (int) veTaus.size();
-			int soLuongVeDaHuy = (int) veTaus.stream().filter(t -> t.getTrangThai() == TrangThaiVeTau.DA_HUY).count();
-			int soLuongKhuyenMaiDaDung = khuyenMais.size();
-			return new ThongKeNgay(date, doanhThu, soLuongHoaDon, soLuongVeBanRa, soLuongVeDaHuy,
-					soLuongKhuyenMaiDaDung);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-		}
+	private void refreshTodayStatistic() {
+		// TODO: Change to today's date
+		TieuChiThongKe tieuChiHomNay = new TieuChiThongKe(StatisticType.DOANH_THU, null, null, null, false, null, null,
+				null, null, LocalDateTime.of(2024, 10, 6, 0, 0, 0), LocalDateTime.of(2024, 10, 6, 0, 0, 0));
+		tongQuanView.loadTodayStatistic(taoThongKeTheoTieuChi(tieuChiHomNay));
 	}
 
-	private ThongKeTuan taoThongKeTuan(LocalDate endDate, int numOfDays) {
-		ThongKeNgay[] thongKeNgays = new ThongKeNgay[numOfDays];
-		for (int i = 0; i < thongKeNgays.length; i++) {
-			thongKeNgays[i] = taoThongKeNgay(endDate.minusDays(numOfDays - i));
-		}
-
-		double[] doanhThu = Stream.of(thongKeNgays).mapToDouble(m -> m.getDoanhThu()).toArray();
-		int[] soLuongHoaDon = Stream.of(thongKeNgays).mapToInt(m -> m.getSoLuongHoaDon()).toArray();
-		int[] soLuongVeBanRa = Stream.of(thongKeNgays).mapToInt(m -> m.getSoLuongVeBanRa()).toArray();
-		int[] soLuongVeDaHuy = Stream.of(thongKeNgays).mapToInt(m -> m.getSoLuongVeDaHuy()).toArray();
-		int[] soLuongKhuyenMaiDaDung = Stream.of(thongKeNgays).mapToInt(m -> m.getSoLuongKhuyenMaiDaDung()).toArray();
-		return new ThongKeTuan(endDate, doanhThu, soLuongHoaDon, soLuongVeBanRa, soLuongVeDaHuy,
-				soLuongKhuyenMaiDaDung);
+	public void stopRefresh() {
+		timerToday.stop();
 	}
 
-	private void inTongQuan(ActionEvent e) {
-		PrinterUtils.print(tongQuanPage, "In thống kê tổng quan");
+	private List<StatisticData> mapEntryToValueList(Map<LocalDateTime, List<ChiTiet_HoaDon>> map) {
+		return map.entrySet().stream().map(m -> {
+			LocalDateTime thoiGian = m.getKey();
+			List<ChiTiet_HoaDon> list = m.getValue();
+
+			double doanhThu = list.stream()
+					.map(m1 -> m1.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe().getGiaVe())
+					.collect(Collectors.summingDouble(Double::doubleValue));
+			int soLuongHoaDon = list.stream().map(m1 -> m1.getHoaDon()).distinct().toList().size();
+			int soLuongVeBan = list.size();
+			int soLuongVeHuy = list.stream().filter(p -> p.getVeTau().isDaHuy()).toList().size();
+
+			return new StatisticData(thoiGian, doanhThu, soLuongHoaDon, soLuongVeBan, soLuongVeHuy, 0);
+		}).toList();
+
+	}
+
+	public List<StatisticData> taoThongKeTheoTieuChi(TieuChiThongKe tieuChi) {
+		List<HoaDon> hoaDons = HoaDon_DAO.getInstance().getByFilters(tieuChi.getTuLuc(),
+				tieuChi.getDenLuc().plusDays(1), null);
+		List<String> maHoaDons = hoaDons.stream().map(m -> m.getMaHoaDon()).toList();
+		List<ChiTiet_HoaDon> chiTiets = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDons);
+
+		Map<LocalDateTime, List<ChiTiet_HoaDon>> map = chiTiets.stream().collect(Collectors.groupingBy(
+				m -> m.getHoaDon().getNgayLapHoaDon().truncatedTo(ChronoUnit.DAYS), TreeMap::new, Collectors.toList()));
+
+		return mapEntryToValueList(map);
+
+	}
+
+	public ArrayList<View> getViewList() {
+		return viewList;
+	}
+
+	public static void main(String[] args) {
+		ThongKe_Controller.getInstance().viewList.get(0).setVisible(true);
+		ThongKe_Controller.getInstance().refreshData();
 	}
 
 }
