@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLType;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -625,7 +626,7 @@ public class HoaDon_DAO {
 			resultSet = statement.executeQuery();
 
 			List<HoaDon> list = new ArrayList<>();
-			if (resultSet.next()) {
+			while (resultSet.next()) {
 				String maHoaDon = resultSet.getString("maHoaDon");
 				LocalDateTime ngayLapHoaDon = resultSet.getTimestamp("ngayLapHoaDon").toLocalDateTime();
 				String ghiChu = resultSet.getString("ghiChu");
