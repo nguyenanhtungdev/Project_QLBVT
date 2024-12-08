@@ -159,7 +159,7 @@ public class Tau {
 
 	public ChuyenTau getChuyenTau() {
 		return chuyenTau.getGaKhoiHanh() == null
-				? ChuyenTau_DAO.getInstance().getByMaChuyenTau(chuyenTau.getMaChuyenTau())
+				? chuyenTau = ChuyenTau_DAO.getInstance().getByMaChuyenTau(chuyenTau.getMaChuyenTau())
 				: chuyenTau;
 	}
 

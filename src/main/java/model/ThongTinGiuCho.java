@@ -58,7 +58,7 @@ public class ThongTinGiuCho {
 
 	public KhachHang getKhachHang() {
 		return khachHang.getSoDienThoai() == null
-				? KhachHang_DAO.getInstance().getByMaKhachHang(khachHang.getMaKhachHang())
+				? khachHang = KhachHang_DAO.getInstance().getByMaKhachHang(khachHang.getMaKhachHang())
 				: khachHang;
 	}
 

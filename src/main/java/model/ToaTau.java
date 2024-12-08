@@ -30,7 +30,7 @@ public class ToaTau {
 	}
 
 	public Tau getTau() {
-		return tau.getTenTau() == null ? Tau_DAO.getInstance().getByMaTau(tau.getMaTau()) : tau;
+		return tau.getTenTau() == null ? tau = Tau_DAO.getInstance().getByMaTau(tau.getMaTau()) : tau;
 	}
 
 	public void setTau(Tau tau) {

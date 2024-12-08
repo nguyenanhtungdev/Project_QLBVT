@@ -76,7 +76,8 @@ public class GheTau {
 	}
 
 	public ToaTau getToaTau() {
-		return toaTau.getLoaiToa() == null ? ToaTau_DAO.getInstance().getByMaToaTau(toaTau.getMaToaTau()) : toaTau;
+		return toaTau.getLoaiToa() == null ? toaTau = ToaTau_DAO.getInstance().getByMaToaTau(toaTau.getMaToaTau())
+				: toaTau;
 	}
 
 	public void setToaTau(ToaTau toaTau) {

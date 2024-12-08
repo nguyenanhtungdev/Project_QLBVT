@@ -37,7 +37,7 @@ public class ChiTiet_HoaDon {
 	}
 
 	public HoaDon getHoaDon() {
-		return hoaDon.getKhachHang() == null ? hoaDon = HoaDon_DAO.getInstance().getByMaHoaDon(hoaDon.getMaHoaDon())
+		return hoaDon.getNgayLapHoaDon() == null ? hoaDon = HoaDon_DAO.getInstance().getByMaHoaDon(hoaDon.getMaHoaDon())
 				: hoaDon;
 	}
 
@@ -46,7 +46,7 @@ public class ChiTiet_HoaDon {
 	}
 
 	public VeTau getVeTau() {
-		return veTau.getGheTau() == null ? veTau = VeTau_DAO.getInstance().getByMaVeTau(veTau.getMaVeTau()) : veTau;
+		return veTau.getNgayHetHan() == null ? veTau = VeTau_DAO.getInstance().getByMaVeTau(veTau.getMaVeTau()) : veTau;
 	}
 
 	public void setVeTau(VeTau veTau) {

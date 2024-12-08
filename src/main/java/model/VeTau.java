@@ -20,6 +20,7 @@ public class VeTau {
 		this.loaiVe = loaiVe;
 		this.ngayHetHan = ngayHetHan;
 		this.daHuy = daHuy;
+		this.gheTau = gheTau;
 	}
 
 	public VeTau(String maVeTau) {
@@ -67,7 +68,7 @@ public class VeTau {
 	}
 
 	public GheTau getGheTau() {
-		return gheTau.getTenLoaiGheTau() == null ? GheTau_DAO.getInstance().getByMaGheTau(gheTau.getMaGheTau())
+		return gheTau.getTenLoaiGheTau() == null ? gheTau = GheTau_DAO.getInstance().getByMaGheTau(gheTau.getMaGheTau())
 				: gheTau;
 	}
 

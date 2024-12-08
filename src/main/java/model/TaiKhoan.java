@@ -89,7 +89,7 @@ public class TaiKhoan {
 	}
 
 	public NhanVien getNhanVien() {
-		return nhanVien.getHoTenNV() == null ? NhanVien_DAO.getInstance().getByMaNhanVien(nhanVien.getMaNV())
+		return nhanVien.getHoTenNV() == null ? nhanVien = NhanVien_DAO.getInstance().getByMaNhanVien(nhanVien.getMaNV())
 				: nhanVien;
 	}
 

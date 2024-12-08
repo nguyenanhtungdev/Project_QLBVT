@@ -44,7 +44,7 @@ public class NhanVien_CaLam {
 	}
 
 	public NhanVien getNhanVien() {
-		return nhanVien.getHoTenNV() == null ? NhanVien_DAO.getInstance().getByMaNhanVien(nhanVien.getMaNV())
+		return nhanVien.getHoTenNV() == null ? nhanVien = NhanVien_DAO.getInstance().getByMaNhanVien(nhanVien.getMaNV())
 				: nhanVien;
 	}
 
@@ -53,7 +53,7 @@ public class NhanVien_CaLam {
 	}
 
 	public CaLam getCaLam() {
-		return caLam.getTenCa() == null ? CaLam_DAO.getInstance().getByMaCa(caLam.getMaCa()) : caLam;
+		return caLam.getTenCa() == null ? caLam = CaLam_DAO.getInstance().getByMaCa(caLam.getMaCa()) : caLam;
 	}
 
 	public void setCaLam(CaLam caLam) {

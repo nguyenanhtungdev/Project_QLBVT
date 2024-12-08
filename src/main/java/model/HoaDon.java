@@ -111,7 +111,8 @@ public class HoaDon {
 	}
 
 	public KhachHang getKhachHang() {
-		return khachHang.getHoTen() == null ? KhachHang_DAO.getInstance().getByMaKhachHang(khachHang.getMaKhachHang())
+		return khachHang.getHoTen() == null
+				? khachHang = KhachHang_DAO.getInstance().getByMaKhachHang(khachHang.getMaKhachHang())
 				: khachHang;
 	}
 
@@ -121,7 +122,7 @@ public class HoaDon {
 
 	public ThongTinTram getThongTinTram() {
 		return thongTinTram.getTenNhaGa() == null
-				? ThongTinTram_DAO.getInstance().getByMaNhaGa(thongTinTram.getMaNhaGa())
+				? thongTinTram = ThongTinTram_DAO.getInstance().getByMaNhaGa(thongTinTram.getMaNhaGa())
 				: thongTinTram;
 	}
 
@@ -130,7 +131,8 @@ public class HoaDon {
 	}
 
 	public NhanVien getNhanVien() {
-		return nhanVien;
+		return nhanVien.getHoTenNV() == null ? nhanVien = NhanVien_DAO.getInstance().getByMaNhanVien(nhanVien.getMaNV())
+				: nhanVien;
 	}
 
 	public void setNhanVien(NhanVien nhanVien) {
