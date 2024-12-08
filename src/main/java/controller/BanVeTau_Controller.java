@@ -318,6 +318,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 	// Tạo phần tử tàu
 	private JPanel createTau(ChuyenTau chuyenTau) {
+		Tau tau = Tau_DAO.getInstance().getTauByMaChuyenTau(chuyenTau.getMaChuyenTau());
 		RoundedPanel panel_chyentau = new RoundedPanel(20);
 		panel_chyentau.setBorder(new EmptyBorder(0, 20, 15, 20));
 		panel_chyentau.setBackground(ColorConstants.PRIMARY_COLOR);
@@ -372,7 +373,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		panel_26.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
 		soLuongGheTrongChuyen = new JLabel("0/0");
-		updateSoLuongGheTrongChuyen(chuyenTau);
+//		updateSoLuongGheTrongChuyen(chuyenTau);
 		soLuongGheTrongChuyen.setForeground(ColorConstants.PRIMARY_COLOR);
 		soLuongGheTrongChuyen.setFont(new Font("Arial", Font.BOLD, 20));
 		panel_26.add(soLuongGheTrongChuyen);
@@ -395,25 +396,19 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 				// Ghi nhận chuyến tàu được chọn
 				chuyenTauChon = chuyenTau;
 
-				try {
-					ArrayList<ToaTau> dsToaTau = ToaTau_DAO.getInstance().getDsToaTau(chuyenTau.getTau().getMaTau());
+				ArrayList<ToaTau> dsToaTau = ToaTau_DAO.getInstance().getDsToaTau(tau.getMaTau());
 
-					if (dsToaTau != null && !dsToaTau.isEmpty()) {
-						JPanel panelToaTau = themDsToaTau(dsToaTau);
-						toaTauChon = dsToaTau.get(0);
-						// Cập nhật giao diện
-						chonGhe_View.panel_DsToaTau.removeAll(); // Xóa các phần tử cũ trong panel
-						chonGhe_View.panel_DsToaTau.add(panelToaTau); // Thêm panel mới
-						chonGhe_View.panel_DsToaTau.revalidate(); // Làm mới layout
-						chonGhe_View.panel_DsToaTau.repaint(); // Vẽ lại giao diện
-					} else {
-						JOptionPane.showMessageDialog(panel_chyentau, "Không có toa tàu nào!", "Thông báo",
-								JOptionPane.INFORMATION_MESSAGE);
-					}
-
-				} catch (SQLException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (dsToaTau != null && !dsToaTau.isEmpty()) {
+					JPanel panelToaTau = themDsToaTau(dsToaTau);
+					toaTauChon = dsToaTau.get(0);
+					// Cập nhật giao diện
+					chonGhe_View.panel_DsToaTau.removeAll(); // Xóa các phần tử cũ trong panel
+					chonGhe_View.panel_DsToaTau.add(panelToaTau); // Thêm panel mới
+					chonGhe_View.panel_DsToaTau.revalidate(); // Làm mới layout
+					chonGhe_View.panel_DsToaTau.repaint(); // Vẽ lại giao diện
+				} else {
+					JOptionPane.showMessageDialog(panel_chyentau, "Không có toa tàu nào!", "Thông báo",
+							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
 
@@ -686,8 +681,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			this.soTrang = 1;
 			this.soChuyenTau = danhSachChuyenTau.size();
 			updateDisplay(danhSachChuyenTau);
-		} catch (SQLException e) {
-			e.printStackTrace();
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
@@ -815,17 +808,13 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		chonGhe_View.panel_DsToaTau.revalidate();
 		chonGhe_View.panel_DsToaTau.repaint();
 
-		try {
-			danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
-			soChuyenTau = danhSachChuyenTau.size();
-			chonGhe_View.getLblSoChuyenTau().setText("Tổng số chuyến tàu: " + soChuyenTau);
-			// Reset lại chỉ số trang và hiển thị giao diện
-			this.currentIndex = 0;
-			this.soTrang = 1;
-			updateDisplay(danhSachChuyenTau);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
+		soChuyenTau = danhSachChuyenTau.size();
+		chonGhe_View.getLblSoChuyenTau().setText("Tổng số chuyến tàu: " + soChuyenTau);
+		// Reset lại chỉ số trang và hiển thị giao diện
+		this.currentIndex = 0;
+		this.soTrang = 1;
+		updateDisplay(danhSachChuyenTau);
 	}
 
 	private void capNhatGiaoDienGheTau(String maToaTau) {
@@ -1110,16 +1099,11 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 	// Cập nhật trạng thái ghế tàu
 	private void capNhatTrangThaiGheTau(String maGheTau) {
-		try {
-			for (GheTau gheTau : GheTau_DAO.getInstance().getAll()) {
-				if (gheTau.getMaGheTau().equals(maGheTau)) {
-					gheTau.setTrangThai("DANG_GIU_CHO");
-					break;
-				}
+		for (GheTau gheTau : GheTau_DAO.getInstance().getAll()) {
+			if (gheTau.getMaGheTau().equals(maGheTau)) {
+				gheTau.setTrangThai("DANG_GIU_CHO");
+				break;
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
@@ -1172,21 +1156,16 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 	// Tìm kiếm khách hàng
 	private KhachHang timKiemKhachHang(String s, boolean b) { // true: sdt, false: cccd
-		try {
-			for (KhachHang khachHang : KhachHang_DAO.getInstance().getAll()) {
-				if (b) {
-					if (khachHang.getSoDienThoai().equals(s)) {
-						return khachHang;
-					}
-				} else {
-					if (khachHang.getCCCD().equals(s)) {
-						return khachHang;
-					}
+		for (KhachHang khachHang : KhachHang_DAO.getInstance().getAll()) {
+			if (b) {
+				if (khachHang.getSoDienThoai().equals(s)) {
+					return khachHang;
+				}
+			} else {
+				if (khachHang.getCCCD().equals(s)) {
+					return khachHang;
 				}
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 		return null;
 	}
@@ -1444,13 +1423,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		for (HoaDon hoaDon : hoaDons) {
 			String formattedNgayLap = hoaDon.getNgayLapHoaDon().format(formatter);
 
-			try {
-				tableModel.addRow(new Object[] { stt++, hoaDon.getMaHoaDon(), hoaDon.getKhachHang().getHoTen(),
-						formattedNgayLap, hoaDon.getThueVAT() });
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			tableModel.addRow(new Object[] { stt++, hoaDon.getMaHoaDon(), hoaDon.getKhachHang().getHoTen(),
+					formattedNgayLap, hoaDon.getThueVAT() });
 		}
 	}
 
@@ -1690,16 +1664,15 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			for (int i = 0; i < jTable_Ds.getRowCount(); i++) {
 				VeTau veTau = new VeTau();
 				veTau.setMaVeTau((String) jTable_Ds.getValueAt(i, 1));
-				veTau.setMaVach("D12345");
 				veTau.setLoaiVe(((String) jTable_Ds.getValueAt(i, 2)).equals("VIP") ? true : false);
-				veTau.setTrangThai(TrangThaiVeTau.DA_BAN);
-				veTau.setChuyenTau(chuyenTauChon);
+				veTau.setDaHuy(false);
+				veTau.setNgayHetHan(chuyenTauChon.getThoiGianKhoiHanh());
+				veTau.setGheTau(new GheTau((String)jTable_Ds.getValueAt(i, 3)));
 				if (VeTau_DAO.getInstance().add(veTau)) {
 					ChiTiet_HoaDon chiTiet_HoaDon = new ChiTiet_HoaDon();
-					model.KhuyenMai khuyenMai = new model.KhuyenMai("KM0000");
 					chiTiet_HoaDon.setHoaDon(hoaDon);
 					chiTiet_HoaDon.setSoLuong(1);
-					chiTiet_HoaDon.setKhuyenMai(khuyenMai);
+					chiTiet_HoaDon.setKhuyenMai(null);
 					chiTiet_HoaDon.setVeTau(veTau);
 					if (ChiTiet_HoaDon_DAO.getInstance().add(chiTiet_HoaDon)) {
 						temp = true;
@@ -1860,12 +1833,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			if (isBtnExampleClicked) {
 				locChuyenTau(danhSachChuyenTau);
 			} else {
-				try {
-					danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
-					locChuyenTau(danhSachChuyenTau);
-				} catch (SQLException e1) {
-					e1.printStackTrace();
-				}
+				danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
+				locChuyenTau(danhSachChuyenTau);
 			}
 		} else if (obj.equals(chonGhe_View.getBtn_ThemVeTau())) {
 			if (themVeTau()) {

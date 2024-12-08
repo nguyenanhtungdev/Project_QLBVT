@@ -118,14 +118,9 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		EventList<String> soDienThoaiList = new BasicEventList<>();
 		List<HoaDon> danhSachKhachHang = hd_dao.getalltbHDKH();
 		for (HoaDon khachHang : danhSachKhachHang) {
-			try {
-				String soDienThoai = khachHang.getKhachHang().getSoDienThoai();
-				soDienThoaiList.add(soDienThoai);
-				comboBox.addItem(soDienThoai);
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			String soDienThoai = khachHang.getKhachHang().getSoDienThoai();
+			soDienThoaiList.add(soDienThoai);
+			comboBox.addItem(soDienThoai);
 		}
 		AutoCompleteSupport.install(comboBox, soDienThoaiList);
 		return comboBox;
@@ -134,19 +129,14 @@ public class QuanLyHoaDon_View extends View implements Printable {
 	public static JComboBox<String> timKiemMaHD() {
 		JComboBox<String> comboBox = new JComboBox<>();
 		EventList<String> maHDList = new BasicEventList<>();
-		try {
-			List<HoaDon> danhSachHD = hd_dao.getAll();
-			for (HoaDon hoaDon : danhSachHD) {
-				String maHD = hoaDon.getMaHoaDon();
-				maHDList.add(maHD);
-				comboBox.addItem(maHD);
-			}
-			AutoCompleteSupport.install(comboBox, maHDList);
-			comboBox.setEditable(true);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		List<HoaDon> danhSachHD = hd_dao.getAll();
+		for (HoaDon hoaDon : danhSachHD) {
+			String maHD = hoaDon.getMaHoaDon();
+			maHDList.add(maHD);
+			comboBox.addItem(maHD);
 		}
+		AutoCompleteSupport.install(comboBox, maHDList);
+		comboBox.setEditable(true);
 		return comboBox;
 	}
 

@@ -310,20 +310,15 @@ public class QuanLy_Controller {
 			JOptionPane.showMessageDialog(null, "Ngày bắt đầu không thể lớn hơn ngày kết thúc!");
 			return;
 		}
-		try {
-			LocalDateTime sqlStartDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-			LocalDateTime sqlEndDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-			List<HoaDon> hoaDons = hoaDon_DAO.layTTHoaDonTheoDate(sqlStartDate, sqlEndDate);
-			xoaDuLieuTableHoaDon();
-			for (HoaDon hoaDon : hoaDons) {
-				themHoaDonVaoBang(hoaDon);
-			}
-			if (hoaDons.isEmpty()) {
-				JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào trong khoảng thời gian đã chọn!");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ!");
+		LocalDateTime sqlStartDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		LocalDateTime sqlEndDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		List<HoaDon> hoaDons = hoaDon_DAO.layTTHoaDonTheoDate(sqlStartDate, sqlEndDate);
+		xoaDuLieuTableHoaDon();
+		for (HoaDon hoaDon : hoaDons) {
+			themHoaDonVaoBang(hoaDon);
+		}
+		if (hoaDons.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào trong khoảng thời gian đã chọn!");
 		}
 	}
 
@@ -363,15 +358,10 @@ public class QuanLy_Controller {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		try {
-			qLHoaDon_view.getModelHD()
-					.addRow(new Object[] { qLHoaDon_view.getModelHD().getRowCount() + 1, hd.getMaHoaDon(), loaiHoaDon,
-							hd.getKhachHang().getHoTen(), hd.getKhachHang().getSoDienThoai(), ngayLapHoaDonFormatted,
-							hd.getThueVAT() + "%", String.format("%,.0f", tongTienSauThue) + " VNĐ" });
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		qLHoaDon_view.getModelHD()
+				.addRow(new Object[] { qLHoaDon_view.getModelHD().getRowCount() + 1, hd.getMaHoaDon(), loaiHoaDon,
+						hd.getKhachHang().getHoTen(), hd.getKhachHang().getSoDienThoai(), ngayLapHoaDonFormatted,
+						hd.getThueVAT() + "%", String.format("%,.0f", tongTienSauThue) + " VNĐ" });
 	}
 
 	private void xoaDuLieuTableHoaDon() {
@@ -394,8 +384,9 @@ public class QuanLy_Controller {
 		GiaVe_DAO giaVeDAO = new GiaVe_DAO();
 		KhuyenMai_DAO khuyenMaiDAO = new KhuyenMai_DAO(); // Giả sử bạn có DAO này
 
-		List<ChiTiet_HoaDon> chiTietHoaDons = chiTietHoaDonDAO.getAll().stream()
-				.filter(p -> p.getHoaDon().getMaHoaDon().equals(maHD)).collect(Collectors.toList());
+		List<ChiTiet_HoaDon> chiTietHoaDons = chiTietHoaDonDAO.getAll().stream().filter(p -> {
+			return p.getHoaDon().getMaHoaDon().equals(maHD);
+		}).collect(Collectors.toList());
 		if (chiTietHoaDons.isEmpty()) {
 			return Collections.emptyMap();
 		}
@@ -410,7 +401,10 @@ public class QuanLy_Controller {
 			}
 
 			// TODO: Sửa lại đi nè
-			ChuyenTau chuyenTau = chuyenTauDAO.getByMaCa(veTau.getChuyenTau().getMaChuyenTau());
+			GheTau gheTau = gheTau_DAO.getByMaGheTau(veTau.getGheTau().getMaGheTau());
+			ToaTau toaTau = toaTau_DAO.getByMaToaTau(gheTau.getToaTau().getMaToaTau());
+			Tau tau = tau_DAO.getByMaTau(toaTau.getTau().getMaTau());
+			ChuyenTau chuyenTau = chuyenTau_DAO.getByMaChuyenTau(tau.getChuyenTau().getMaChuyenTau());
 			if (chuyenTau == null) {
 				continue;
 			}
@@ -485,8 +479,9 @@ public class QuanLy_Controller {
 			Map<String, Double> tongTienHoaDon = layTongTienHoaDon(maHD);
 			double tongTienSauThue = tongTienHoaDon.get("tongTienSauThue");
 
-			List<ChiTiet_HoaDon> ctHD1 = ctHD_DAO.getAll().stream()
-					.filter(p -> p.getHoaDon().getMaHoaDon().equals(maHD)).collect(Collectors.toList());
+			List<ChiTiet_HoaDon> ctHD1 = ctHD_DAO.getAll().stream().filter(p -> {
+				return p.getHoaDon().getMaHoaDon().equals(maHD);
+			}).collect(Collectors.toList());
 			xoaDuLieuTableHoaDonChiTiet();
 			for (int i = 0; i < ctHD1.size(); i++) {
 				ChiTiet_HoaDon ctHD = ctHD1.get(i);
@@ -496,7 +491,10 @@ public class QuanLy_Controller {
 				}
 
 				// TODO: Sửa lại đi nè
-				ChuyenTau chuyenTau = chuyenTau_DAO.getByMaCa(veTau.getChuyenTau().getMaChuyenTau());
+				GheTau gheTau = gheTau_DAO.getByMaGheTau(veTau.getGheTau().getMaGheTau());
+				ToaTau toaTau = toaTau_DAO.getByMaToaTau(gheTau.getToaTau().getMaToaTau());
+				Tau tau = tau_DAO.getByMaTau(toaTau.getTau().getMaTau());
+				ChuyenTau chuyenTau = chuyenTau_DAO.getByMaChuyenTau(tau.getChuyenTau().getMaChuyenTau());
 				GiaVe giaVe = giaVe_DAO.getByMaGiaVe(chuyenTau.getGiaVe().getMaGiaVe());
 				if (giaVe == null) {
 					continue;
@@ -588,34 +586,30 @@ public class QuanLy_Controller {
 			String tenKhuyenMai = qLKhuyenMai_View.getTxtTenkm().getText().trim();
 			String noiDungKhuyenMai = qLKhuyenMai_View.getTxtNDKM().getText().trim();
 			int soLuongToiDa = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText().trim());
+			Date ngayBatDau = qLKhuyenMai_View.getDateBDKM().getDate();
+			LocalDateTime ngayBatDau1 = ngayBatDau != null
+					? LocalDateTime.ofInstant(ngayBatDau.toInstant(), ZoneId.systemDefault()).withHour(0).withMinute(0)
+							.withSecond(0).withNano(0)
+					: null;
 			Date dateHanSuDung = qLKhuyenMai_View.getDateKTKM().getDate();
 			LocalDateTime hanSuDung = dateHanSuDung != null
 					? LocalDateTime.ofInstant(dateHanSuDung.toInstant(), ZoneId.systemDefault()).withHour(0)
 							.withMinute(0).withSecond(0).withNano(0)
 					: null;
-			double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().trim()); // Chuyển giamGia
-																									// sang double
-
+			int giamGia = Integer.parseInt(qLKhuyenMai_View.getTxtGiamGia().getText().trim());
 			String maKhuyenMaiCu;
-			try {
-				maKhuyenMaiCu = kMai_DAO.getMaxMaKhuyenMai();
-				String maKhuyenMai = generateNextMaKhuyenMai(maKhuyenMaiCu);
-				KhuyenMai khuyenMai = new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, giamGia,
-						ngayBatDau, hanSuDung, TinhTrangKhuyenMai.CON); // Gán giá trị giamGia vào đối tượng
-																		// KhuyenMai
+			maKhuyenMaiCu = kMai_DAO.getMaxMaKhuyenMai();
+			String maKhuyenMai = generateNextMaKhuyenMai(maKhuyenMaiCu);
+			KhuyenMai khuyenMai = new KhuyenMai(maKhuyenMai, tenKhuyenMai, noiDungKhuyenMai, soLuongToiDa, giamGia,
+					ngayBatDau1, hanSuDung, TinhTrangKhuyenMai.CON);
+			boolean result = kMai_DAO.add(khuyenMai);
 
-				boolean result = kMai_DAO.add(khuyenMai);
-
-				if (result) {
-					themKhuyenMaiVaoBang(khuyenMai);
-					JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Thêm khuyến mãi thành công!");
-					huyTxtKM();
-				} else {
-					JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(),
-							"Thêm khuyến mãi không thành công!");
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
+			if (result) {
+				themKhuyenMaiVaoBang(khuyenMai);
+				JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Thêm khuyến mãi thành công!");
+				huyTxtKM();
+			} else {
+				JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Thêm khuyến mãi không thành công!");
 			}
 		}
 	}
@@ -696,13 +690,9 @@ public class QuanLy_Controller {
 	private void reLoadSearchKM() {
 		xoaDuLieuTableKM();
 		List<KhuyenMai> kmList;
-		try {
-			kmList = kMai_DAO.getAll();
-			for (KhuyenMai km : kmList) {
-				themKhuyenMaiVaoBang(km);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		kmList = kMai_DAO.getAll();
+		for (KhuyenMai km : kmList) {
+			themKhuyenMaiVaoBang(km);
 		}
 		qLKhuyenMai_View.getComboBoxMaKM().setSelectedItem(null);
 		qLKhuyenMai_View.getComboBoxTrangThai().setSelectedItem(null);
@@ -756,24 +746,19 @@ public class QuanLy_Controller {
 		int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText());
 		LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault())
 				.toLocalDateTime();
-		double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", ""));
+		int giamGia = Integer.parseInt(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", ""));
 		String currentTinhTrang = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 7);
 
 		TinhTrangKhuyenMai newTinhTrang = null;
 
 		if ("Hết số lượng".equals(currentTinhTrang)) {
 			int currentSoLuong;
-			try {
-				currentSoLuong = kMai_DAO.getByMaKhuyenMai(maKM).getSoLuongToiDa();
-				if (soLuong <= currentSoLuong) {
-					JOptionPane.showMessageDialog(null, "Số lượng mới không hợp lệ!");
-					return;
-				}
-				newTinhTrang = TinhTrangKhuyenMai.HET_SO_LUONG;
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+			currentSoLuong = kMai_DAO.getByMaKhuyenMai(maKM).getSoLuongToiDa();
+			if (soLuong <= currentSoLuong) {
+				JOptionPane.showMessageDialog(null, "Số lượng mới không hợp lệ!");
+				return;
 			}
+			newTinhTrang = TinhTrangKhuyenMai.HET_SO_LUONG;
 		} else if ("Còn".equals(currentTinhTrang)) {
 			newTinhTrang = TinhTrangKhuyenMai.CON;
 		} else if ("Hết hạn sử dụng".equals(currentTinhTrang)) {
@@ -796,20 +781,16 @@ public class QuanLy_Controller {
 		kmEntity.setTinhTrangKhuyenMai(newTinhTrang);
 		kmEntity.setGiamGia(giamGia); // TODO: Thiết kế là int
 
-		try {
-//			boolean result = kMai_DAO.capNhat(kmEntity, maKM); KHÔNG CẦN ĐỂ MÃ DÔ ĐÂU ÔNG. NÓ LẤY TRONG OBJECT
-			boolean result = kMai_DAO.update(kmEntity);
+		// boolean result = kMai_DAO.capNhat(kmEntity, maKM); KHÔNG CẦN ĐỂ MÃ DÔ ĐÂU
+		// ÔNG. NÓ LẤY TRONG OBJECT
+		boolean result = kMai_DAO.update(kmEntity);
 
-			if (result) {
-				JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
-				xoaDuLieuTableKM();
-				DocDuLieuVaoTableKhuyenMai();
-			} else {
-				JOptionPane.showMessageDialog(null, "Cập nhật thất bại!");
-			}
-		} catch (SQLException ex) {
-			ex.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Lỗi cập nhật dữ liệu!");
+		if (result) {
+			JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
+			xoaDuLieuTableKM();
+			DocDuLieuVaoTableKhuyenMai();
+		} else {
+			JOptionPane.showMessageDialog(null, "Cập nhật thất bại!");
 		}
 	}
 
@@ -821,50 +802,43 @@ public class QuanLy_Controller {
 			return;
 		}
 
-		try {
-			List<KhuyenMai> danhSachKM = new ArrayList<>();
+		List<KhuyenMai> danhSachKM = new ArrayList<>();
 
-			if (maKM != null && !maKM.isEmpty()) {
-				KhuyenMai km = kMai_DAO.getByMaKhuyenMai(maKM);
-				if (km != null) {
-					danhSachKM.add(km);
-				} else {
-					JOptionPane.showMessageDialog(null, "Không tìm thấy khuyến mãi với mã " + maKM + "!");
-				}
+		if (maKM != null && !maKM.isEmpty()) {
+			KhuyenMai km = kMai_DAO.getByMaKhuyenMai(maKM);
+			if (km != null) {
+				danhSachKM.add(km);
+			} else {
+				JOptionPane.showMessageDialog(null, "Không tìm thấy khuyến mãi với mã " + maKM + "!");
 			}
-
-			if (trangThai != null && !trangThai.isEmpty()) {
-				if (trangThai.equals("Hết hạn sau 7 ngày")) {
-					// Lọc các khuyến mãi có hạn sử dụng trong vòng 7 ngày
-					List<KhuyenMai> danhSachKMHetHan7Ngay = kMai_DAO.getKhuyenMaiHetHanTrong7Ngay();
-					if (!danhSachKMHetHan7Ngay.isEmpty()) {
-						danhSachKM.addAll(danhSachKMHetHan7Ngay);
-					} else {
-						JOptionPane.showMessageDialog(null, "Không tìm thấy khuyến mãi hết hạn trong 7 ngày!");
-					}
-				} else {
-					TinhTrangKhuyenMai tinhTrangEnum = convertStringToTinhTrang(trangThai);
-					List<KhuyenMai> danhSachKMTheoTrangThai = kMai_DAO.getKhuyenMaiTheoTrangThai(tinhTrangEnum);
-					if (!danhSachKMTheoTrangThai.isEmpty()) {
-						danhSachKM.addAll(danhSachKMTheoTrangThai);
-					} else {
-						JOptionPane.showMessageDialog(null,
-								"Không tìm thấy khuyến mãi với trạng thái " + trangThai + "!");
-					}
-				}
-			}
-
-			danhSachKM = danhSachKM.stream().distinct().collect(Collectors.toList());
-			xoaDuLieuTableKM();
-			for (KhuyenMai km : danhSachKM) {
-				themKhuyenMaiVaoBang(km);
-			}
-			huyTxtKM();
-
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ!");
 		}
+
+		if (trangThai != null && !trangThai.isEmpty()) {
+			if (trangThai.equals("Hết hạn sau 7 ngày")) {
+				// Lọc các khuyến mãi có hạn sử dụng trong vòng 7 ngày
+				List<KhuyenMai> danhSachKMHetHan7Ngay = kMai_DAO.getKhuyenMaiHetHanTrong7Ngay();
+				if (!danhSachKMHetHan7Ngay.isEmpty()) {
+					danhSachKM.addAll(danhSachKMHetHan7Ngay);
+				} else {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy khuyến mãi hết hạn trong 7 ngày!");
+				}
+			} else {
+				TinhTrangKhuyenMai tinhTrangEnum = convertStringToTinhTrang(trangThai);
+				List<KhuyenMai> danhSachKMTheoTrangThai = kMai_DAO.getKhuyenMaiTheoTrangThai(tinhTrangEnum);
+				if (!danhSachKMTheoTrangThai.isEmpty()) {
+					danhSachKM.addAll(danhSachKMTheoTrangThai);
+				} else {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy khuyến mãi với trạng thái " + trangThai + "!");
+				}
+			}
+		}
+
+		danhSachKM = danhSachKM.stream().distinct().collect(Collectors.toList());
+		xoaDuLieuTableKM();
+		for (KhuyenMai km : danhSachKM) {
+			themKhuyenMaiVaoBang(km);
+		}
+		huyTxtKM();
 	}
 
 	private TinhTrangKhuyenMai convertStringToTinhTrang(String trangThai) {
@@ -882,14 +856,9 @@ public class QuanLy_Controller {
 
 	public void DocDuLieuVaoTableKhuyenMai() {
 		List<KhuyenMai> list;
-		try {
-			list = kMai_DAO.getAll();
-			for (KhuyenMai km : list) {
-				themKhuyenMaiVaoBang(km);
-			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		list = kMai_DAO.getAll();
+		for (KhuyenMai km : list) {
+			themKhuyenMaiVaoBang(km);
 		}
 	}
 
@@ -941,13 +910,9 @@ public class QuanLy_Controller {
 	private void reloadTau() {
 		xoaDuLieuTableTau();
 		List<Tau> tauList;
-		try {
-			tauList = tau_DAO.getAll();
-			for (Tau tau : tauList) {
-				themTauVaoBang(tau);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		tauList = tau_DAO.getAll();
+		for (Tau tau : tauList) {
+			themTauVaoBang(tau);
 		}
 		qLTau_View.getComBmaTau().setSelectedItem(null);
 		qLTau_View.getComBTThai().setSelectedItem(null);
@@ -961,37 +926,31 @@ public class QuanLy_Controller {
 			JOptionPane.showMessageDialog(null, "Vui lòng nhập (chọn) mã tàu hoặc trạng thái!");
 			return;
 		}
-		try {
-			List<Tau> danhSachTau = new ArrayList<>();
+		List<Tau> danhSachTau = new ArrayList<>();
 
-			if (maTau != null && !maTau.isEmpty()) {
-				Tau tau = tau_DAO.layTTTauTheoMa(maTau);
-				if (tau != null) {
-					danhSachTau.add(tau);
+		if (maTau != null && !maTau.isEmpty()) {
+			Tau tau = tau_DAO.layTTTauTheoMa(maTau);
+			if (tau != null) {
+				danhSachTau.add(tau);
+			} else {
+				JOptionPane.showMessageDialog(null, "Không tìm thấy Tàu với mã " + maTau + "!");
+			}
+		}
+		if (trangThai != null && !trangThai.isEmpty()) {
+			TrangThaiTau trangThaiEnum = chuyenDoiTrangThai(trangThai);
+			if (trangThaiEnum != null) {
+				List<Tau> tauList = tau_DAO.layTTTauTheoTrangThai(trangThaiEnum);
+				if (!tauList.isEmpty()) {
+					danhSachTau.addAll(tauList);
 				} else {
-					JOptionPane.showMessageDialog(null, "Không tìm thấy Tàu với mã " + maTau + "!");
+					JOptionPane.showMessageDialog(null, "Không có tàu nào với trạng thái " + trangThai + "!");
 				}
 			}
-			if (trangThai != null && !trangThai.isEmpty()) {
-				TrangThaiTau trangThaiEnum = chuyenDoiTrangThai(trangThai);
-				if (trangThaiEnum != null) {
-					List<Tau> tauList = tau_DAO.layTTTauTheoTrangThai(trangThaiEnum);
-					if (!tauList.isEmpty()) {
-						danhSachTau.addAll(tauList);
-					} else {
-						JOptionPane.showMessageDialog(null, "Không có tàu nào với trạng thái " + trangThai + "!");
-					}
-				}
-			}
-			danhSachTau = danhSachTau.stream().distinct().collect(Collectors.toList());
-			xoaDuLieuTableTau();
-			for (Tau tau : danhSachTau) {
-				themTauVaoBang(tau);
-			}
-
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-			JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ!");
+		}
+		danhSachTau = danhSachTau.stream().distinct().collect(Collectors.toList());
+		xoaDuLieuTableTau();
+		for (Tau tau : danhSachTau) {
+			themTauVaoBang(tau);
 		}
 	}
 
@@ -1175,16 +1134,11 @@ public class QuanLy_Controller {
 		iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panelTrain.add(iconLabel, BorderLayout.CENTER);
 
-		try {
-			JLabel labelMaTau = new JLabel(dsToaTau.get(0).getTau().getMaTau(), JLabel.CENTER);
-			labelMaTau.setFont(new Font("Arial", Font.BOLD, 12));
-			labelMaTau.setForeground(new Color(70, 130, 180));
-			labelMaTau.setHorizontalAlignment(SwingConstants.CENTER);
-			panelTrain.add(labelMaTau, BorderLayout.SOUTH);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		JLabel labelMaTau = new JLabel(dsToaTau.get(0).getTau().getMaTau(), JLabel.CENTER);
+		labelMaTau.setFont(new Font("Arial", Font.BOLD, 12));
+		labelMaTau.setForeground(new Color(70, 130, 180));
+		labelMaTau.setHorizontalAlignment(SwingConstants.CENTER);
+		panelTrain.add(labelMaTau, BorderLayout.SOUTH);
 
 		panelTrain.addMouseListener(new MouseAdapter() {
 			@Override
@@ -1229,39 +1183,34 @@ public class QuanLy_Controller {
 	}
 
 	private void updateGheTau(JPanel gheTauPanel, String maToaTau) {
-		try {
-			List<GheTau> dsGheTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
+		List<GheTau> dsGheTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
 
-			gheTauPanel.removeAll();
+		gheTauPanel.removeAll();
 
-			int numberOfSeats = dsGheTau.size();
-			int columns = 14;
-			int rows = (numberOfSeats + columns - 1) / columns;
+		int numberOfSeats = dsGheTau.size();
+		int columns = 14;
+		int rows = (numberOfSeats + columns - 1) / columns;
 
-			gheTauPanel.setLayout(new GridLayout(rows, columns, 10, 10));
+		gheTauPanel.setLayout(new GridLayout(rows, columns, 10, 10));
 
-			for (int i = 0; i < dsGheTau.size(); i++) {
-				GheTau gTau = dsGheTau.get(i);
-				JButton gheTauItem = createGheTau(gTau, i + 1, dsGheTau.size());
-				int rowIndex = i;
-				gheTauItem.addActionListener(e -> {
-					if (rowIndex >= 0 && rowIndex < qLTau_View.getTableGheTau().getRowCount()) {
-						qLTau_View.getTableGheTau().setRowSelectionInterval(rowIndex, rowIndex);
-						qLTau_View.getTableGheTau()
-								.scrollRectToVisible(qLTau_View.getTableGheTau().getCellRect(rowIndex, 0, true));
-					} else {
-						JOptionPane.showMessageDialog(null, "Không tìm thấy dòng để chọn.");
-					}
-				});
-				gheTauPanel.add(gheTauItem);
-			}
-
-			gheTauPanel.revalidate();
-			gheTauPanel.repaint();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (int i = 0; i < dsGheTau.size(); i++) {
+			GheTau gTau = dsGheTau.get(i);
+			JButton gheTauItem = createGheTau(gTau, i + 1, dsGheTau.size());
+			int rowIndex = i;
+			gheTauItem.addActionListener(e -> {
+				if (rowIndex >= 0 && rowIndex < qLTau_View.getTableGheTau().getRowCount()) {
+					qLTau_View.getTableGheTau().setRowSelectionInterval(rowIndex, rowIndex);
+					qLTau_View.getTableGheTau()
+							.scrollRectToVisible(qLTau_View.getTableGheTau().getCellRect(rowIndex, 0, true));
+				} else {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy dòng để chọn.");
+				}
+			});
+			gheTauPanel.add(gheTauItem);
 		}
+
+		gheTauPanel.revalidate();
+		gheTauPanel.repaint();
 	}
 
 	private JButton createGheTau(GheTau gTau, int i, int size) {
@@ -1291,35 +1240,30 @@ public class QuanLy_Controller {
 	public void DocDuLieuVaoTableGheTau(String maToaTau) {
 		qLTau_View.getModelGheTau().setRowCount(0);
 
-		try {
-			List<GheTau> dsGTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
+		List<GheTau> dsGTau = gheTau_DAO.getGheTauTheoMaToaTau(maToaTau);
 
-			for (GheTau gt : dsGTau) {
-				String trangThaiHienThi;
-				switch (gt.getTrangThai()) {
-				case "TRONG":
-					trangThaiHienThi = "Trống";
-					break;
-				case "DA_THANH_TOAN":
-					trangThaiHienThi = "Đã thanh toán";
-					break;
-				case "DANG_BAO_TRI":
-					trangThaiHienThi = "Đang bảo trì";
-					break;
-				case "DANG_GIU_CHO":
-					trangThaiHienThi = "Đang giữ chỗ";
-					break;
-				default:
-					trangThaiHienThi = "Không xác định";
-					break;
-				}
-
-				qLTau_View.getModelGheTau().addRow(new Object[] { sttGT++, gt.getMaGheTau(), gt.getTenLoaiGheTau(),
-						gt.getsoThuTuGhe(), trangThaiHienThi, });
+		for (GheTau gt : dsGTau) {
+			String trangThaiHienThi;
+			switch (gt.getTrangThai()) {
+			case "TRONG":
+				trangThaiHienThi = "Trống";
+				break;
+			case "DA_THANH_TOAN":
+				trangThaiHienThi = "Đã thanh toán";
+				break;
+			case "DANG_BAO_TRI":
+				trangThaiHienThi = "Đang bảo trì";
+				break;
+			case "DANG_GIU_CHO":
+				trangThaiHienThi = "Đang giữ chỗ";
+				break;
+			default:
+				trangThaiHienThi = "Không xác định";
+				break;
 			}
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			qLTau_View.getModelGheTau().addRow(new Object[] { sttGT++, gt.getMaGheTau(), gt.getTenLoaiGheTau(),
+					gt.getsoThuTuGhe(), trangThaiHienThi, });
 		}
 	}
 

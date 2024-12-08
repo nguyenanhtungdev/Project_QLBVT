@@ -286,5 +286,52 @@ public class Tau_DAO {
 
 		return null;
 	}
+	
+	public Tau getTauByMaChuyenTau(String maChuyenTau) {
+	    String sql = "SELECT * FROM Tau WHERE maChuyenTau = ?";
+
+	    Connection con = null;
+	    PreparedStatement preparedStatement = null;
+	    ResultSet resultSet = null;
+
+	    try {
+	        con = Database.getInstance().getConnection();
+	        preparedStatement = con.prepareStatement(sql);
+	        preparedStatement.setString(1, maChuyenTau);
+	        resultSet = preparedStatement.executeQuery();
+
+	        if (resultSet.next()) {
+	            String maTau = resultSet.getString("maTau");
+	            String tenTau = resultSet.getString("tenTau");
+	            int soToa = resultSet.getInt("soToa");
+	            LocalDate namSanXuat = resultSet.getDate("namSanXuat").toLocalDate();
+	            String nhaSanXuat = resultSet.getString("nhaSanXuat");
+	            float tocDoTB = resultSet.getFloat("tocDoTB");
+	            float tocDoToiDa = resultSet.getFloat("tocDoToiDa");
+	            TrangThaiTau trangThai = TrangThaiTau.fromInt(resultSet.getInt("trangThai"));
+	            String ghiChu = resultSet.getString("ghiChu");
+
+	            // Khởi tạo ChuyenTau từ maChuyenTau
+	            ChuyenTau chuyenTau = new ChuyenTau(maChuyenTau);
+
+	            // Tạo và trả về đối tượng Tau
+	            return new Tau(maTau, tenTau, soToa, namSanXuat, nhaSanXuat, tocDoTB, tocDoToiDa, trangThai, ghiChu, chuyenTau);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (resultSet != null)
+	                resultSet.close();
+	            if (preparedStatement != null)
+	                preparedStatement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return null;
+	}
+
 
 }

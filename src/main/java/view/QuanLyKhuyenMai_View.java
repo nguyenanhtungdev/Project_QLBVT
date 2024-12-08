@@ -68,6 +68,8 @@ public class QuanLyKhuyenMai_View extends View {
 	private JTextArea txtNDKM;
 	private JTextField txtGiamGia;
 	private PrimaryButton btnCapNhap;
+	private PrimaryButton btnGuiTB;
+	private JDateChooser dateBDKM;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -103,20 +105,20 @@ public class QuanLyKhuyenMai_View extends View {
 		btnHuy.addActionListener(listener);
 	}
 
+	public void addButtonThongBaoListener(ActionListener listener) {
+		btnGuiTB.addActionListener(listener);
+	}
+
 	// Phương thức tạo JComboBox với tính năng gợi ý
 	public static JComboBox<String> timKiemMaKhuyenMai() {
 		JComboBox<String> comboBox = new JComboBox<>();
 		EventList<String> maKMList = new BasicEventList<>();
 		List<KhuyenMai> danhSachKM;
-		try {
-			danhSachKM = km_dao.getAll();
-			for (KhuyenMai km : danhSachKM) {
-				String maKM = km.getMaKhuyenMai();
-				maKMList.add(maKM);
-				comboBox.addItem(maKM);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		danhSachKM = km_dao.getAll();
+		for (KhuyenMai km : danhSachKM) {
+			String maKM = km.getMaKhuyenMai();
+			maKMList.add(maKM);
+			comboBox.addItem(maKM);
 		}
 		AutoCompleteSupport.install(comboBox, maKMList);
 
@@ -251,8 +253,37 @@ public class QuanLyKhuyenMai_View extends View {
 		panelNhap3.add(panelDate);
 		panelDate.setLayout(new BoxLayout(panelDate, BoxLayout.Y_AXIS));
 
-		Component verticalStrut_1 = Box.createVerticalStrut(20);
+		Component verticalStrut_1 = Box.createVerticalStrut(7);
 		panelDate.add(verticalStrut_1);
+
+		JPanel panelDateBD = new JPanel();
+		panelDateBD.setBorder(new EmptyBorder(0, 0, 0, 0));
+		panelDateBD.setBackground(Color.WHITE);
+		panelDate.add(panelDateBD);
+		panelDateBD.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+
+		JPanel panelDateBD_1 = new JPanel();
+		panelDateBD_1.setBorder(new EmptyBorder(0, 0, 0, 10));
+		panelDateBD_1.setBackground(Color.WHITE);
+		panelDateBD.add(panelDateBD_1);
+
+		JLabel lblDateBD = new JLabel("Ngày bắt đầu ");
+		lblDateBD.setForeground(new Color(70, 130, 180));
+		lblDateBD.setFont(new Font("Arial", Font.BOLD, 16));
+		panelDateBD_1.add(lblDateBD);
+
+		dateBDKM = new JDateChooser();
+		dateBDKM.getCalendarButton().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+		dateBDKM.getCalendarButton().setBackground(new Color(235, 235, 235));
+		dateBDKM.setPreferredSize(new Dimension(253, 25));
+		dateBDKM.setFont(new Font("Arial", Font.PLAIN, 16));
+		dateBDKM.setDateFormatString("dd-MM-yyyy");
+		dateBDKM.setBorder(new EmptyBorder(0, 56, 0, 0));
+		dateBDKM.setBackground(Color.WHITE);
+		dateBDKM.setPreferredSize(new Dimension(250, 25));
+		iconlich = new ImageIcon(getClass().getResource("/Image/icon_lich.png"));
+		dateBDKM.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
+		panelDateBD.add(dateBDKM);
 
 		JPanel panelDate1 = new JPanel();
 		panelDate1.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -275,17 +306,14 @@ public class QuanLyKhuyenMai_View extends View {
 		dateKTKM.setBackground(Color.WHITE);
 		dateKTKM.getCalendarButton().setBackground(new Color(235, 235, 235));
 		dateKTKM.getCalendarButton().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
-		dateKTKM.setBorder(new EmptyBorder(0, 58, 0, 0));
+		dateKTKM.setBorder(new EmptyBorder(0, 56, 0, 0));
 		dateKTKM.getCalendarButton().setFont(new Font("Arial", Font.PLAIN, 16));
 		dateKTKM.setFont(new Font("Arial", Font.PLAIN, 16));
 		dateKTKM.setDateFormatString("dd-MM-yyyy");
-		dateKTKM.setPreferredSize(new Dimension(250, 25));
+		dateKTKM.setPreferredSize(new Dimension(252, 25));
 		iconlich = new ImageIcon(getClass().getResource("/Image/icon_lich.png"));
 		dateKTKM.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
 		panelDate1.add(dateKTKM);
-
-		Component verticalStrut = Box.createVerticalStrut(20);
-		panelDate.add(verticalStrut);
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -370,7 +398,7 @@ public class QuanLyKhuyenMai_View extends View {
 		panelNut.add(Box.createVerticalGlue());
 
 		String[] header = { "STT", "Mã khuyến mãi", "Tên khuyến mãi", "Nội dung", "Giảm giá", "Số lượng",
-				"Ngày kết thúc", "Trạng thái" };
+				"Ngày bắt đầu", "Ngày kết thúc", "Trạng thái" };
 		Font headerFont = new Font("Arial", Font.BOLD, 18);
 		modelTableKM = new DefaultTableModel(header, 0) {
 			private static final long serialVersionUID = 277400464860378899L;
@@ -387,6 +415,7 @@ public class QuanLyKhuyenMai_View extends View {
 		tableKM.getTableHeader().setFont(headerFont);
 		tableKM.setFont(new Font("Arial", Font.PLAIN, 16));
 		tableKM.getColumnModel().getColumn(0).setPreferredWidth(5);
+		tableKM.getColumnModel().getColumn(1).setPreferredWidth(90);
 		tableKM.getColumnModel().getColumn(2).setPreferredWidth(150);
 		tableKM.getColumnModel().getColumn(3).setPreferredWidth(150);
 		tableKM.getColumnModel().getColumn(4).setPreferredWidth(50);
@@ -474,6 +503,18 @@ public class QuanLyKhuyenMai_View extends View {
 		panelLblDSkm.add(lblDS);
 		panelSearch1.add(panelLblDSkm, BorderLayout.WEST);
 
+		JPanel panelThongBao = new JPanel();
+		panelThongBao.setBackground(Color.WHITE);
+		panelSearchAndTable.add(panelThongBao, BorderLayout.SOUTH);
+		panelThongBao.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
+
+		btnGuiTB = new PrimaryButton("Gửi thông báo", "/Image/Thongbao.png");
+		btnGuiTB.setText("Gửi thông báo");
+		btnGuiTB.setIconSize(32, 32);
+		btnGuiTB.setPreferredSize(new Dimension(220, 35));
+		btnGuiTB.setFont(new Font("Arial", Font.BOLD, 18));
+		btnGuiTB.setBorderRadius(15);
+		panelThongBao.add(btnGuiTB);
 	}
 
 	public JTextField getTxtGiamGia() {
@@ -506,6 +547,14 @@ public class QuanLyKhuyenMai_View extends View {
 
 	public JTable getTableKM() {
 		return tableKM;
+	}
+
+	public JDateChooser getDateBDKM() {
+		return dateBDKM;
+	}
+
+	public void setDateBDKM(JDateChooser dateBDKM) {
+		this.dateBDKM = dateBDKM;
 	}
 
 	public DefaultTableModel getModelTableKM() {

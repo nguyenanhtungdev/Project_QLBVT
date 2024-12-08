@@ -93,15 +93,11 @@ public class QuanLyTau_View extends View {
 		JComboBox<String> comboBox = new JComboBox<>();
 		EventList<String> maTauList = new BasicEventList<>();
 		List<Tau> danhSachTau;
-		try {
-			danhSachTau = t_dao.getAll();
-			for (Tau tau : danhSachTau) {
-				String maTau = tau.getMaTau();
-				maTauList.add(maTau);
-				comboBox.addItem(maTau);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		danhSachTau = t_dao.getAll();
+		for (Tau tau : danhSachTau) {
+			String maTau = tau.getMaTau();
+			maTauList.add(maTau);
+			comboBox.addItem(maTau);
 		}
 		AutoCompleteSupport.install(comboBox, maTauList);
 
