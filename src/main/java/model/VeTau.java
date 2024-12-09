@@ -75,6 +75,7 @@ public class VeTau {
 	public KhachHang getKhachHang() {
 		return khachHang = KhachHang_DAO.getInstance().getByMaKhachHang(khachHang.getMaKhachHang());
 	}
+	
 	public void setGheTau(GheTau gheTau) {
 		this.gheTau = gheTau;
 	}

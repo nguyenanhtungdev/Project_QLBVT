@@ -127,6 +127,11 @@ public class ChonGhe_View extends View {
 	private JDateChooser dateChooser_NgayVe_1;
 	private JLabel lbl_TenToaTau;
 	private PrimaryButton btn_LamMoi;
+	private PrimaryButton btn_QuayLai;
+	private JLabel lbl_TongSoVeChieuVe;
+	private JLabel lbl_TongSoVeChieuDi;
+	private JPanel panel_20;
+	private PrimaryButton btn_TiepTheo;
 
 	// Thêm sự kiện cho lớp tìm kiếm view
 	public void addSuKien(ActionListener listener) {
@@ -139,6 +144,8 @@ public class ChonGhe_View extends View {
 		combobox_KhungGio.addActionListener(listener);
 		btn_ThemVeTau.addActionListener(listener);
 		btn_ChonNhanh.addActionListener(listener);
+		btn_QuayLai.addActionListener(listener);
+		btn_TiepTheo.addActionListener(listener);
 	}
 
 	public void addNextButtonListener(ActionListener listener) {
@@ -328,6 +335,7 @@ public class ChonGhe_View extends View {
 
 		dateChooser_NgayVe_1 = new JDateChooser();
 		dateChooser_NgayVe_1.setEnabled(false);
+		dateChooser_NgayVe_1.setBackground(Color.WHITE);
 		dateChooser_NgayVe_1.setLocale(new java.util.Locale("vi", "VN")); // Đặt ngôn ngữ là tiếng Việt
 		dateChooser_NgayVe_1.getCalendarButton().setBorder(null);
 		dateChooser_NgayVe_1.getCalendarButton().setBackground(Color.WHITE);
@@ -593,6 +601,44 @@ public class ChonGhe_View extends View {
 		panel_bottom.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
 		contentPane.add(panel_bottom);
 		panel_bottom.setLayout(new FlowLayout(FlowLayout.RIGHT, 30, 5));
+		
+		lbl_TongSoVeChieuDi = new JLabel("Số vé chiều đi: 0");
+		lbl_TongSoVeChieuDi.setFont(new Font("Arial", Font.BOLD, 18));
+		lbl_TongSoVeChieuDi.setVisible(false);
+		
+		panel_20 = new JPanel();
+		panel_20.setBorder(new EmptyBorder(0, 0, 0, 100));
+		panel_20.setBackground(Color.WHITE);
+		panel_bottom.add(panel_20);
+		panel_20.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));
+		
+		btn_QuayLai = new PrimaryButton("Quay lại", "/Image/arrow-back-up.png");
+		panel_20.add(btn_QuayLai);
+		btn_QuayLai.setFont(new Font("Arial", Font.BOLD, 18));
+		btn_QuayLai.setPreferredSize(new Dimension(140, 35));
+		btn_QuayLai.setMaximumSize(new Dimension(2147483647, 50));
+		btn_QuayLai.setInsets(new Insets(4, 6, 4, 6));
+		btn_QuayLai.setIconTextGap(5);
+		btn_QuayLai.setBorderRadius(10);
+		btn_QuayLai.setAlignmentX(0.0f);
+		
+		btn_TiepTheo = new PrimaryButton("Chọn nhanh", "/Image/arrow-right.png");
+		btn_TiepTheo.setVisible(false);
+
+		btn_TiepTheo.setText("Tiếp theo");
+		btn_TiepTheo.setPreferredSize(new Dimension(140, 35));
+		btn_TiepTheo.setInsets(new Insets(4, 10, 4, 10));
+		btn_TiepTheo.setIconTextGap(5);
+		btn_TiepTheo.setFont(new Font("Arial", Font.BOLD, 18));
+		btn_TiepTheo.setBorderRadius(10);
+		panel_20.add(btn_TiepTheo);
+		btn_QuayLai.setVisible(false);
+		panel_bottom.add(lbl_TongSoVeChieuDi);
+		
+		lbl_TongSoVeChieuVe = new JLabel("Số vé chiều về: 0");
+		lbl_TongSoVeChieuVe.setVisible(false);
+		lbl_TongSoVeChieuVe.setFont(new Font("Arial", Font.BOLD, 18));
+		panel_bottom.add(lbl_TongSoVeChieuVe);
 
 		lbl_TongSoVeTamThoi = new JLabel("Số vé tạm thời: 0");
 		lbl_TongSoVeTamThoi.setFont(new Font("Arial", Font.BOLD, 18));
@@ -746,4 +792,21 @@ public class ChonGhe_View extends View {
 	public JLabel getLbl_TongSoVeTamThoi() {
 		return lbl_TongSoVeTamThoi;
 	}
+
+	public PrimaryButton getBtn_QuayLai() {
+		return btn_QuayLai;
+	}
+
+	public JLabel getLbl_TongSoVeChieuVe() {
+		return lbl_TongSoVeChieuVe;
+	}
+
+	public JLabel getLbl_TongSoVeChieuDi() {
+		return lbl_TongSoVeChieuDi;
+	}
+
+	public PrimaryButton getBtn_TiepTheo() {
+		return btn_TiepTheo;
+	}
+	
 }

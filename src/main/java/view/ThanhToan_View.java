@@ -546,6 +546,7 @@ public class ThanhToan_View extends View {
 		panel_Right.add(panel_2);
 		
 		btn_QuayLai = new PrimaryButton("Quay lại", "/Image/arrow-back-up.png");
+		btn_QuayLai.setFont(new Font("Arial", Font.BOLD, 18));
 		btn_QuayLai.setInsets(new Insets(4, 6, 4, 6));
 		btn_QuayLai.setBorderRadius(10);
 		btn_QuayLai.setIconTextGap(5);
@@ -556,6 +557,7 @@ public class ThanhToan_View extends View {
 		panel_2.add(btn_QuayLai);
 		
 		btn_XemTruoc = new PrimaryButton("Xem trước", "/Image/file-description.png");
+		btn_XemTruoc.setFont(new Font("Arial", Font.BOLD, 18));
 		btn_XemTruoc.setInsets(new Insets(4, 6, 4, 6));
 		btn_XemTruoc.setBorderRadius(10);
 		btn_XemTruoc.setIconTextGap(5);
@@ -566,6 +568,7 @@ public class ThanhToan_View extends View {
 		panel_2.add(btn_XemTruoc);
 		
 		btn_ThuTien = new PrimaryButton("Thu tiền", "/Image/file-check.png");
+		btn_ThuTien.setFont(new Font("Arial", Font.BOLD, 18));
 		btn_ThuTien.setInsets(new Insets(4, 6, 4, 6));
 		btn_ThuTien.setBorderRadius(10);
 		btn_ThuTien.setIconTextGap(5);
