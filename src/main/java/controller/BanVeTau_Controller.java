@@ -164,9 +164,9 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	private ShortcutManager shortcutManager;
 	// ThanhToan
 	private ArrayList<Double> dsTienChiTietVe;
-	private double tienKhacDua = 0;
+	private double tienKhachDua = 0;
 	private double tongTienThanhToan = 0;
-	private String ghiChu = null;
+	private String ghiChu = "";
 	private String phuongThucThanhToan = "TienMat";
 
 	public ArrayList<View> getViewList() {
@@ -1177,7 +1177,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		veTau_Page.getTxt_HoTen().setText(khachHang.getHoTen());
 		veTau_Page.getTxt_Email().setText(khachHang.getEmail());
 		veTau_Page.getTxt_NgaySinh().setText(formatterNgay.format(khachHang.getNgaySinh()));
-		veTau_Page.getComboBox_GioiTinh().setSelectedIndex(khachHang.isGioiTinh() ? 2 : 1);
+		veTau_Page.getComboBox_GioiTinh().setSelectedIndex(khachHang.isGioiTinh() ? 1 : 2);
 		veTau_Page.getComboBox_LoaiKH()
 				.setSelectedItem(KhachHang.LoaiKhachHang.chuyenDoiTuEnumSangChuoi(khachHang.getLoaiKH()));
 	}
@@ -1473,9 +1473,9 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		thanhToan_Page.getLbl_SauThue().setText(String.format("%,.0f ₫", tongTienHoaDon * 0.1));
 		thanhToan_Page.getLbl_TongTienThanhToan().setText(String.format("%,.0f ₫", tongTienThanhToan));
 
-		thanhToan_Page.getPanel_GoiYTien().removeAll(); // Xóa các phần tử cũ trong panel
-		thanhToan_Page.getPanel_GoiYTien().revalidate(); // Làm mới layout
-		thanhToan_Page.getPanel_GoiYTien().repaint(); // Vẽ lại giao diện
+		thanhToan_Page.getPanel_GoiYTien().removeAll(); 
+		thanhToan_Page.getPanel_GoiYTien().revalidate(); 
+		thanhToan_Page.getPanel_GoiYTien().repaint(); 
 		thanhToan_Page.getPanel_GoiYTien().add(createPaymentSuggestionPanel(tongTienThanhToan));
 
 	}
@@ -1539,10 +1539,10 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					double amount = Double.parseDouble(button.getText().replace(".", "").trim());
-					tienKhacDua += amount;
-					thanhToan_Page.getTxt_TienKhachDua().setText(formatCurrency(tienKhacDua));
-					if (tienKhacDua >= tongTienThanhToan) {
-						thanhToan_Page.getTxt_TienTraLai().setText(formatCurrency(tienKhacDua - tongTienThanhToan));
+					tienKhachDua += amount;
+					thanhToan_Page.getTxt_TienKhachDua().setText(formatCurrency(tienKhachDua));
+					if (tienKhachDua >= tongTienThanhToan) {
+						thanhToan_Page.getTxt_TienTraLai().setText(formatCurrency(tienKhachDua - tongTienThanhToan));
 					}
 				}
 			});
@@ -1575,10 +1575,10 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 					try {
 						thanhToan_Page.getTxt_TienTraLai().setText("");
 						String sanitizedText = button.getText().replace("\u00A0", "").replaceAll("[^\\d]", "");
-						tienKhacDua = Double.parseDouble(sanitizedText);
-						thanhToan_Page.getTxt_TienKhachDua().setText(formatCurrency(tienKhacDua));
-						if (tienKhacDua >= tongTienThanhToan) {
-							thanhToan_Page.getTxt_TienTraLai().setText(formatCurrency(tienKhacDua - tongTienThanhToan));
+						tienKhachDua = Double.parseDouble(sanitizedText);
+						thanhToan_Page.getTxt_TienKhachDua().setText(formatCurrency(tienKhachDua));
+						if (tienKhachDua >= tongTienThanhToan) {
+							thanhToan_Page.getTxt_TienTraLai().setText(formatCurrency(tienKhachDua - tongTienThanhToan));
 						}
 					} catch (NumberFormatException ex) {
 						JOptionPane.showMessageDialog(null, "Lỗi định dạng số tiền: " + button.getText(),
@@ -1619,7 +1619,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		tongSoVeTamThoi = 0;
 		tongTienThanhToan = 0;
 		sttVeTau = 0;
-		tienKhacDua = 0;
+		tienKhachDua = 0;
 		ghiChu = "trống";
 
 		resetHuyBoVe();
@@ -1647,14 +1647,14 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 		hoaDon.setMaHoaDon(taoMaHoaDon(HoaDon_DAO.getInstance().getMaHoaDonMaxTrongThang()));
 		hoaDon.setNgayLapHoaDon(LocalDateTime.now());
-		hoaDon.setGhiChu(ghiChu == null ? "trống" : ghiChu);
+		hoaDon.setGhiChu(ghiChu == null || ghiChu.equals("") ? "trống" : ghiChu);
 		hoaDon.setThueVAT(10);
 		hoaDon.setPhuongThucThanhToan(phuongThucThanhToan);
 		hoaDon.setLoaiHoaDon(thanhToan_Page.getComboBox_LoaiHD().getSelectedIndex() == 0 ? "ThanhToan" : "GiuCho");
 		hoaDon.setKhachHang(khachHang);
 		hoaDon.setThongTinTram(thongTinTram);
 		hoaDon.setNhanVien(nhanVien);
-		hoaDon.setThongTinGiuCho(null);
+		hoaDon.setThongTinGiuCho(null); 
 
 		
 		// TODO: Sửa lại đi nè
@@ -1667,7 +1667,11 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 				veTau.setDaHuy(false);
 				veTau.setNgayHetHan(chuyenTauChon.getThoiGianKhoiHanh());
 				veTau.setGheTau(new GheTau((String)jTable_Ds.getValueAt(i, 3)));
-				if (VeTau_DAO.getInstance().add(veTau)) {
+				veTau.setKhachHang(new KhachHang((String) jTable_Ds.getValueAt(i, 4)));
+				
+				GheTau_DAO.getInstance().updateTrangThaiGheTau((String) jTable_Ds.getValueAt(i, 3), "DA_THANH_TOAN");
+				
+				if (VeTau_DAO.getInstance().themVeTau(veTau)) {
 					ChiTiet_HoaDon chiTiet_HoaDon = new ChiTiet_HoaDon();
 					chiTiet_HoaDon.setHoaDon(hoaDon);
 					chiTiet_HoaDon.setSoLuong(1);
@@ -1679,17 +1683,16 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 				}
 			}
 		}
-//		 inVeTau(hoaDon.getMaHoaDon());
+		 inVeTau(hoaDon.getMaHoaDon());
 		return temp;
 	}
 
 	public String taoMaHoaDon(String maHoaDonMax) {
 		String prefix = "HD";
 		LocalDate today = LocalDate.now();
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMM");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMyy");
 		String yearMonth = today.format(formatter);
 		int newNumber = 1;
-
 		if (maHoaDonMax != null && maHoaDonMax.startsWith(prefix + yearMonth)) {
 			String currentNumberStr = maHoaDonMax.substring(6);
 			newNumber = Integer.parseInt(currentNumberStr) + 1;
@@ -1732,43 +1735,57 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	}
 
 	public static void inVeTau(String maHoaDon) {
+	    try {
+	        PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
 
-		try {
-			PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+	        if (printServices.length > 0) {
+	            PrintService printer = printServices[1]; // Bạn có thể thay đổi để chọn máy in cụ thể
 
-			if (printServices.length > 0) {
-				PrintService printer = printServices[0];
+	            // Lấy danh sách chi tiết hóa đơn
+	            List<Map<String, Object>> ticketInfoList = HoaDon_DAO.getInstance().getThongTinHoaDon(maHoaDon);
 
-				Map<String, Object> ticketInfo = HoaDon_DAO.getInstance().getThongTinHoaDon(maHoaDon);
-				ticketInfo.put("tenNhaGa", removeAccent((String) ticketInfo.get("tenNhaGa")));
-				ticketInfo.put("diaChiNhaGa", removeAccent((String) ticketInfo.get("diaChiNhaGa")));
-				ticketInfo.put("dienThoaiNhaGa", ticketInfo.get("dienThoaiNhaGa"));
-				ticketInfo.put("hoTenKhachHang", removeAccent((String) ticketInfo.get("hoTenKhachHang")));
-				ticketInfo.put("soDienThoaiKH", ticketInfo.get("soDienThoaiKH"));
-				ticketInfo.put("cccdKH", ticketInfo.get("cccdKH"));
-				ticketInfo.put("maVeTau", ticketInfo.get("maVeTau"));
-				ticketInfo.put("loaiVe", removeAccent((String) ticketInfo.get("loaiVe")));
-				ticketInfo.put("gaKhoiHanh", removeAccent((String) ticketInfo.get("gaKhoiHanh")));
-				ticketInfo.put("gaDen", removeAccent((String) ticketInfo.get("gaDen")));
-				ticketInfo.put("thoiGianKhoiHanh", ticketInfo.get("thoiGianKhoiHanh"));
+	            if (ticketInfoList.isEmpty()) {
+	                System.out.println("Không có chi tiết hóa đơn nào để in.");
+	                return;
+	            }
 
-				String billsContent = generateTicket(ticketInfo);
+	            StringBuilder billsContent = new StringBuilder();
 
-				InputStream is = new ByteArrayInputStream(billsContent.getBytes());
-				DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
-				Doc doc = new SimpleDoc(is, flavor, null);
+	            for (Map<String, Object> ticketInfo : ticketInfoList) {
+	                ticketInfo.put("tenNhaGa", removeAccent((String) ticketInfo.get("tenNhaGa")));
+	                ticketInfo.put("diaChiNhaGa", removeAccent((String) ticketInfo.get("diaChiNhaGa")));
+	                ticketInfo.put("dienThoaiNhaGa", ticketInfo.get("dienThoaiNhaGa"));
+	                ticketInfo.put("hoTenKhachHang", removeAccent((String) ticketInfo.get("hoTenKhachHang")));
+	                ticketInfo.put("soDienThoaiKH", ticketInfo.get("soDienThoaiKH"));
+	                ticketInfo.put("cccdKH", ticketInfo.get("cccdKH"));
+	                ticketInfo.put("maVeTau", ticketInfo.get("maVeTau"));
+	                ticketInfo.put("loaiVe", removeAccent((String) ticketInfo.get("loaiVe")));
+	                ticketInfo.put("gaKhoiHanh", removeAccent((String) ticketInfo.get("gaKhoiHanh")));
+	                ticketInfo.put("gaDen", removeAccent((String) ticketInfo.get("gaDen")));
+	                ticketInfo.put("thoiGianKhoiHanh", ticketInfo.get("thoiGianKhoiHanh"));
+	                ticketInfo.put("maTau", ticketInfo.get("maTau"));
+	                ticketInfo.put("soThuTuToa", ticketInfo.get("soThuTuToa"));
+	                ticketInfo.put("soThuTuGhe", ticketInfo.get("soThuTuGhe"));
 
-				DocPrintJob printJob = printer.createPrintJob();
+	                billsContent.append(generateTicket(ticketInfo));
+	                billsContent.append("\n\n"); 
+	            }
 
-				printJob.print(doc, null);
-				System.out.println("Printed bills successfully!");
-			} else {
-				System.out.println("No printers available.");
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	            InputStream is = new ByteArrayInputStream(billsContent.toString().getBytes());
+	            DocFlavor flavor = DocFlavor.INPUT_STREAM.AUTOSENSE;
+	            Doc doc = new SimpleDoc(is, flavor, null);
+
+	            DocPrintJob printJob = printer.createPrintJob();
+	            printJob.print(doc, null);
+	            System.out.println("Printed bills successfully!");
+	        } else {
+	            System.out.println("No printers available.");
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 	}
+
 
 	public static String removeAccent(String text) {
 		text = text.replace("Đ", "D").replace("đ", "d");
@@ -1782,23 +1799,26 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	public static String generateTicket(Map<String, Object> ticketInfo) {
 		StringBuilder ticket = new StringBuilder();
 
-		ticket.append("****************************************\n");
-		ticket.append("               VE TAU\n");
-		ticket.append("****************************************\n");
+		ticket.append("             VE TAU\n\n");
 		ticket.append(String.format("Nha ga: %s\n", ticketInfo.get("tenNhaGa")));
 		ticket.append(String.format("Dia chi: %s\n", ticketInfo.get("diaChiNhaGa")));
 		ticket.append(String.format("Dien thoai: %s\n", ticketInfo.get("dienThoaiNhaGa")));
-		ticket.append("****************************************\n");
+		ticket.append("-------------------------------\n");
 		ticket.append(String.format("Hanh khach: %s\n", ticketInfo.get("hoTenKhachHang")));
-		ticket.append(String.format("So dien thoai: %s\n", ticketInfo.get("soDienThoaiKH")));
-		ticket.append(String.format("CCCD: %s\n", ticketInfo.get("cccdKH")));
-		ticket.append("****************************************\n");
+	    String soDienThoaiMasked = maskString((String) ticketInfo.get("soDienThoaiKH"), 3, 2);
+	    ticket.append(String.format("So dien thoai: %s\n", soDienThoaiMasked));
+	    String cccdMasked = maskString((String) ticketInfo.get("cccdKH"), 4, 3);
+	    ticket.append(String.format("CCCD: %s\n", cccdMasked));
+		ticket.append("-------------------------------\n");
+		ticket.append(String.format("Ma Tau: %s\n", ticketInfo.get("maTau")));
+		ticket.append(String.format("So thu tu toa: %s\n", ticketInfo.get("soThuTuToa")));
+		ticket.append(String.format("Vi tri ghe: %s\n", ticketInfo.get("soThuTuGhe")));
 		ticket.append(String.format("Ma ve tau: %s\n", ticketInfo.get("maVeTau")));
 		ticket.append(String.format("Loai ve: %s\n", ticketInfo.get("loaiVe")));
 		ticket.append(String.format("Ga khoi hanh: %s\n", ticketInfo.get("gaKhoiHanh")));
 		ticket.append(String.format("Ga den: %s\n", ticketInfo.get("gaDen")));
 		ticket.append(String.format("Thoi gian khoi hanh: %s\n", ticketInfo.get("thoiGianKhoiHanh")));
-		ticket.append("****************************************\n");
+		ticket.append("\n\n");
 		ticket.append("Cam on ban da su dung dich vu cua chung toi!\n");
 		ticket.append("\n");
 		ticket.append("\n");
@@ -1808,7 +1828,19 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 		return ticket.toString();
 	}
+	public static String maskString(String input, int unmaskedStart, int unmaskedEnd) {
+	    if (input == null || input.length() <= (unmaskedStart + unmaskedEnd)) {
+	        return input; 
+	    }
 
+	    int maskLength = input.length() - unmaskedStart - unmaskedEnd;
+	    StringBuilder masked = new StringBuilder(input.substring(0, unmaskedStart));
+	    for (int i = 0; i < maskLength; i++) {
+	        masked.append("*");
+	    }
+	    masked.append(input.substring(input.length() - unmaskedEnd));
+	    return masked.toString();
+	}
 	// Xử lý sự kiện
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -1918,18 +1950,22 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		else if (obj.equals(thanhToan_Page.getBtn_QuayLai())) {
 			thanhToan_Page.setVisible(false);
 		} else if (obj.equals(thanhToan_Page.getBtn_ThuTien())) {
+			
 			if (xuLyThuTien()) {
-				JOptionPane.showMessageDialog(null, "Thu thanh toán thành công!", "Thông báo",
-						JOptionPane.INFORMATION_MESSAGE);
-				thanhToan_Page.setVisible(false);
+				int response = JOptionPane.showConfirmDialog(null, "Bạn có muốn tiếp tục?", "Xác nhận",
+						JOptionPane.YES_NO_OPTION);
+				if(response == JOptionPane.YES_OPTION) {
+					JOptionPane.showMessageDialog(null, "Thu thanh toán thành công!", "Thông báo",
+							JOptionPane.INFORMATION_MESSAGE);
+					thanhToan_Page.setVisible(false);
+				}
 			} else {
 				JOptionPane.showMessageDialog(null, "Thu thanh toán không thành công!", "Thông báo",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		} else if (obj.equals(thanhToan_Page.getBtn_ThemGhiChu())) {
-			String note = thanhToan_Page.showNoteInputDialog(null, "Nhập ghi chú", "Vui lòng nhập ghi chú:");
+			String note = thanhToan_Page.showNoteInputDialog(null,"Nhập ghi chú", "Vui lòng nhập ghi chú:",ghiChu);
 
-			// Kiểm tra kết quả
 			if (note != null && !note.isEmpty()) {
 				ghiChu = note;
 			} else {
@@ -2057,7 +2093,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		}
 
 		if (e.getKeyCode() == KeyEvent.VK_DELETE || e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
-			tienKhacDua = 0;
+			tienKhachDua = 0;
 			thanhToan_Page.getTxt_TienTraLai().setText("");
 		}
 	}

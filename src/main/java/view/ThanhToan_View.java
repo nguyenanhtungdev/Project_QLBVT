@@ -84,29 +84,34 @@ public class ThanhToan_View extends View {
 	public void addSuKienTableThanhToan(MouseListener mouseListener) {
 		danhSachHoaDonJTable.addMouseListener(mouseListener);
 	}
-	public String showNoteInputDialog(Component parent, String title, String message) {
-        // Tạo JTextArea để nhập ghi chú
-        JTextArea textArea = new JTextArea(5, 20); // 5 dòng, 20 cột
-        textArea.setLineWrap(true); // Tự xuống dòng
-        textArea.setWrapStyleWord(true); // Xuống dòng theo từ
-        JScrollPane scrollPane = new JScrollPane(textArea);
+	public String showNoteInputDialog(Component parent, String title, String message, String defaultNote) {
+	    JTextArea textArea = new JTextArea(5, 20); 
+	    textArea.setLineWrap(true); 
+	    textArea.setWrapStyleWord(true);
+	    JScrollPane scrollPane = new JScrollPane(textArea);
 
-        // Hiển thị dialog với JTextArea
-        int result = JOptionPane.showConfirmDialog(
-                parent,
-                scrollPane,
-                title,
-                JOptionPane.OK_CANCEL_OPTION,
-                JOptionPane.PLAIN_MESSAGE
-        );
+	    if (defaultNote != null && !defaultNote.trim().isEmpty()) {
+	        textArea.setText(defaultNote); 
+	    }
 
-        // Xử lý kết quả
-        if (result == JOptionPane.OK_OPTION) {
-            return textArea.getText().trim();
-        } else {
-            return null; // Người dùng nhấn Cancel hoặc đóng dialog
-        }
-    }
+	    int result = JOptionPane.showConfirmDialog(
+	            parent,
+	            scrollPane,
+	            title,
+	            JOptionPane.OK_CANCEL_OPTION,
+	            JOptionPane.PLAIN_MESSAGE
+	    );
+
+	    if (result == JOptionPane.OK_OPTION) {
+	        return textArea.getText().trim();
+	    } else if(!defaultNote.equals("")) {
+	    	return textArea.getText().trim();
+	    }
+	    else {
+	    	return null;
+	    }
+	}
+
 
 		
 	public ThanhToan_View(String name, String imagePath) {

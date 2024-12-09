@@ -47,7 +47,8 @@ public class HoaDon {
 		if (maHoaDon != null && maHoaDon.matches("^HD\\d{4}\\d{5}$")) {
 			this.maHoaDon = maHoaDon;
 		} else {
-			throw new IllegalArgumentException("Mã hóa đơn phải có dạng 'HDyyyyxxxxx'");
+			System.out.println(maHoaDon);
+			throw new IllegalArgumentException("Mã hóa đơn phải có dạng 'HDmmyyxxxxx'");
 		}
 	}
 
