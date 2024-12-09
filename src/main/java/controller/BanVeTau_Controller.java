@@ -177,13 +177,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	public BanVeTau_Controller() throws SQLException {
 		this.danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
 		this.soChuyenTau = danhSachChuyenTau.size();
-		try {
-			shortcutManager = new ShortcutManager();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
+		
 		pageList.add(chonGhe_View = new ChonGhe_View("Chọn ghế", "/Image/armchair.png"));
 		pageList.add(veTau_Page = new VeTau_View("Vé tàu", "/Image/tabler-icon-ticket.png"));
 		pageList.add(hoanTien_view = new DoiTraVe_View("Đổi trả vé", "/Image/icon_ThanhToan.png"));
