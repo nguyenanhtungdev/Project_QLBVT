@@ -22,7 +22,7 @@ public class CaLam_DAO {
 
 	public List<CaLam> getAll() {
 		String sql = "SELECT * FROM CaLam";
-
+		List<CaLam> list = new ArrayList<>();
 		Connection con = null;
 		Statement statement = null;
 		ResultSet resultSet = null;
@@ -31,7 +31,6 @@ public class CaLam_DAO {
 			statement = con.createStatement();
 			resultSet = statement.executeQuery(sql);
 
-			List<CaLam> list = new ArrayList<>();
 			while (resultSet.next()) {
 				String maCa = resultSet.getString("maCa");
 				String tenCa = resultSet.getNString("tenCa");
