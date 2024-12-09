@@ -495,7 +495,7 @@ public class HoaDon_DAO {
 			con = Database.getInstance().getConnection();
 			PreparedStatement preparedStatement = con.prepareStatement(sql);
 			LocalDate today = LocalDate.now();
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyMM");
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMyy");
 			String prefix = today.format(formatter);
 
 			preparedStatement.setString(1, "HD" + prefix + "%");
@@ -550,47 +550,71 @@ public class HoaDon_DAO {
 		return false;
 	}
 
-	public Map<String, Object> getThongTinHoaDon(String maHoaDon) {
-		Map<String, Object> thongTinHoaDon = new HashMap<>();
-		Connection con = null;
-		PreparedStatement stmt = null;
-		ResultSet rs = null;
+	public List<Map<String, Object>> getThongTinHoaDon(String maHoaDon) {
+	    List<Map<String, Object>> danhSachThongTinHoaDon = new ArrayList<>();
+	    Connection con = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
 
-		try {
-			Database.getInstance();
-			con = Database.getInstance().getConnection();
+	    try {
+	        Database.getInstance();
+	        con = Database.getInstance().getConnection();
 
-			String sql = "SELECT " + "ttt.tenNhaGa, ttt.dienThoai, ttt.diaChi, " + "kh.hoTen, kh.soDienThoai, kh.CCCD, "
-					+ "vt.maVeTau, vt.loaiVe, " + "ct.gaKhoiHanh, ct.gaDen, ct.thoiGianKhoiHanh " + "FROM HoaDon hd "
-					+ "INNER JOIN KhachHang kh ON hd.maKH = kh.maKH "
-					+ "INNER JOIN ThongTinTram ttt ON ttt.maNhaGa = hd.maNhaGa "
-					+ "INNER JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon "
-					+ "INNER JOIN VeTau vt ON cthd.maVeTau = vt.maVeTau "
-					+ "INNER JOIN ChuyenTau ct ON ct.maChuyenTau = vt.maChuyenTau " + "WHERE hd.maHoaDon = ?";
+	        String sql = "SELECT " + 
+	                     "ttt.tenNhaGa, ttt.dienThoai, ttt.diaChi, " + 
+	                     "kh.hoTen, kh.soDienThoai, kh.CCCD, " +
+	                     "vt.maVeTau, vt.loaiVe, " + 
+	                     "ct.gaKhoiHanh, ct.gaDen, ct.thoiGianKhoiHanh, " + 
+	                     "gt.soThuTuGhe, tt.soThuTuToa, t.maTau " +
+	                     "FROM HoaDon hd " +
+	                     "INNER JOIN ThongTinTram ttt ON ttt.maNhaGa = hd.maNhaGa " +
+	                     "INNER JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon " +
+	                     "INNER JOIN VeTau vt ON cthd.maVeTau = vt.maVeTau " +
+	                     "INNER JOIN KhachHang kh ON kh.maKH = vt.maKH " +
+	                     "INNER JOIN GheTau gt ON gt.maGheTau = vt.maGheTau " + 
+	                     "INNER JOIN ToaTau tt ON tt.maToaTau = gt.maToaTau " + 
+	                     "INNER JOIN Tau t ON t.maTau = tt.maTau " + 
+	                     "INNER JOIN ChuyenTau ct ON ct.maChuyenTau = t.maChuyenTau " + 
+	                     "WHERE hd.maHoaDon = ?";
 
-			stmt = con.prepareStatement(sql);
-			stmt.setString(1, maHoaDon);
+	        stmt = con.prepareStatement(sql);
+	        stmt.setString(1, maHoaDon);
 
-			rs = stmt.executeQuery();
+	        rs = stmt.executeQuery();
 
-			if (rs.next()) {
-				thongTinHoaDon.put("tenNhaGa", rs.getString("tenNhaGa"));
-				thongTinHoaDon.put("dienThoaiNhaGa", rs.getString("dienThoai"));
-				thongTinHoaDon.put("diaChiNhaGa", rs.getString("diaChi"));
-				thongTinHoaDon.put("hoTenKhachHang", rs.getString("hoTen"));
-				thongTinHoaDon.put("soDienThoaiKH", rs.getString("soDienThoai"));
-				thongTinHoaDon.put("cccdKH", rs.getString("CCCD"));
-				thongTinHoaDon.put("maVeTau", rs.getString("maVeTau"));
-				thongTinHoaDon.put("loaiVe", rs.getString("loaiVe"));
-				thongTinHoaDon.put("gaKhoiHanh", rs.getString("gaKhoiHanh"));
-				thongTinHoaDon.put("gaDen", rs.getString("gaDen"));
-				thongTinHoaDon.put("thoiGianKhoiHanh", rs.getString("thoiGianKhoiHanh"));
-			}
+	        while (rs.next()) {
+	            Map<String, Object> thongTinHoaDon = new HashMap<>();
+	            thongTinHoaDon.put("tenNhaGa", rs.getString("tenNhaGa"));
+	            thongTinHoaDon.put("dienThoaiNhaGa", rs.getString("dienThoai"));
+	            thongTinHoaDon.put("diaChiNhaGa", rs.getString("diaChi"));
+	            thongTinHoaDon.put("hoTenKhachHang", rs.getString("hoTen"));
+	            thongTinHoaDon.put("soDienThoaiKH", rs.getString("soDienThoai"));
+	            thongTinHoaDon.put("cccdKH", rs.getString("CCCD"));
+	            thongTinHoaDon.put("maVeTau", rs.getString("maVeTau"));
+	            thongTinHoaDon.put("loaiVe", rs.getString("loaiVe"));
+	            thongTinHoaDon.put("gaKhoiHanh", rs.getString("gaKhoiHanh"));
+	            thongTinHoaDon.put("gaDen", rs.getString("gaDen"));
+	            thongTinHoaDon.put("thoiGianKhoiHanh", rs.getString("thoiGianKhoiHanh"));
+	            thongTinHoaDon.put("soThuTuGhe", rs.getString("soThuTuGhe"));
+	            thongTinHoaDon.put("soThuTuToa", rs.getString("soThuTuToa"));
+	            thongTinHoaDon.put("maTau", rs.getString("maTau"));
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		return thongTinHoaDon;
+	            danhSachThongTinHoaDon.add(thongTinHoaDon); // Thêm vào danh sách
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	            if (con != null) con.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return danhSachThongTinHoaDon;
 	}
 
 	public List<HoaDon> getByFilters(LocalDateTime start, LocalDateTime end, String loaiHoaDon) {

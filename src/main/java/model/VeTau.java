@@ -9,18 +9,19 @@ public class VeTau {
 	private boolean loaiVe;
 	private LocalDateTime ngayHetHan;
 	private boolean daHuy;
-
 	private GheTau gheTau;
+	private KhachHang khachHang;
 
 	public VeTau() {
 	}
 
-	public VeTau(String maVeTau, boolean loaiVe, LocalDateTime ngayHetHan, boolean daHuy, GheTau gheTau) {
+	public VeTau(String maVeTau, boolean loaiVe, LocalDateTime ngayHetHan, boolean daHuy, GheTau gheTau, KhachHang khachHang) {
 		setMaVeTau(maVeTau);
 		this.loaiVe = loaiVe;
 		this.ngayHetHan = ngayHetHan;
 		this.daHuy = daHuy;
 		this.gheTau = gheTau;
+		this.khachHang = khachHang;
 	}
 
 	public VeTau(String maVeTau) {
@@ -71,15 +72,20 @@ public class VeTau {
 		return gheTau.getTenLoaiGheTau() == null ? gheTau = GheTau_DAO.getInstance().getByMaGheTau(gheTau.getMaGheTau())
 				: gheTau;
 	}
-
+	public KhachHang getKhachHang() {
+		return khachHang = KhachHang_DAO.getInstance().getByMaKhachHang(khachHang.getMaKhachHang());
+	}
 	public void setGheTau(GheTau gheTau) {
 		this.gheTau = gheTau;
+	}
+	
+	public void setKhachHang(KhachHang khachHang) {
+		this.khachHang = khachHang;
 	}
 
 	@Override
 	public String toString() {
-		return "VeTau {maVeTau: " + maVeTau + ", loaiVe: " + loaiVe + ", ngayHetHan: " + ngayHetHan + ", daHuy: "
-				+ daHuy + ", gheTau: " + gheTau + "}";
+		return "VeTau [maVeTau=" + maVeTau + ", loaiVe=" + loaiVe + ", ngayHetHan=" + ngayHetHan + ", daHuy=" + daHuy
+				+ ", gheTau=" + gheTau + ", khachHang=" + khachHang + "]";
 	}
-
 }

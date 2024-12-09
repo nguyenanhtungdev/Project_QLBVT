@@ -37,10 +37,11 @@ public class VeTau_DAO {
 				boolean loaiVe = resultSet.getBoolean("loaiVe");
 				LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
 				boolean daHuy = resultSet.getBoolean("daHuy");
+				String maKH = resultSet.getString("maKH");
 
 				GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
 
-				list.add(new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau));
+				list.add(new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau,new KhachHang(maKH)));
 			}
 
 			return list;
@@ -93,10 +94,11 @@ public class VeTau_DAO {
 				boolean loaiVe = resultSet.getBoolean("loaiVe");
 				LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
 				boolean daHuy = resultSet.getBoolean("daHuy");
-
+				String maKH = resultSet.getString("maKH");
+				
 				GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
 
-				return new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau);
+				return new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau, new KhachHang(maKH));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -114,8 +116,8 @@ public class VeTau_DAO {
 		return null;
 	}
 
-	public boolean add(VeTau veTau) {
-		String sql = "INSERT INTO VeTau (maVeTau, loaiVe, ngayHetHan, daHuy, maGheTau) VALUES (?, ?, ?, ?, ?)";
+	public boolean themVeTau(VeTau veTau) {
+		String sql = "INSERT INTO VeTau (maVeTau, loaiVe, ngayHetHan, daHuy, maGheTau, maKH) VALUES (?, ?, ?, ?, ?, ?)";
 
 		Connection con = null;
 		PreparedStatement statement = null;
@@ -127,6 +129,7 @@ public class VeTau_DAO {
 			statement.setTimestamp(3, Timestamp.valueOf(veTau.getNgayHetHan()));
 			statement.setBoolean(4, veTau.isDaHuy());
 			statement.setString(5, veTau.getGheTau().getMaGheTau());
+			statement.setString(6, veTau.getKhachHang().getMaKhachHang());
 			int count = statement.executeUpdate();
 
 			return count == 1;
