@@ -41,6 +41,7 @@ public class CaLam_DAO {
 
 				list.add(new CaLam(maCa, tenCa, thoiGianBatDau, thoiGianKetThuc, ghiChu));
 			}
+			return list;
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} finally {
@@ -53,6 +54,7 @@ public class CaLam_DAO {
 				e.printStackTrace();
 			}
 		}
+
 		return null;
 	}
 
