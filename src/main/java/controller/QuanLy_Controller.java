@@ -17,15 +17,20 @@ import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
@@ -34,11 +39,14 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.table.DefaultTableModel;
 
 import constant.ColorConstants;
+import model.CaLam;
+import model.CaLam_DAO;
 import model.ChiTiet_HoaDon;
 import model.ChiTiet_HoaDon_DAO;
 import model.ChuyenTau;
@@ -54,6 +62,10 @@ import model.KhachHang.LoaiKhachHang;
 import model.KhuyenMai;
 import model.KhuyenMai.TinhTrangKhuyenMai;
 import model.KhuyenMai_DAO;
+import model.NhanVien;
+import model.NhanVien_CaLam;
+import model.NhanVien_CaLam_DAO;
+import model.NhanVien_DAO;
 import model.Tau;
 import model.Tau.TrangThaiTau;
 import model.Tau_DAO;
@@ -64,9 +76,11 @@ import model.VeTau;
 import model.VeTau_DAO;
 import other.CustomTitleLable;
 import other.CustomTrainStatusButton;
+import other.MultiCheckPopupMenuEditor;
 import other.SeatButton;
 import util.PrinterUtils;
 import view.HoaDonChiTiet_View;
+import view.QuanLyCaLam_View;
 import view.QuanLyHoaDon_View;
 import view.QuanLyKhuyenMai_View;
 import view.QuanLyTau_View;
@@ -82,11 +96,15 @@ public class QuanLy_Controller {
 	private ToaTau_DAO toaTau_DAO;
 	private GheTau_DAO gheTau_DAO;
 	private KhuyenMai_DAO kMai_DAO;
+	private CaLam_DAO caLam_DAO;
+	private NhanVien_DAO nhanVien_DAO;
+	private NhanVien_CaLam_DAO nhanVien_CaLam_DAO;
 	private static final int ITEMS_PER_PAGE = 5;
 	private int currentIndex = 0;
 	private QuanLyTau_View qLTau_View;
 	private QuanLyHoaDon_View qLHoaDon_view;
 	private QuanLyKhuyenMai_View qLKhuyenMai_View;
+	private QuanLyCaLam_View qLCaLam_View;
 	private HoaDonChiTiet_View qlHoaDonChiTiet;
 	private int soTau;
 	private int soTrang = 1;
@@ -122,6 +140,7 @@ public class QuanLy_Controller {
 		pageList.add(this.qLHoaDon_view = new QuanLyHoaDon_View("Hóa đơn", "/Image/iconHoaDon.png"));
 		pageList.add(this.qLTau_View = new QuanLyTau_View("Tàu", "/Image/Trains.png"));
 		pageList.add(this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/Sales.png"));
+		pageList.add(this.qLCaLam_View = new QuanLyCaLam_View("Ca làm", "/Image/lichCaLam.png"));
 
 		this.gheTau_DAO = new GheTau_DAO();
 		this.toaTau_DAO = new ToaTau_DAO();
@@ -141,8 +160,13 @@ public class QuanLy_Controller {
 		this.ctHD_DAO = new ChiTiet_HoaDon_DAO();
 		initControllerHD();
 
+		this.nhanVien_DAO = new NhanVien_DAO();
+		this.nhanVien_CaLam_DAO = new NhanVien_CaLam_DAO();
+		this.caLam_DAO = new CaLam_DAO();
+		initControllerCaLam();
 	}
 
+	// QL_Tau
 	private void initControllerTau() throws SQLException {
 		themSuKien();
 		DocDuLieuVaoTableTau();
@@ -159,7 +183,6 @@ public class QuanLy_Controller {
 	}
 
 	// QL_KhuyenMai
-
 	private void initControllerKM() {
 		themSuKienKM();
 		DocDuLieuVaoTableKhuyenMai();
@@ -172,6 +195,26 @@ public class QuanLy_Controller {
 		qLKhuyenMai_View.addButtonCapNhapListener(e -> CapNhapKM());
 		qLKhuyenMai_View.addButtonTimListener(e -> searchKM());
 		qLKhuyenMai_View.addButtonReloadListener(e -> reLoadSearchKM());
+	}
+
+	// QL_CaLam
+	private void initControllerCaLam() {
+		themSuKienCL();
+		xoaDuLieuTableCaLam();
+		setUpEditorAndListener();
+		DocDuLieuVaoTableCaLam();
+		DocDuLieuVaoTableLichLam();
+
+	}
+
+	private void themSuKienCL() {
+		qLCaLam_View.addButtonLuuListener(e -> luuLichLamViec());
+		qLCaLam_View.addButtonHuyListener(e -> huyChinhSuaLichLamViec());
+		qLCaLam_View.getLichTuan().addPropertyChangeListener("date", evt -> {
+			if (evt.getNewValue() != null) {
+				DocDuLieuVaoTableLichLam();
+			}
+		});
 	}
 
 	// QL_HoaDon
@@ -190,7 +233,6 @@ public class QuanLy_Controller {
 			try {
 				xemHDCT();
 			} catch (SQLException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		});
@@ -380,9 +422,8 @@ public class QuanLy_Controller {
 		HoaDon_DAO hoaDonDAO = new HoaDon_DAO();
 		ChiTiet_HoaDon_DAO chiTietHoaDonDAO = ChiTiet_HoaDon_DAO.getInstance();
 		VeTau_DAO veTauDAO = new VeTau_DAO();
-		ChuyenTau_DAO chuyenTauDAO = new ChuyenTau_DAO();
 		GiaVe_DAO giaVeDAO = new GiaVe_DAO();
-		KhuyenMai_DAO khuyenMaiDAO = new KhuyenMai_DAO(); // Giả sử bạn có DAO này
+		KhuyenMai_DAO khuyenMaiDAO = new KhuyenMai_DAO();
 
 		List<ChiTiet_HoaDon> chiTietHoaDons = chiTietHoaDonDAO.getAll().stream().filter(p -> {
 			return p.getHoaDon().getMaHoaDon().equals(maHD);
@@ -711,13 +752,14 @@ public class QuanLy_Controller {
 		qLKhuyenMai_View.getComboBoxMaKM().setSelectedItem(null);
 		qLKhuyenMai_View.getComboBoxTrangThai().setSelectedItem(null);
 	}
+
 	private void LayDataTuBangKM() {
 		qLKhuyenMai_View.getTableKM().addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
 				if (selectedRow >= 0) {
-					qLKhuyenMai_View.getDateBDKM().setEnabled(false);					
+					qLKhuyenMai_View.getDateBDKM().setEnabled(false);
 					String tenKM = qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 2).toString();
 					String soLuong = qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 5).toString();
 					String noiDung = qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 3).toString();
@@ -749,82 +791,82 @@ public class QuanLy_Controller {
 			}
 		});
 	}
-	
+
 	private void CapNhapKM() {
-	    int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
-	    if (selectedRow < 0) {
-	        JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng cần cập nhật!");
-	        return;
-	    }
+		int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
+		if (selectedRow < 0) {
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn dòng cần cập nhật!");
+			return;
+		}
 
-	    String maKM = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 1);
-	    String tenKM = qLKhuyenMai_View.getTxtTenkm().getText().trim();
-	    String noiDung = qLKhuyenMai_View.getTxtNDKM().getText().trim();
-	    int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText().trim());
-	    LocalDateTime ngayBatDau = kMai_DAO.getByMaKhuyenMai(maKM).getThoiGianBatDau();
-	    LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-	    int giamGia = Integer.parseInt(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", "").trim());
+		String maKM = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 1);
+		String tenKM = qLKhuyenMai_View.getTxtTenkm().getText().trim();
+		String noiDung = qLKhuyenMai_View.getTxtNDKM().getText().trim();
+		int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText().trim());
+		LocalDateTime ngayBatDau = kMai_DAO.getByMaKhuyenMai(maKM).getThoiGianBatDau();
+		LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault())
+				.toLocalDateTime();
+		int giamGia = Integer.parseInt(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", "").trim());
 
-	    if (tenKM.isEmpty()) {
-	        JOptionPane.showMessageDialog(null, "Vui lòng nhập tên khuyến mãi!");
-	        return;
-	    }
-	    if (soLuong <= 0) {
-	        JOptionPane.showMessageDialog(null, "Số lượng tối đa phải lớn hơn 0!");
-	        return;
-	    }
-	    if (hanSuDung.isBefore(ngayBatDau) || hanSuDung.isEqual(ngayBatDau)) {
-	        JOptionPane.showMessageDialog(null, "Hạn sử dụng phải sau ngày bắt đầu!");
-	        return;
-	    }
-	    if (giamGia < 0 || giamGia > 100) {
-	        JOptionPane.showMessageDialog(null, "Giảm giá phải nằm trong khoảng từ 0 đến 100!");
-	        return;
-	    }
-	    String currentTinhTrang = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 8);
-	    TinhTrangKhuyenMai newTinhTrang = null;
+		if (tenKM.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Vui lòng nhập tên khuyến mãi!");
+			return;
+		}
+		if (soLuong <= 0) {
+			JOptionPane.showMessageDialog(null, "Số lượng tối đa phải lớn hơn 0!");
+			return;
+		}
+		if (hanSuDung.isBefore(ngayBatDau) || hanSuDung.isEqual(ngayBatDau)) {
+			JOptionPane.showMessageDialog(null, "Hạn sử dụng phải sau ngày bắt đầu!");
+			return;
+		}
+		if (giamGia < 0 || giamGia > 100) {
+			JOptionPane.showMessageDialog(null, "Giảm giá phải nằm trong khoảng từ 0 đến 100!");
+			return;
+		}
+		String currentTinhTrang = (String) qLKhuyenMai_View.getTableKM().getValueAt(selectedRow, 8);
+		TinhTrangKhuyenMai newTinhTrang = null;
 
-	    if ("Hết số lượng".equals(currentTinhTrang)) {
-	        int currentSoLuong = kMai_DAO.getByMaKhuyenMai(maKM).getSoLuongToiDa();
-	        if (soLuong <= currentSoLuong) {
-	            JOptionPane.showMessageDialog(null, "Số lượng mới không hợp lệ!");
-	            return;
-	        }
-	        newTinhTrang = TinhTrangKhuyenMai.HET_SO_LUONG;
-	    } else if ("Còn".equals(currentTinhTrang)) {
-	        newTinhTrang = TinhTrangKhuyenMai.CON;
-	    } else if ("Hết hạn sử dụng".equals(currentTinhTrang)) {
-	        newTinhTrang = TinhTrangKhuyenMai.HET_HAN_SU_DUNG;
-	    } else {
-	        throw new IllegalArgumentException("Giá trị tình trạng không hợp lệ: " + currentTinhTrang);
-	    }
+		if ("Hết số lượng".equals(currentTinhTrang)) {
+			int currentSoLuong = kMai_DAO.getByMaKhuyenMai(maKM).getSoLuongToiDa();
+			if (soLuong <= currentSoLuong) {
+				JOptionPane.showMessageDialog(null, "Số lượng mới không hợp lệ!");
+				return;
+			}
+			newTinhTrang = TinhTrangKhuyenMai.HET_SO_LUONG;
+		} else if ("Còn".equals(currentTinhTrang)) {
+			newTinhTrang = TinhTrangKhuyenMai.CON;
+		} else if ("Hết hạn sử dụng".equals(currentTinhTrang)) {
+			newTinhTrang = TinhTrangKhuyenMai.HET_HAN_SU_DUNG;
+		} else {
+			throw new IllegalArgumentException("Giá trị tình trạng không hợp lệ: " + currentTinhTrang);
+		}
 
-	    if (newTinhTrang == TinhTrangKhuyenMai.HET_SO_LUONG && soLuong > 0) {
-	        newTinhTrang = TinhTrangKhuyenMai.CON;
-	    } else if (newTinhTrang == TinhTrangKhuyenMai.HET_HAN_SU_DUNG && hanSuDung.isAfter(LocalDateTime.now())) {
-	        newTinhTrang = TinhTrangKhuyenMai.CON;
-	    }
+		if (newTinhTrang == TinhTrangKhuyenMai.HET_SO_LUONG && soLuong > 0) {
+			newTinhTrang = TinhTrangKhuyenMai.CON;
+		} else if (newTinhTrang == TinhTrangKhuyenMai.HET_HAN_SU_DUNG && hanSuDung.isAfter(LocalDateTime.now())) {
+			newTinhTrang = TinhTrangKhuyenMai.CON;
+		}
 
-	    KhuyenMai kmEntity = new KhuyenMai(maKM);
-	    kmEntity.setTenKhuyenMai(tenKM);
-	    kmEntity.setNoiDungKhuyenMai(noiDung);
-	    kmEntity.setSoLuongToiDa(soLuong);
-	    kmEntity.setThoiGianBatDau(ngayBatDau);
-	    kmEntity.setHanSuDungKhuyenMai(hanSuDung);
-	    kmEntity.setTinhTrangKhuyenMai(newTinhTrang);
-	    kmEntity.setGiamGia(giamGia);
+		KhuyenMai kmEntity = new KhuyenMai(maKM);
+		kmEntity.setTenKhuyenMai(tenKM);
+		kmEntity.setNoiDungKhuyenMai(noiDung);
+		kmEntity.setSoLuongToiDa(soLuong);
+		kmEntity.setThoiGianBatDau(ngayBatDau);
+		kmEntity.setHanSuDungKhuyenMai(hanSuDung);
+		kmEntity.setTinhTrangKhuyenMai(newTinhTrang);
+		kmEntity.setGiamGia(giamGia);
 
-	    boolean result = kMai_DAO.update(kmEntity);
+		boolean result = kMai_DAO.update(kmEntity);
 
-	    if (result) {
-	        JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
-	        xoaDuLieuTableKM();
-	        DocDuLieuVaoTableKhuyenMai();
-	    } else {
-	        JOptionPane.showMessageDialog(null, "Cập nhật thất bại! Vui lòng kiểm tra lại thông tin.");
-	    }
+		if (result) {
+			JOptionPane.showMessageDialog(null, "Cập nhật thành công!");
+			xoaDuLieuTableKM();
+			DocDuLieuVaoTableKhuyenMai();
+		} else {
+			JOptionPane.showMessageDialog(null, "Cập nhật thất bại! Vui lòng kiểm tra lại thông tin.");
+		}
 	}
-
 
 	private void searchKM() {
 		String maKM = (String) qLKhuyenMai_View.getComboBoxMaKM().getSelectedItem();
@@ -946,6 +988,248 @@ public class QuanLy_Controller {
 		qLKhuyenMai_View.getDateBDKM().setDate(null);
 		qLKhuyenMai_View.getDateKTKM().setDate(null);
 		qLKhuyenMai_View.getTxtTenkm().requestFocus();
+	}
+
+	////// QL_CaLam_View
+	public void DocDuLieuVaoTableCaLam() {
+		List<CaLam> list;
+		list = caLam_DAO.getAll();
+		for (CaLam cl : list) {
+			themCaLamVaoBang(cl);
+		}
+	}
+
+	private void themCaLamVaoBang(CaLam caLam) {
+		DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+		String thoiGianBatDauFormatted = caLam.getThoiGianBatDau() != null
+				? caLam.getThoiGianBatDau().format(timeFormatter)
+				: "";
+		String thoiGianKetThucFormatted = caLam.getThoiGianKetThuc() != null
+				? caLam.getThoiGianKetThuc().format(timeFormatter)
+				: "";
+
+		String tenCaFormatted = chuyenDoiTenCa(caLam.getTenCa());
+
+		qLCaLam_View.getModelTableCaLam()
+				.addRow(new Object[] { qLCaLam_View.getModelTableCaLam().getRowCount() + 1, caLam.getMaCa(),
+						tenCaFormatted, thoiGianBatDauFormatted, thoiGianKetThucFormatted, caLam.getGhiChu() });
+	}
+
+	private void xoaDuLieuTableCaLam() {
+		DefaultTableModel dm = (DefaultTableModel) qLCaLam_View.getTableCaLam().getModel();
+		dm.getDataVector().removeAllElements();
+	}
+
+	public void DocDuLieuVaoTableLichLam() {
+		Date selectedDate = qLCaLam_View.getLichTuan().getDate();
+		if (selectedDate == null) {
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn ngày để hiển thị lịch làm việc!");
+			return;
+		}
+		LocalDate selectedLocalDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate tuNgay = selectedLocalDate.with(DayOfWeek.MONDAY);
+		LocalDate denNgay = selectedLocalDate.with(DayOfWeek.SUNDAY);
+
+		List<NhanVien> danhSachNhanVien = nhanVien_DAO.getAll();
+		List<NhanVien_CaLam> danhSachCaLam = nhanVien_CaLam_DAO.getAll().stream().filter(caLam -> {
+			LocalDate ngayNhanCa = caLam.getThoiGianNhanCa().toLocalDate();
+			return !ngayNhanCa.isBefore(tuNgay) && !ngayNhanCa.isAfter(denNgay);
+		}).collect(Collectors.toList());
+
+		qLCaLam_View.getModelTableLichLV().setRowCount(0);
+
+		for (NhanVien nv : danhSachNhanVien) {
+			Object[] rowData = new Object[8];
+			rowData[0] = nv.getMaNV() + " - " + nv.getHoTenNV();
+			qLCaLam_View.getModelTableLichLV().addRow(rowData);
+		}
+		for (NhanVien_CaLam cl : danhSachCaLam) {
+			themLichLamVaoBang(cl);
+		}
+	}
+
+	private void themLichLamVaoBang(NhanVien_CaLam nhanVien_CaLam) {
+		String maNV = nhanVien_CaLam.getNhanVien().getMaNV();
+		String maCaLam = nhanVien_CaLam.getCaLam().getMaCa();
+		LocalDateTime thoiGianNhanCa = nhanVien_CaLam.getThoiGianNhanCa();
+		int dayOfWeek = thoiGianNhanCa.getDayOfWeek().getValue();
+		int columnIndex = dayOfWeek;
+
+		NhanVien nv = nhanVien_DAO.getByMaNhanVien(maNV);
+		CaLam caLam = caLam_DAO.getByMaCa(maCaLam);
+
+		String tenCaFormatted = chuyenDoiTenCa(caLam.getTenCa());
+
+		for (int i = 0; i < qLCaLam_View.getModelTableLichLV().getRowCount(); i++) {
+			String existingRowNV = (String) qLCaLam_View.getModelTableLichLV().getValueAt(i, 0);
+			if (existingRowNV.startsWith(maNV)) {
+				Object currentValue = qLCaLam_View.getModelTableLichLV().getValueAt(i, columnIndex);
+				if (currentValue != null) {
+					String currentText = currentValue.toString();
+					if (!currentText.contains(tenCaFormatted)) {
+						qLCaLam_View.getModelTableLichLV().setValueAt(currentText + ", " + tenCaFormatted, i,
+								columnIndex);
+					}
+				} else {
+					qLCaLam_View.getModelTableLichLV().setValueAt(tenCaFormatted, i, columnIndex);
+				}
+				return;
+			}
+		}
+
+		Object[] rowData = new Object[8];
+		rowData[0] = maNV + " - " + nv.getHoTenNV();
+		rowData[columnIndex] = tenCaFormatted;
+		qLCaLam_View.getModelTableLichLV().addRow(rowData);
+	}
+
+	private void setUpEditorAndListener() {
+		String[] caLamOptions = { "Sáng", "Trưa", "Tối", "Khuya" };
+		MultiCheckPopupMenuEditor editor = new MultiCheckPopupMenuEditor(caLamOptions);
+
+		for (int i = 1; i <= 7; i++) {
+			qLCaLam_View.getTableLichLV().getColumnModel().getColumn(i).setCellEditor(editor);
+		}
+
+		qLCaLam_View.getTableLichLV().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				JTable table = (JTable) e.getSource();
+				int row = table.rowAtPoint(e.getPoint());
+				int column = table.columnAtPoint(e.getPoint());
+
+				if (column > 0 && column <= 7) {
+					editor.getTableCellEditorComponent(table, table.getValueAt(row, column), false, row, column);
+				}
+			}
+		});
+	}
+
+	private LocalDate tinhNgayTrongTuan(Date selectedDate, int dayOfWeek) {
+		LocalDate baseDate = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		return baseDate.with(DayOfWeek.of(dayOfWeek));
+	}
+
+	private String chuyenDoiTenCa(String tenCa) {
+		switch (tenCa) {
+		case "SA":
+			return "Sáng";
+		case "TR":
+			return "Trưa";
+		case "TO":
+			return "Tối";
+		case "KH":
+			return "Khuya";
+		default:
+			return "Không xác định";
+		}
+	}
+
+	private String chuyenDoiTenCaVeMa(String tenCa) {
+		switch (tenCa) {
+		case "Sáng":
+			return "CA01";
+		case "Trưa":
+			return "CA02";
+		case "Tối":
+			return "CA03";
+		case "Khuya":
+			return "CA04";
+		default:
+			return "";
+		}
+	}
+
+	public void luuLichLamViec() {
+		int response = JOptionPane.showConfirmDialog(null, "Bạn có muốn lưu những thay đổi này không?", "Xác nhận lưu",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+		if (response == JOptionPane.NO_OPTION) {
+			return;
+		}
+
+		int rowCount = qLCaLam_View.getModelTableLichLV().getRowCount();
+		boolean hasError = false;
+
+		for (int i = 0; i < rowCount; i++) {
+			String maNV_HoTen = (String) qLCaLam_View.getModelTableLichLV().getValueAt(i, 0);
+
+			if (maNV_HoTen == null || !maNV_HoTen.contains(" - ")) {
+				hasError = true;
+				continue;
+			}
+			String maNV = maNV_HoTen.split(" - ")[0].trim();
+			NhanVien nv = nhanVien_DAO.getByMaNhanVien(maNV);
+			if (nv == null) {
+				hasError = true;
+				continue;
+			}
+
+			for (int day = 1; day <= 7; day++) {
+				String caLam = (String) qLCaLam_View.getModelTableLichLV().getValueAt(i, day);
+				LocalDate ngay = tinhNgayTrongTuan(qLCaLam_View.getLichTuan().getDate(), day);
+				List<NhanVien_CaLam> caLamHienTai = nhanVien_CaLam_DAO.getByNhanVienAndNgay(maNV, ngay);
+				Set<String> maCaLamMoi = new HashSet<>();
+				if (caLam != null && !caLam.trim().isEmpty()) {
+					String[] caLamArray = caLam.split(", ");
+					for (String ca : caLamArray) {
+						String maCaLam = chuyenDoiTenCaVeMa(ca.trim());
+						if (!maCaLam.isEmpty()) {
+							maCaLamMoi.add(maCaLam);
+						} else {
+							hasError = true;
+						}
+					}
+				}
+				for (NhanVien_CaLam caHienTai : caLamHienTai) {
+					if (!maCaLamMoi.contains(caHienTai.getCaLam().getMaCa())) {
+						boolean deleted = nhanVien_CaLam_DAO.delete(caHienTai);
+						if (!deleted) {
+							hasError = true;
+							System.err.println("Không thể xóa ca làm: " + caHienTai.getCaLam().getMaCa()
+									+ " cho nhân viên: " + maNV);
+						}
+					}
+				}
+				for (String maCaLam : maCaLamMoi) {
+					CaLam caLamObject = caLam_DAO.getByMaCa(maCaLam);
+					if (caLamObject == null) {
+						hasError = true;
+						continue;
+					}
+
+					LocalTime gioBatDau = caLamObject.getThoiGianBatDau();
+					LocalTime gioKetThuc = caLamObject.getThoiGianKetThuc();
+
+					NhanVien_CaLam nhanVien_CaLam = new NhanVien_CaLam(ngay.atTime(gioBatDau), ngay.atTime(gioKetThuc),
+							nv, new CaLam(maCaLam));
+
+					boolean result = nhanVien_CaLam_DAO.saveOrUpdate(nhanVien_CaLam);
+					if (!result) {
+						hasError = true;
+					}
+				}
+			}
+		}
+
+		if (hasError) {
+			JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi lưu lịch làm việc. Vui lòng kiểm tra lại!", "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(null, "Lưu lịch làm việc thành công!");
+		}
+	}
+
+	public void huyChinhSuaLichLamViec() {
+		int response = JOptionPane.showConfirmDialog(null, "Bạn có chắc muốn hủy bỏ các thay đổi không?",
+				"Xác nhận hủy", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		if (response == JOptionPane.NO_OPTION) {
+			return;
+		}
+		xoaDuLieuTableCaLam();
+		DocDuLieuVaoTableCaLam();
+		DocDuLieuVaoTableLichLam();
+		JOptionPane.showMessageDialog(null, "Đã hủy các thay đổi!");
 	}
 
 	////// Tau_view

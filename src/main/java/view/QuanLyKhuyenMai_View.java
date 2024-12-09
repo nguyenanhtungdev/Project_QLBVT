@@ -24,7 +24,6 @@ import javax.swing.border.EmptyBorder;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
-import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.border.CompoundBorder;
@@ -145,11 +144,6 @@ public class QuanLyKhuyenMai_View extends View {
 		panelTitle.setBorder(new EmptyBorder(0, 0, 10, 0));
 		panelTitle.setBackground(Color.WHITE);
 		headerPanel.add(panelTitle, BorderLayout.NORTH);
-
-		JLabel lblQLKM = new JLabel("Quản Lý Khuyến Mãi");
-		lblQLKM.setHorizontalAlignment(SwingConstants.CENTER);
-		lblQLKM.setFont(new Font("Arial", Font.BOLD, 20));
-		panelTitle.add(lblQLKM);
 		contentPane.add(headerPanel, BorderLayout.NORTH);
 
 		JPanel pThemKM = new JPanel();
@@ -275,12 +269,11 @@ public class QuanLyKhuyenMai_View extends View {
 		dateBDKM = new JDateChooser();
 		dateBDKM.getCalendarButton().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 		dateBDKM.getCalendarButton().setBackground(new Color(235, 235, 235));
-		dateBDKM.setPreferredSize(new Dimension(253, 25));
+		dateBDKM.setPreferredSize(new Dimension(252, 25));
 		dateBDKM.setFont(new Font("Arial", Font.PLAIN, 16));
 		dateBDKM.setDateFormatString("dd-MM-yyyy");
 		dateBDKM.setBorder(new EmptyBorder(0, 56, 0, 0));
 		dateBDKM.setBackground(Color.WHITE);
-		dateBDKM.setPreferredSize(new Dimension(250, 25));
 		iconlich = new ImageIcon(getClass().getResource("/Image/icon_lich.png"));
 		dateBDKM.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
 		panelDateBD.add(dateBDKM);
@@ -415,7 +408,7 @@ public class QuanLyKhuyenMai_View extends View {
 		tableKM.getTableHeader().setFont(headerFont);
 		tableKM.setFont(new Font("Arial", Font.PLAIN, 16));
 		tableKM.getTableHeader().setFont(new Font("Arial", Font.BOLD, 14));
-		Font font1 = new Font("Arial", Font.PLAIN, 14); 
+		Font font1 = new Font("Arial", Font.PLAIN, 14);
 		tableKM.setFont(font1);
 		tableKM.getColumnModel().getColumn(0).setPreferredWidth(5);
 		tableKM.getColumnModel().getColumn(1).setPreferredWidth(90);
