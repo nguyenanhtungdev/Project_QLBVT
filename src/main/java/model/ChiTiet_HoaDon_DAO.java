@@ -60,34 +60,41 @@ public class ChiTiet_HoaDon_DAO {
 	}
 
 	public boolean add(ChiTiet_HoaDon ct) {
-		String sql = "INSERT INTO ChiTiet_HoaDon(soLuong, maHoaDon, maKhuyenMai, maVeTau) VALUES(?, ?, ?, ?)";
+	    String sql = "INSERT INTO ChiTiet_HoaDon(soLuong, maHoaDon, maKhuyenMai, maVeTau) VALUES(?, ?, ?, ?)";
 
-		Connection con = null;
-		PreparedStatement statement = null;
-		try {
-			con = Database.getInstance().getConnection();
-			statement = con.prepareStatement(sql);
+	    Connection con = null;
+	    PreparedStatement statement = null;
+	    try {
+	        con = Database.getInstance().getConnection();
+	        statement = con.prepareStatement(sql);
+	        statement.setInt(1, ct.getSoLuong());
+	        statement.setString(2, ct.getHoaDon().getMaHoaDon());
 
-			statement.setInt(0, ct.getSoLuong());
-			statement.setString(1, ct.getHoaDon().getMaHoaDon());
-			statement.setString(2, ct.getKhuyenMai().getMaKhuyenMai());
-			statement.setString(3, ct.getVeTau().getMaVeTau());
-			int count = statement.executeUpdate();
+	        if (ct.getKhuyenMai() != null && ct.getKhuyenMai().getMaKhuyenMai() != null) {
+	            statement.setString(3, ct.getKhuyenMai().getMaKhuyenMai());
+	        } else {
+	            statement.setNull(3, java.sql.Types.VARCHAR); 
+	        }
 
-			return count == 1;
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if (statement != null)
-					statement.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
+	        statement.setString(4, ct.getVeTau().getMaVeTau());
 
-		return false;
+	        int count = statement.executeUpdate();
+
+	        return count == 1;
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (statement != null)
+	                statement.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return false;
 	}
+
 
 	public List<ChiTiet_HoaDon> getByMaHoaDon(String maHoaDon) {
 		String sql = "SELECT * FROM ChiTiet_HoaDon WHERE maHoaDon = ?";

@@ -209,39 +209,4 @@ public class ChuyenTau_DAO {
 
 	}
 
-	public Map<String, Integer> layThongTinGhe(String maChuyenTau) {
-		String sql = """
-				SELECT
-				    COUNT(ghe.maGheTau) AS tongSoGhe,
-				    SUM(CASE WHEN ghe.trangThai = 'TRONG' THEN 1 ELSE 0 END) AS soGheConLai
-				FROM
-				    ChuyenTau chuyen
-				JOIN
-				    Tau tau ON chuyen.maTau = tau.maTau
-				JOIN
-				    ToaTau toa ON tau.maTau = toa.maTau
-				JOIN
-				    GheTau ghe ON toa.maToaTau = ghe.maToaTau
-				WHERE
-				    chuyen.maChuyenTau = ?
-				""";
-
-		try {
-			Map<String, Integer> result = new HashMap<>();
-			Connection con = Database.getInstance().getConnection();
-			PreparedStatement stmt = con.prepareStatement(sql);
-			stmt.setString(1, maChuyenTau);
-			ResultSet rs = stmt.executeQuery();
-			if (rs.next()) {
-				result.put("tongSoGhe", rs.getInt("tongSoGhe"));
-				result.put("soGheConLai", rs.getInt("soGheConLai"));
-			}
-			return result;
-		} catch (SQLException e) {
-			e.printStackTrace();
-			return null;
-
-		}
-	}
-
 }

@@ -309,8 +309,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		trainPanel.repaint();
 	}
 
-	private void updateSoLuongGheTrongChuyen(ChuyenTau chuyenTau) {
-		Map<String, Integer> thongTinGhe = ChuyenTau_DAO.getInstance().layThongTinGhe(chuyenTau.getMaChuyenTau());
+	private void updateSoLuongGheTrongChuyen(Tau tau) {
+		Map<String, Integer> thongTinGhe = Tau_DAO.getInstance().layThongTinGhe(tau.getMaTau());
 		soLuongGheTrongChuyen.setText(thongTinGhe.get("soGheConLai") + "/" + thongTinGhe.get("tongSoGhe") + "");
 		soLuongGheTrongChuyen.revalidate();
 		soLuongGheTrongChuyen.repaint();
@@ -333,7 +333,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		panel_chyentau.add(panel_maTau);
 		panel_maTau.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		JLabel lblNewLabel_9 = new JLabel(chuyenTau.getMaChuyenTau());
+		JLabel lblNewLabel_9 = new JLabel(chuyenTau.getGaKhoiHanh() + "-" + chuyenTau.getGaDen());
 		lblNewLabel_9.setForeground(Color.WHITE);
 		lblNewLabel_9.setFont(new Font("Arial", Font.BOLD, 18));
 		panel_maTau.add(lblNewLabel_9);
@@ -371,9 +371,14 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		JPanel panel_26 = new JPanel();
 		panel_23.add(panel_26);
 		panel_26.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+	
+		JLabel maTau_JLabel = new JLabel(chuyenTau.getMaChuyenTau()+ " - ");
+		maTau_JLabel.setForeground(ColorConstants.PRIMARY_COLOR);
+		maTau_JLabel.setFont(new Font("Arial", Font.BOLD, 20));
+		panel_26.add(maTau_JLabel);
 
 		soLuongGheTrongChuyen = new JLabel("0/0");
-//		updateSoLuongGheTrongChuyen(chuyenTau);
+		updateSoLuongGheTrongChuyen(tau);
 		soLuongGheTrongChuyen.setForeground(ColorConstants.PRIMARY_COLOR);
 		soLuongGheTrongChuyen.setFont(new Font("Arial", Font.BOLD, 20));
 		panel_26.add(soLuongGheTrongChuyen);

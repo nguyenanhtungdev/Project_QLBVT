@@ -63,7 +63,7 @@ public class KhachHang_DAO {
 	}
 
 	public KhachHang getByMaKhachHang(String maKhachHang) {
-		String sql = "SELECT * FROM KhachHang WHERE maKhachHang = ?";
+		String sql = "SELECT * FROM KhachHang WHERE maKH = ?";
 
 		Connection con = null;
 		PreparedStatement statement = null;

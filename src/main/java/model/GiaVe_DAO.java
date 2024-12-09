@@ -98,7 +98,7 @@ public class GiaVe_DAO {
 	public GiaVe getGiaVeTheoChuyenTau(String maGheTau, String maChuyenTau) {
 		GiaVe gv = null;
 		String sql = "SELECT GV.maGiaVe, GV.giaVe, GV.tiLeTangGia, GV.ngayCapNhat, GV.ghiChu " + "FROM dbo.GiaVe GV "
-				+ "JOIN dbo.ChuyenTau CT ON GV.maGiaVe = CT.maGiaVe " + "JOIN dbo.Tau T ON T.maTau = CT.maTau "
+				+ "JOIN dbo.ChuyenTau CT ON GV.maGiaVe = CT.maGiaVe " + "JOIN dbo.Tau T ON T.maChuyenTau = CT.maChuyenTau "
 				+ "JOIN dbo.ToaTau TT ON TT.maTau = T.maTau " + "JOIN dbo.GheTau GT ON GT.maToaTau = TT.maToaTau "
 				+ "WHERE GT.maGheTau = ? AND CT.maChuyenTau = ?";
 		Connection con;

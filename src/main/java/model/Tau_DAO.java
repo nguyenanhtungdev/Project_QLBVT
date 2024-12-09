@@ -8,7 +8,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import connectDB.Database;
 import model.Tau.TrangThaiTau;
@@ -332,6 +334,37 @@ public class Tau_DAO {
 
 	    return null;
 	}
+	
+	public Map<String, Integer> layThongTinGhe(String maTau) {
+		String sql = """
+				SELECT
+				    COUNT(ghe.maGheTau) AS tongSoGhe,
+				    SUM(CASE WHEN ghe.trangThai = 'TRONG' THEN 1 ELSE 0 END) AS soGheConLai
+				FROM
+				    Tau tau
+				JOIN
+				    ToaTau toa ON tau.maTau = toa.maTau
+				JOIN
+				    GheTau ghe ON toa.maToaTau = ghe.maToaTau
+				WHERE
+				    tau.maTau = ?
+				""";
 
+		try {
+			Map<String, Integer> result = new HashMap<>();
+			Connection con = Database.getInstance().getConnection();
+			PreparedStatement stmt = con.prepareStatement(sql);
+			stmt.setString(1, maTau);
+			ResultSet rs = stmt.executeQuery();
+			if (rs.next()) {
+				result.put("tongSoGhe", rs.getInt("tongSoGhe"));
+				result.put("soGheConLai", rs.getInt("soGheConLai"));
+			}
+			return result;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
 
+		}
+	}
 }
