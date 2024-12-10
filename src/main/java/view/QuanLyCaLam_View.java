@@ -33,8 +33,10 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 
 import other.CustomTitleLable;
-import java.awt.FlowLayout;
 import javax.swing.border.MatteBorder;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.border.CompoundBorder;
 
 public class QuanLyCaLam_View extends View {
 
@@ -46,8 +48,14 @@ public class QuanLyCaLam_View extends View {
 	private JTable tableLichLV;
 	private JDateChooser lichTuan;
 	private ImageIcon iconlich;
-	private PrimaryButton btnLuu;
+	private JButton btnSau;
+	private JButton btnTruoc;
+	private JLabel lblWeek;
+	private PrimaryButton btnSaoChep;
 	private DangerPrimaryButton btnHuy;
+	private PrimaryButton btnLuu;
+	private JComboBox<String> comboBoxSoThangSaoChep;
+	private DangerPrimaryButton btnXoaLich;
 
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -66,8 +74,24 @@ public class QuanLyCaLam_View extends View {
 		btnLuu.addActionListener(listener);
 	}
 
+	public void addButtonSaoChepListener(ActionListener listener) {
+		btnSaoChep.addActionListener(listener);
+	}
+
 	public void addButtonHuyListener(ActionListener listener) {
 		btnHuy.addActionListener(listener);
+	}
+
+	public void addButtonTruocListener(ActionListener listener) {
+		btnTruoc.addActionListener(listener);
+	}
+
+	public void addButtonSauListener(ActionListener listener) {
+		btnSau.addActionListener(listener);
+	}
+
+	public void addButtonXoaLichListener(ActionListener listener) {
+		btnXoaLich.addActionListener(listener);
 	}
 
 	public QuanLyCaLam_View(String name, String imagePath) {
@@ -128,26 +152,6 @@ public class QuanLyCaLam_View extends View {
 		tableCaLam.getColumnModel().getColumn(0).setPreferredWidth(5);
 		tableCaLam.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
 		tableCaLam.setRowHeight(30);
-		tableCaLam.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
-					boolean hasFocus, int row, int column) {
-				JTextArea textArea = new JTextArea();
-				textArea.setText(value == null ? "" : value.toString());
-				textArea.setWrapStyleWord(true);
-				textArea.setLineWrap(true);
-				textArea.setBackground(isSelected ? new Color(240, 240, 255) : table.getBackground());
-				textArea.setEditable(false);
-				textArea.setFont(table.getFont());
-				textArea.setBorder(BorderFactory.createLineBorder(new Color(225, 225, 225)));
-				return textArea;
-			}
-		});
-
-		tableCaLam.setSelectionBackground(new Color(240, 240, 255));
-		tableCaLam.setSelectionForeground(Color.BLACK);
 		JScrollPane scrollPane = new JScrollPane(tableCaLam);
 		scrollPane.setPreferredSize(new Dimension(400, 148));
 		tableCaLam.setPreferredScrollableViewportSize(new Dimension(400, 148));
@@ -187,12 +191,17 @@ public class QuanLyCaLam_View extends View {
 		iconlich = new ImageIcon(getClass().getResource("/Image/icon_lich.png"));
 		lichTuan.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
 
-		JLabel lblWeek = new JLabel("Tuần: ");
+		lblWeek = new JLabel("Tuần: ");
 		lblWeek.setFont(new Font("Arial", Font.BOLD, 16));
 		panel_7.add(lichTuan);
+
+		btnTruoc = new JButton("Trước");
+		btnTruoc.setFont(new Font("Arial", Font.PLAIN, 16));
+		panel_7.add(btnTruoc);
 		panel_7.add(lblWeek);
 
 		Date currentDate = new Date();
+		lichTuan.setDate(currentDate);
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(currentDate);
 		calendar.setFirstDayOfWeek(Calendar.MONDAY);
@@ -205,7 +214,7 @@ public class QuanLyCaLam_View extends View {
 		String weekRange = dateFormat.format(startOfWeek) + " - " + dateFormat.format(endOfWeek);
 
 		lblWeek.setText("Tuần " + weekOfYear + ": " + weekRange);
-		lichTuan.setDate(startOfWeek);
+
 		lichTuan.getDateEditor().addPropertyChangeListener("date", evt -> {
 			Date selectedDate = lichTuan.getDate();
 			if (selectedDate != null) {
@@ -223,32 +232,30 @@ public class QuanLyCaLam_View extends View {
 			}
 		});
 
-		JPanel panel_2 = new JPanel();
-		panel_2.setBorder(new MatteBorder(0, 1, 0, 0, (Color) Color.GRAY));
-		FlowLayout flowLayout = (FlowLayout) panel_2.getLayout();
-		flowLayout.setHgap(7);
-		flowLayout.setVgap(0);
-		panel_2.setBackground(Color.WHITE);
-		panel_7.add(panel_2);
+		btnSau = new JButton(" Sau ");
+		btnSau.setFont(new Font("Arial", Font.PLAIN, 16));
+		panel_7.add(btnSau);
 
-		btnLuu = new PrimaryButton("Lưu", "/Image/icon-Save.png");
-		btnLuu.setPreferredSize(new Dimension(170, 35));
-		btnLuu.setIconSize(28, 28);
-		btnLuu.setFont(new Font("Arial", Font.BOLD, 18));
-		btnLuu.setBorderRadius(15);
-		panel_2.add(btnLuu);
+		JPanel panel_2_1 = new JPanel();
+		panel_2_1.setBorder(new CompoundBorder(new MatteBorder(0, 1, 0, 0, (Color) new Color(192, 192, 192)),
+				new EmptyBorder(0, 5, 0, 0)));
+		panel_2_1.setBackground(Color.WHITE);
+		panel_7.add(panel_2_1);
 
-		btnHuy = new DangerPrimaryButton("Huỷ bỏ     ", "/Image/Cancel.png");
-		btnHuy.setPreferredSize(new Dimension(170, 35));
-		btnHuy.setIconSize(30, 30);
-		btnHuy.setFont(new Font("Arial", Font.BOLD, 18));
-		btnHuy.setBorderRadius(15);
-		panel_2.add(btnHuy);
+		String[] items = { "1 tháng", "2 tháng", "3 tháng", "4 tháng", "5 tháng" };
+		comboBoxSoThangSaoChep = new JComboBox<>(items);
+		comboBoxSoThangSaoChep.setFont(new Font("Arial", Font.PLAIN, 16));
+		panel_2_1.add(comboBoxSoThangSaoChep);
+
+		btnSaoChep = new PrimaryButton("Sao chép", "/Image/icon-Save.png");
+		btnSaoChep.setPreferredSize(new Dimension(170, 35));
+		btnSaoChep.setFont(new Font("Arial", Font.BOLD, 18));
+		btnSaoChep.setBorderRadius(15);
+		panel_2_1.add(btnSaoChep);
 
 		JPanel panel_3_1 = new JPanel();
 		panel_3_1.setBackground(Color.WHITE);
 		panel_4.add(panel_3_1, BorderLayout.CENTER);
-		panel_3_1.setLayout(new BorderLayout(0, 0));
 
 		String[] header1 = { "Nhân viên", "Thứ Hai", "Thứ Ba", "Thứ Tư", "Thứ Năm", "Thứ Sáu", "Thứ Bảy", "Chủ Nhật" };
 		modelTableLichLV = new DefaultTableModel(header1, 0) {
@@ -283,18 +290,51 @@ public class QuanLyCaLam_View extends View {
 				textArea.setText(value == null ? "" : value.toString());
 				textArea.setWrapStyleWord(true);
 				textArea.setLineWrap(true);
-				textArea.setBackground(isSelected ? new Color(240, 240, 255) : table.getBackground());
 				textArea.setEditable(false);
 				textArea.setFont(table.getFont());
-				textArea.setBorder(BorderFactory.createLineBorder(new Color(225, 225, 225)));
+				textArea.setBorder(BorderFactory.createLineBorder(new Color(230, 230, 230)));
+				if (isSelected) {
+					textArea.setForeground(Color.WHITE);
+					textArea.setBackground(table.getSelectionBackground());
+				} else {
+					textArea.setForeground(table.getForeground());
+					textArea.setBackground(table.getBackground());
+				}
+
 				return textArea;
 			}
 		});
-		tableLichLV.setSelectionBackground(new Color(240, 240, 255));
-		tableLichLV.setSelectionForeground(Color.BLACK);
-		JScrollPane scrollPane1 = new JScrollPane(tableLichLV);
-		panel_3_1.add(scrollPane1, BorderLayout.NORTH);
+		panel_3_1.setLayout(new BoxLayout(panel_3_1, BoxLayout.X_AXIS));
 
+		JScrollPane scrollPane1 = new JScrollPane(tableLichLV);
+		panel_3_1.add(scrollPane1);
+
+		JPanel panel_9 = new JPanel();
+		panel_9.setBackground(Color.WHITE);
+		panel_4.add(panel_9, BorderLayout.SOUTH);
+		panel_9.setLayout(new BorderLayout(0, 0));
+
+		JPanel panel_2 = new JPanel();
+		panel_2.setBackground(Color.WHITE);
+		panel_9.add(panel_2, BorderLayout.EAST);
+
+		btnLuu = new PrimaryButton("Lưu", "/Image/icon-Save.png");
+		btnLuu.setPreferredSize(new Dimension(170, 35));
+		btnLuu.setFont(new Font("Arial", Font.BOLD, 18));
+		btnLuu.setBorderRadius(15);
+		panel_2.add(btnLuu);
+
+		btnXoaLich = new DangerPrimaryButton("Xoá lịch  ", "/Image/Cancel.png");
+		btnXoaLich.setPreferredSize(new Dimension(170, 35));
+		btnXoaLich.setFont(new Font("Arial", Font.BOLD, 18));
+		btnXoaLich.setBorderRadius(15);
+		panel_2.add(btnXoaLich);
+
+		btnHuy = new DangerPrimaryButton("Huỷ bỏ     ", "/Image/Cancel.png");
+		btnHuy.setPreferredSize(new Dimension(170, 35));
+		btnHuy.setFont(new Font("Arial", Font.BOLD, 18));
+		btnHuy.setBorderRadius(15);
+		panel_2.add(btnHuy);
 	}
 
 	public JPanel getQLCaLam_View() {
@@ -339,6 +379,22 @@ public class QuanLyCaLam_View extends View {
 
 	public void setLichTuan(JDateChooser lichTuan) {
 		this.lichTuan = lichTuan;
+	}
+
+	public JLabel getLblWeek() {
+		return lblWeek;
+	}
+
+	public void setLblWeek(JLabel lblWeek) {
+		this.lblWeek = lblWeek;
+	}
+
+	public JComboBox<String> getComboBoxSoThangSaoChep() {
+		return comboBoxSoThangSaoChep;
+	}
+
+	public void setComboBoxSoThangSaoChep(JComboBox<String> comboBoxSoThangSaoChep) {
+		this.comboBoxSoThangSaoChep = comboBoxSoThangSaoChep;
 	}
 
 }

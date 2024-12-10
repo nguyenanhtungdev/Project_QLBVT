@@ -23,7 +23,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -210,6 +212,10 @@ public class QuanLy_Controller {
 	private void themSuKienCL() {
 		qLCaLam_View.addButtonLuuListener(e -> luuLichLamViec());
 		qLCaLam_View.addButtonHuyListener(e -> huyChinhSuaLichLamViec());
+		qLCaLam_View.addButtonXoaLichListener(e -> xoaLichLamViec());
+		qLCaLam_View.addButtonSaoChepListener(e -> saoChepLichLamViec());
+		qLCaLam_View.addButtonTruocListener(e -> capNhatLichTuan(-1));
+		qLCaLam_View.addButtonSauListener(e -> capNhatLichTuan(1));
 		qLCaLam_View.getLichTuan().addPropertyChangeListener("date", evt -> {
 			if (evt.getNewValue() != null) {
 				DocDuLieuVaoTableLichLam();
@@ -1046,6 +1052,7 @@ public class QuanLy_Controller {
 		for (NhanVien_CaLam cl : danhSachCaLam) {
 			themLichLamVaoBang(cl);
 		}
+		storeOriginalValues();
 	}
 
 	private void themLichLamVaoBang(NhanVien_CaLam nhanVien_CaLam) {
@@ -1137,6 +1144,195 @@ public class QuanLy_Controller {
 			return "CA04";
 		default:
 			return "";
+		}
+	}
+
+	public void saoChepLichLamViec() {
+		int response = JOptionPane.showConfirmDialog(null,
+				"Bạn có muốn lưu những thay đổi trước khi sao chép lịch làm việc không?", "Xác nhận sao chép",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+		if (response == JOptionPane.NO_OPTION) {
+			JOptionPane.showMessageDialog(null, "Bạn đã hủy sao chép lịch làm việc!", "Thông báo",
+					JOptionPane.INFORMATION_MESSAGE);
+			return;
+		} else if (response != JOptionPane.YES_OPTION) {
+			return;
+		}
+
+		String selectedOption = (String) qLCaLam_View.getComboBoxSoThangSaoChep().getSelectedItem();
+		int soThang = Integer.parseInt(selectedOption.split(" ")[0]);
+		Date selectedDate = qLCaLam_View.getLichTuan().getDate();
+		if (selectedDate == null) {
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn tuần để sao chép lịch làm việc!", "Thông báo",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		LocalDate tuNgay = selectedDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate().with(DayOfWeek.MONDAY);
+		LocalDate denNgay = tuNgay.plusMonths(soThang).with(TemporalAdjusters.lastDayOfMonth());
+
+		LocalDate currentWeekStart = tuNgay;
+		boolean hasError = false;
+		if (currentWeekStart.plusWeeks(1).getMonthValue() != currentWeekStart.getMonthValue()) {
+			denNgay = denNgay.plusMonths(1);
+		}
+		while (!currentWeekStart.isAfter(denNgay)) {
+			LocalDate currentWeekEnd = currentWeekStart.with(DayOfWeek.SUNDAY);
+			int rowCount = qLCaLam_View.getModelTableLichLV().getRowCount();
+			for (int i = 0; i < rowCount; i++) {
+				String maNV_HoTen = (String) qLCaLam_View.getModelTableLichLV().getValueAt(i, 0);
+				if (maNV_HoTen == null || !maNV_HoTen.contains(" - "))
+					continue;
+
+				String maNV = maNV_HoTen.split(" - ")[0].trim();
+				for (int day = 1; day <= 7; day++) {
+					String caLam = (String) qLCaLam_View.getModelTableLichLV().getValueAt(i, day);
+					if (caLam == null || caLam.trim().isEmpty()) {
+						LocalDate ngay = currentWeekStart.plusDays(day - 1);
+						List<NhanVien_CaLam> caLamHienTai = nhanVien_CaLam_DAO.getByNhanVienAndNgay(maNV, ngay);
+						for (NhanVien_CaLam caHienTai : caLamHienTai) {
+							boolean deleted = nhanVien_CaLam_DAO.delete(caHienTai);
+							if (!deleted) {
+								hasError = true;
+								System.err.println("Không thể xóa ca làm: " + caHienTai.getCaLam().getMaCa()
+										+ " cho nhân viên: " + maNV);
+							}
+						}
+					}
+				}
+			}
+			for (int i = 0; i < rowCount; i++) {
+				String maNV_HoTen = (String) qLCaLam_View.getModelTableLichLV().getValueAt(i, 0);
+				if (maNV_HoTen == null || !maNV_HoTen.contains(" - "))
+					continue;
+
+				String maNV = maNV_HoTen.split(" - ")[0].trim();
+				for (int day = 1; day <= 7; day++) {
+					String caLam = (String) qLCaLam_View.getModelTableLichLV().getValueAt(i, day);
+					if (caLam == null || caLam.trim().isEmpty())
+						continue;
+
+					String[] caLamArray = caLam.split(", ");
+					for (String ca : caLamArray) {
+						String maCaLam = chuyenDoiTenCaVeMa(ca.trim());
+						if (maCaLam.isEmpty()) {
+							hasError = true;
+							continue;
+						}
+
+						CaLam caLamObject = caLam_DAO.getByMaCa(maCaLam);
+						if (caLamObject == null) {
+							hasError = true;
+							continue;
+						}
+
+						LocalTime gioBatDau = caLamObject.getThoiGianBatDau();
+						LocalTime gioKetThuc = caLamObject.getThoiGianKetThuc();
+						LocalDate ngay = currentWeekStart.plusDays(day - 1);
+						NhanVien_CaLam nhanVien_CaLam = new NhanVien_CaLam(ngay.atTime(gioBatDau),
+								ngay.atTime(gioKetThuc), nhanVien_DAO.getByMaNhanVien(maNV), caLamObject);
+
+						boolean result = nhanVien_CaLam_DAO.saveOrUpdate(nhanVien_CaLam);
+						if (!result) {
+							hasError = true;
+							System.err
+									.println("Không thể lưu lịch làm việc cho nhân viên: " + maNV + ", ca: " + maCaLam);
+						}
+					}
+				}
+			}
+			currentWeekStart = currentWeekStart.plusWeeks(1);
+		}
+		if (hasError) {
+			JOptionPane.showMessageDialog(null, "Có lỗi xảy ra khi sao chép lịch làm việc. Vui lòng kiểm tra lại!",
+					"Lỗi", JOptionPane.ERROR_MESSAGE);
+		} else {
+			JOptionPane.showMessageDialog(null, "Sao chép lịch làm việc thành công!");
+		}
+	}
+
+	private void capNhatLichTuan(int soTuan) {
+		if (isTableModified()) {
+			int result = JOptionPane.showConfirmDialog(null, "Bạn có muốn hủy bỏ thay đổi?", "Xác nhận",
+					JOptionPane.YES_NO_OPTION);
+			if (result == JOptionPane.YES_OPTION) {
+				storeOriginalValues();
+			} else {
+				return;
+			}
+		}
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(qLCaLam_View.getLichTuan().getDate());
+		calendar.add(Calendar.WEEK_OF_YEAR, soTuan);
+		calendar.setFirstDayOfWeek(Calendar.MONDAY);
+		calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+		Date startOfWeek = calendar.getTime();
+		Calendar endOfWeekCalendar = (Calendar) calendar.clone();
+		endOfWeekCalendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		Date endOfWeek = endOfWeekCalendar.getTime();
+
+		SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		String weekRange = dateFormat.format(startOfWeek) + " - " + dateFormat.format(endOfWeek);
+		int weekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+		qLCaLam_View.getLichTuan().setDate(startOfWeek);
+		qLCaLam_View.getLblWeek().setText("Tuần " + weekOfYear + ": " + weekRange);
+		storeOriginalValues();
+		DocDuLieuVaoTableLichLam();
+	}
+
+	private Map<Integer, Map<Integer, Object>> originalValues = new HashMap<>();
+
+	private boolean isTableModified() {
+		int rowCount = qLCaLam_View.getModelTableLichLV().getRowCount();
+		int colCount = qLCaLam_View.getModelTableLichLV().getColumnCount();
+		for (int row = 0; row < rowCount; row++) {
+			for (int col = 0; col < colCount; col++) {
+				Object currentValue = qLCaLam_View.getModelTableLichLV().getValueAt(row, col);
+				Object originalValue = originalValues.getOrDefault(row, new HashMap<>()).get(col);
+				if (currentValue != null && !currentValue.equals(originalValue)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private void storeOriginalValues() {
+		originalValues.clear();
+		int rowCount = qLCaLam_View.getModelTableLichLV().getRowCount();
+		int colCount = qLCaLam_View.getModelTableLichLV().getColumnCount();
+
+		for (int row = 0; row < rowCount; row++) {
+			Map<Integer, Object> rowValues = new HashMap<>();
+			for (int col = 0; col < colCount; col++) {
+				Object value = qLCaLam_View.getModelTableLichLV().getValueAt(row, col);
+				rowValues.put(col, value);
+			}
+			originalValues.put(row, rowValues);
+		}
+	}
+
+	public void xoaLichLamViec() {
+		int result = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn xóa lịch không?", "Xác nhận",
+				JOptionPane.YES_NO_OPTION);
+		if (result == JOptionPane.YES_OPTION) {
+			DefaultTableModel model = (DefaultTableModel) qLCaLam_View.getModelTableLichLV();
+			int rowCount = model.getRowCount();
+			int colCount = model.getColumnCount();
+			for (int row = 0; row < rowCount; row++) {
+				for (int col = 1; col < colCount; col++) {
+					model.setValueAt(null, row, col);
+				}
+			}
+			setTableModified(true);
+			JOptionPane.showMessageDialog(null, "Lịch làm việc trong tuần đã được xóa!");
+		} else {
+			return;
+		}
+	}
+
+	private void setTableModified(boolean modified) {
+		if (modified) {
+			originalValues.clear();
 		}
 	}
 
