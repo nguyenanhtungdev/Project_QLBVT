@@ -109,7 +109,6 @@ public class ChonGhe_View extends View {
 	private JLabel lblNewLabel_25;
 	private JLabel lbl_TongSoVeTamThoi;
 	private JPanel panel_43;
-	private PrimaryButton btn_ThemVeTau;
 	private PrimaryButton btn_ChonNhanh;
 	private JPanel panel_44;
 	private JComboBox combobox_KhungGio;
@@ -128,10 +127,15 @@ public class ChonGhe_View extends View {
 	private JLabel lbl_TenToaTau;
 	private PrimaryButton btn_LamMoi;
 	private PrimaryButton btn_QuayLai;
-	private JLabel lbl_TongSoVeChieuVe;
-	private JLabel lbl_TongSoVeChieuDi;
+	private JLabel lbl_VeChieuVe;
+	private JLabel lbl_VeChieuDi;
 	private JPanel panel_20;
 	private PrimaryButton btn_TiepTheo;
+	private JPanel panel_22;
+	private JLabel lbl_SoVeChieuDi;
+	private JPanel panel_23;
+	private JLabel lbl_SoVeChieuVe;
+	private JPanel panel_24;
 
 	// Thêm sự kiện cho lớp tìm kiếm view
 	public void addSuKien(ActionListener listener) {
@@ -142,7 +146,6 @@ public class ChonGhe_View extends View {
 		rdbtn_KhuHoi.addActionListener(listener);
 		btn_LamMoi.addActionListener(listener);
 		combobox_KhungGio.addActionListener(listener);
-		btn_ThemVeTau.addActionListener(listener);
 		btn_ChonNhanh.addActionListener(listener);
 		btn_QuayLai.addActionListener(listener);
 		btn_TiepTheo.addActionListener(listener);
@@ -174,7 +177,7 @@ public class ChonGhe_View extends View {
 		super(name, imagePath);
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 1250, 800);
+		setBounds(100, 100, 1350, 800);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
 		contentPane.setBorder(new EmptyBorder(0, 0, 0, 0));
@@ -600,17 +603,13 @@ public class ChonGhe_View extends View {
 		panel_bottom.setPreferredSize(new Dimension(0, 70));
 		panel_bottom.setMaximumSize(new Dimension(Integer.MAX_VALUE, 70));
 		contentPane.add(panel_bottom);
-		panel_bottom.setLayout(new FlowLayout(FlowLayout.RIGHT, 30, 5));
-		
-		lbl_TongSoVeChieuDi = new JLabel("Số vé chiều đi: 0");
-		lbl_TongSoVeChieuDi.setFont(new Font("Arial", Font.BOLD, 18));
-		lbl_TongSoVeChieuDi.setVisible(false);
+		panel_bottom.setLayout(new BoxLayout(panel_bottom, BoxLayout.X_AXIS));
 		
 		panel_20 = new JPanel();
-		panel_20.setBorder(new EmptyBorder(0, 0, 0, 100));
+		panel_20.setBorder(new EmptyBorder(5, 20, 0, 0));
 		panel_20.setBackground(Color.WHITE);
 		panel_bottom.add(panel_20);
-		panel_20.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));
+		panel_20.setLayout(new FlowLayout(FlowLayout.LEFT, 15, 5));
 		
 		btn_QuayLai = new PrimaryButton("Quay lại", "/Image/arrow-back-up.png");
 		panel_20.add(btn_QuayLai);
@@ -633,18 +632,51 @@ public class ChonGhe_View extends View {
 		btn_TiepTheo.setBorderRadius(10);
 		panel_20.add(btn_TiepTheo);
 		btn_QuayLai.setVisible(false);
-		panel_bottom.add(lbl_TongSoVeChieuDi);
 		
-		lbl_TongSoVeChieuVe = new JLabel("Số vé chiều về: 0");
-		lbl_TongSoVeChieuVe.setVisible(false);
-		lbl_TongSoVeChieuVe.setFont(new Font("Arial", Font.BOLD, 18));
-		panel_bottom.add(lbl_TongSoVeChieuVe);
+		panel_22 = new JPanel();
+		panel_22.setBorder(new EmptyBorder(15, 0, 0, 0));
+		panel_22.setBackground(Color.WHITE);
+		panel_bottom.add(panel_22);
+		panel_22.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+		
+		lbl_VeChieuDi = new JLabel("Số vé chiều đi: ");
+		panel_22.add(lbl_VeChieuDi);
+		lbl_VeChieuDi.setFont(new Font("Arial", Font.BOLD, 18));
+		
+		lbl_SoVeChieuDi = new JLabel("0");
+		lbl_SoVeChieuDi.setFont(new Font("Arial", Font.BOLD, 18));
+		panel_22.add(lbl_SoVeChieuDi);
+		lbl_SoVeChieuDi.setVisible(false);
+		lbl_VeChieuDi.setVisible(false);
+		
+		panel_23 = new JPanel();
+		panel_23.setBorder(new EmptyBorder(15, 0, 0, 0));
+		panel_23.setBackground(Color.WHITE);
+		panel_bottom.add(panel_23);
+		panel_23.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
+		
+		lbl_VeChieuVe = new JLabel("Số vé chiều về:");
+		panel_23.add(lbl_VeChieuVe);
+		lbl_VeChieuVe.setVisible(false);
+		lbl_VeChieuVe.setFont(new Font("Arial", Font.BOLD, 18));
+		
+		lbl_SoVeChieuVe = new JLabel("0");
+		lbl_SoVeChieuVe.setFont(new Font("Arial", Font.BOLD, 18));
+		lbl_SoVeChieuVe.setVisible(false);
+		panel_23.add(lbl_SoVeChieuVe);
+		
+		panel_24 = new JPanel();
+		panel_24.setBorder(new EmptyBorder(15, 0, 0, 0));
+		panel_24.setBackground(Color.WHITE);
+		panel_bottom.add(panel_24);
+		panel_24.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 0));
 
 		lbl_TongSoVeTamThoi = new JLabel("Số vé tạm thời: 0");
+		panel_24.add(lbl_TongSoVeTamThoi);
 		lbl_TongSoVeTamThoi.setFont(new Font("Arial", Font.BOLD, 18));
-		panel_bottom.add(lbl_TongSoVeTamThoi);
 
 		panel_43 = new JPanel();
+		panel_43.setBorder(new EmptyBorder(5, 0, 0, 0));
 		panel_43.setBackground(Color.WHITE);
 		panel_bottom.add(panel_43);
 		panel_43.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));
@@ -657,15 +689,6 @@ public class ChonGhe_View extends View {
 		btn_ChonNhanh.setInsets(new Insets(4, 10, 4, 10));
 		btn_ChonNhanh.setPreferredSize(new Dimension(170, 35));
 		panel_43.add(btn_ChonNhanh);
-
-		btn_ThemVeTau = new PrimaryButton("Thêm vé tàu", "/Image/icon_them.png");
-		btn_ThemVeTau.setIconTextGap(5);
-		btn_ThemVeTau.setBorderRadius(10);
-		btn_ThemVeTau.setIconSize(24, 24);
-		btn_ThemVeTau.setFont(new Font("Arial", Font.BOLD, 18));
-		btn_ThemVeTau.setInsets(new Insets(4, 10, 4, 10));
-		btn_ThemVeTau.setPreferredSize(new Dimension(170, 35));
-		panel_43.add(btn_ThemVeTau);
 
 		buttonGroup = new ButtonGroup();
 		buttonGroup_1 = new ButtonGroup();
@@ -780,11 +803,7 @@ public class ChonGhe_View extends View {
 	public JLabel getLblTTChuyenTauTimKiem() {
 		return lblTTChuyenTauTimKiem;
 	}
-
-	public PrimaryButton getBtn_ThemVeTau() {
-		return btn_ThemVeTau;
-	}
-
+	
 	public PrimaryButton getBtn_ChonNhanh() {
 		return btn_ChonNhanh;
 	}
@@ -797,16 +816,24 @@ public class ChonGhe_View extends View {
 		return btn_QuayLai;
 	}
 
-	public JLabel getLbl_TongSoVeChieuVe() {
-		return lbl_TongSoVeChieuVe;
-	}
-
-	public JLabel getLbl_TongSoVeChieuDi() {
-		return lbl_TongSoVeChieuDi;
-	}
-
 	public PrimaryButton getBtn_TiepTheo() {
 		return btn_TiepTheo;
+	}
+
+	public JLabel getLbl_VeChieuVe() {
+		return lbl_VeChieuVe;
+	}
+
+	public JLabel getLbl_VeChieuDi() {
+		return lbl_VeChieuDi;
+	}
+
+	public JLabel getLbl_SoVeChieuDi() {
+		return lbl_SoVeChieuDi;
+	}
+
+	public JLabel getLbl_SoVeChieuVe() {
+		return lbl_SoVeChieuVe;
 	}
 	
 }

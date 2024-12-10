@@ -131,8 +131,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	private JButton selectedButon_GheTau = null;
 	private TinhThanh selectedTinhThanhDi, selectedTinhThanhDen;
 	private String ngayDi, ngayVe, gaDi, gaDen;
-	private boolean isMotChieu;
-	private boolean isKhuHoi;
 	private ArrayList<ChuyenTau> chuyenTauList;
 	private ImageIcon icon;
 	private SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy/MM/dd");
@@ -151,8 +149,9 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	private int tongSoVeTamThoi = 0;
 	private double tongTienVeTauTamThoi = 0;
 	private NumberFormat vndFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-	private ThongTin thongTinView;
-	private BaoMat_view baoMat_view;
+	private int tongSoVeChieuDi = 0;
+	private int tongSoVeChieuVe = 0;
+	private boolean isBtnTiepTheoClick = false;
 	// hoàn tiền view
 	private DoiTraVe_View hoanTien_view;
 	private ArrayList<View> pageList = new ArrayList<>();
@@ -161,7 +160,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	private int[] timeLeft;
 	private DefaultTableModel model;
 	private JLabel soLuongGheTrongChuyen;
-	private ShortcutManager shortcutManager;
+
 	// ThanhToan
 	private ArrayList<Double> dsTienChiTietVe;
 	private double tienKhachDua = 0;
@@ -407,7 +406,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 					chonGhe_View.panel_DsToaTau.revalidate();
 					chonGhe_View.panel_DsToaTau.repaint();
 				} else {
-					JOptionPane.showMessageDialog(panel_chyentau, "Không có toa tàu nào!", "Thông báo",
+					JOptionPane.showMessageDialog(null, "Không có toa tàu nào!", "Thông báo",
 							JOptionPane.INFORMATION_MESSAGE);
 				}
 			}
@@ -643,10 +642,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 	// Phương thức tìm kiếm chuyến tàu
 	public void timKiemChuyenTau(String ngay, boolean isChiChieuDi) {
-
-		if (!kiemTraTinhThanh())
-			return;
-
 		try {
 			// Tìm kiếm chuyến tàu
 			String gaDiTemp = isChiChieuDi ? gaDi : gaDen;
@@ -758,12 +753,12 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		Date ngayDiDate = chonGhe_View.getDateChooser_NgayDi().getDate();
 		Date ngayVeDate = chonGhe_View.getDateChooser_NgayVe().getDate();
 
-		if (isMotChieu && ngayDiDate == null) {
+		if (chonGhe_View.getRdbtn_MotChieu().isSelected() && ngayDiDate == null) {
 			JOptionPane.showMessageDialog(null, "Vui lòng chọn ngày đi cho vé một chiều!");
 			return false;
 		}
 
-		if (isKhuHoi) {
+		if (chonGhe_View.getRdbtn_KhuHoi().isSelected()) {
 			if (ngayDiDate == null || ngayVeDate == null) {
 				JOptionPane.showMessageDialog(null, "Vui lòng chọn cả ngày đi và ngày về cho vé khứ hồi!");
 				return false;
@@ -783,15 +778,41 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		return true;
 	}
 
-	// Làm mới chuyến tàu lại như ban đầu và ô nhập dữ liệu
-	public void lamMoi() {
-		lamMoiInput();
-		chonGhe_View.getCombobox_KhungGio().setSelectedIndex(0);
-		isBtnClicked = false;
+	private void lamMoi_ChuyenTau_Tau_ToaTau_GheTau() {
 		chuyenTauChon = null;
 		toaTauChon = null;
 		gheTauChon = null;
+	}
+
+	// Làm mới chuyến tàu lại như ban đầu và ô nhập dữ liệu
+	private void lamMoi() {
+		lamMoiInput();
+		chonGhe_View.getCombobox_KhungGio().setSelectedIndex(0);
+		isBtnClicked = false;
+		lamMoi_ChuyenTau_Tau_ToaTau_GheTau();
+
 		// Làm mới giao diện ghế tàu
+		lamMoiToaTau_GheTau();
+
+		// Ẩn buton
+		chonGhe_View.getBtn_QuayLai().setVisible(false);
+		chonGhe_View.getBtn_TiepTheo().setVisible(false);
+		chonGhe_View.getLbl_VeChieuDi().setVisible(false);
+		chonGhe_View.getLbl_SoVeChieuVe().setVisible(false);
+		chonGhe_View.getLbl_VeChieuVe().setVisible(false);
+		chonGhe_View.getLbl_SoVeChieuDi().setVisible(false);
+		chonGhe_View.getLbl_TongSoVeTamThoi().setVisible(true);
+
+		danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
+		soChuyenTau = danhSachChuyenTau.size();
+		chonGhe_View.getLblSoChuyenTau().setText("Tổng số chuyến tàu: " + soChuyenTau);
+		// Reset lại chỉ số trang và hiển thị giao diện
+		this.currentIndex = 0;
+		this.soTrang = 1;
+		updateDisplay(danhSachChuyenTau);
+	}
+
+	private void lamMoiToaTau_GheTau() {
 		chonGhe_View.panel_DsGheTau.removeAll();
 		chonGhe_View.panel_DsGheTau.revalidate();
 		chonGhe_View.panel_DsGheTau.repaint();
@@ -801,14 +822,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		chonGhe_View.panel_DsToaTau.removeAll();
 		chonGhe_View.panel_DsToaTau.revalidate();
 		chonGhe_View.panel_DsToaTau.repaint();
-
-		danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
-		soChuyenTau = danhSachChuyenTau.size();
-		chonGhe_View.getLblSoChuyenTau().setText("Tổng số chuyến tàu: " + soChuyenTau);
-		// Reset lại chỉ số trang và hiển thị giao diện
-		this.currentIndex = 0;
-		this.soTrang = 1;
-		updateDisplay(danhSachChuyenTau);
 	}
 
 	private void lamMoiInput() {
@@ -830,9 +843,24 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 	}
 
+	private boolean checkSoLuongVeChieuDi() {
+		if (Integer.parseInt(chonGhe_View.getLbl_SoVeChieuDi().getText()) < 1) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean checkSoLuongVeChieuVe() {
+		if (Integer.parseInt(chonGhe_View.getLbl_SoVeChieuVe().getText()) < 1) {
+			return false;
+		}
+		return true;
+	}
+
 	private boolean chonNhanhGheTauNgauNhien() {
 		String input = JOptionPane.showInputDialog(null, "Nhập số lượng ghế muốn chọn:", "Chọn nhanh ghế tàu",
 				JOptionPane.QUESTION_MESSAGE);
+
 		if (input == null) {
 			return false;
 		}
@@ -840,7 +868,9 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			JOptionPane.showMessageDialog(null, "Vui lòng nhập số lượng ghế!", "Lỗi", JOptionPane.ERROR_MESSAGE);
 			return false;
 		}
+
 		int soLuongGhe;
+
 		try {
 			soLuongGhe = Integer.parseInt(input);
 		} catch (NumberFormatException e) {
@@ -883,19 +913,57 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			}
 		}
 
-		for (GheTau ghe : danhSachGheDuocChon) {
-			themVeTauChonNhanh(ghe);
-			ghe.setTrangThai("DANG_GIU_CHO");
-			GheTau_DAO.getInstance().updateTrangThaiGheTau(ghe.getMaGheTau(), "DANG_GIU_CHO");
+		if (!isBtnTiepTheoClick) {
+			for (GheTau ghe : danhSachGheDuocChon) {
+				themVeTauChonNhanh(ghe);
+				ghe.setTrangThai("DANG_GIU_CHO");
+				GheTau_DAO.getInstance().updateTrangThaiGheTau(ghe.getMaGheTau(), "DANG_GIU_CHO");
+			}
+		} else {
+			JTable jTable = veTau_Page.getDanhSachVeTau();
+			int i = 0;
+			for (GheTau ghe : danhSachGheDuocChon) {
+				String chiTiet = (String)jTable.getValueAt(i, 12);
+				System.out.println(chiTiet);
+//				jTable.setValueAt(danhSachGheDuocChon, i, 12);
+				i++;
+			}
+			capNhatVeTauKhuHoi(danhSachGheDuocChon);
 		}
 
 		capNhatGiaoDienGheTau(toaTauChon.getMaToaTau());
-		tongSoVeTamThoi += soLuongGhe;
+
+		if (chonGhe_View.getRdbtn_MotChieu().isSelected()) {
+			tongSoVeTamThoi += soLuongGhe;
+		} else {
+			if (isBtnTiepTheoClick) {
+				tongSoVeChieuVe += soLuongGhe;
+			} else {
+				tongSoVeChieuDi += soLuongGhe;
+			}
+		}
 
 		updateTrangThaiThemVeTau();
 		JOptionPane.showMessageDialog(null, "Đã chọn nhanh " + soLuongGhe + " ghế thành công!", "Thông báo",
 				JOptionPane.INFORMATION_MESSAGE);
 		return true;
+	}
+
+	private void capNhatVeTauKhuHoi(ArrayList<GheTau> danhSachGheDuocChon) {
+		// TODO Auto-generated method stub
+		JTable jTable = veTau_Page.getDanhSachVeTau();
+		int i = 0;
+		for (GheTau gheTau : danhSachGheDuocChon) {
+			double giaVeHienTai = Double.parseDouble(((String) jTable.getValueAt(i, 13)).replace(",", ""));
+			double giaVe = GiaVe_DAO.getInstance()
+					.getGiaVeTheoChuyenTau(gheTau.getMaGheTau(), chuyenTauChon.getMaChuyenTau())
+					.getGiaVeHienTai((gheTau.getTenLoaiGheTau().equals("Giường nằm")) ? "VIP" : "Thường");
+
+			jTable.setValueAt(String.format("%,.0f", giaVeHienTai + giaVe), i, 13);
+
+			i++;
+		}
+		veTau_Page.getLblTienTamTinh().setText(String.format("%,.0f VND", roundMoney(tinhGiaVeTamTinh())));
 	}
 
 	private boolean isLienKe(GheTau ghe1, GheTau ghe2) {
@@ -906,7 +974,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		JTable jTable = veTau_Page.getDanhSachVeTau();
 		DefaultTableModel model = (DefaultTableModel) jTable.getModel();
 
-		boolean loaiVe = toaTauChon.getSoThuTuToa() <= 3; // Xác định loại vé (VIP hoặc thường)
 		String chiTietChuyenTau = chuyenTauChon.getGaKhoiHanh() + " - " + chuyenTauChon.getGaDen() + " "
 				+ formatterNgayGio.format(chuyenTauChon.getThoiGianKhoiHanh());
 
@@ -915,7 +982,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		} else {
 			maVeTau = taoMaVeTau(maVeTau);
 		}
-		String loaiVeString = loaiVe ? "VIP" : "Thường";
+		String loaiVeString = (gheTau.getTenLoaiGheTau().equals("Giường nằm")) ? "VIP" : "Thường";
 		double giaVe = GiaVe_DAO.getInstance()
 				.getGiaVeTheoChuyenTau(gheTau.getMaGheTau(), chuyenTauChon.getMaChuyenTau())
 				.getGiaVeHienTai(loaiVeString);
@@ -923,8 +990,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		// Thêm dữ liệu vào model
 		model.addRow(new Object[] { ++sttVeTau, maVeTau, loaiVeString, gheTau.getMaGheTau(), "{trống}", "{trống}",
 				"{trống}", "{trống}", "{trống}", "{trống}", "dd/mm/yyyy", "{trống}", chiTietChuyenTau,
-				String.format("%,.0f ₫", giaVe) });
-		updateTrangThaiThemVeTau();
+				String.format("%,.0f", giaVe) });
 	}
 
 	public static double convertStringToDouble(String formattedString) {
@@ -977,8 +1043,18 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	public void updateTrangThaiThemVeTau() {
 		int soVeTau = veTau_Page.getDanhSachVeTauModel().getRowCount();
 		veTau_Page.getLbl_TongSoVe().setText(soVeTau + "");
-		chonGhe_View.getLbl_TongSoVeTamThoi().setText("Số vé tạm thời: " + tongSoVeTamThoi);
-		veTau_Page.getLblTienTamTinh().setText(String.format("%,.0f ₫", tinhGiaVeTamTinh()));
+
+		if (chonGhe_View.getRdbtn_MotChieu().isSelected()) {
+			chonGhe_View.getLbl_TongSoVeTamThoi().setText("Số vé tạm thời: " + tongSoVeTamThoi);
+			veTau_Page.getLblTienTamTinh().setText(String.format("%,.0f VND", roundMoney(tinhGiaVeTamTinh())));
+		} else {
+			if (isBtnTiepTheoClick) {
+				chonGhe_View.getLbl_SoVeChieuVe().setText(tongSoVeChieuVe + "");
+			} else {
+				chonGhe_View.getLbl_SoVeChieuDi().setText(tongSoVeChieuDi + "");
+				veTau_Page.getLblTienTamTinh().setText(String.format("%,.0f VND", roundMoney(tinhGiaVeTamTinh())));
+			}
+		}
 	}
 
 	// Tạo mã vé tàu
@@ -1056,7 +1132,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		veTau_Page.getDanhSachVeTauModel()
 				.addRow(new Object[] { ++sttVeTau, maVeTau, loaiVeString, gheTauChon.getMaGheTau(), "{trống}",
 						"{trống}", "{trống}", "{trống}", "{trống}", "{trống}", "dd/mm/yyyy", "{trống}",
-						chiTietChuyenTau, String.format("%,.0f ₫", roundMoney(giaVe)) });
+						chiTietChuyenTau, String.format("%,.0f VND", roundMoney(giaVe)) });
 		veTau_Page.getLbl_TongSoVe().setText(sttVeTau + "");
 	}
 
@@ -1137,6 +1213,12 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		tongSoVeTamThoi = 0;
 		sttVeTau = 0;
 		maHoaDon = null;
+		
+		lamMoi_ChuyenTau_Tau_ToaTau_GheTau();
+		lamMoiToaTau_GheTau();
+		
+		chonGhe_View.getLbl_SoVeChieuDi().setText(0 + "");
+		chonGhe_View.getLbl_SoVeChieuVe().setText(0 + "");
 
 		// Xóa thông tin hiển thị thời gian
 		veTau_Page.getLbl_ThoiGianGiuVe().setText("");
@@ -1148,6 +1230,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			capNhatGiaoDienGheTau(toaTauChon.getMaToaTau());
 		}
 	}
+	
 
 	// Bôi đen chọn toàn bộ dự liệu trên ô text field
 	private void boiDenDuLieu() {
@@ -1271,11 +1354,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		double giaVeTamTinh = 0.0;
 		JTable jTable = veTau_Page.getDanhSachVeTau();
 		for (int i = 0; i < veTau_Page.getDanhSachVeTauModel().getRowCount(); i++) {
-			String maGhe = (String) jTable.getValueAt(i, 3);
-			String loaiVe = (String) jTable.getValueAt(i, 2);
-			GiaVe gv = GiaVe_DAO.getInstance().getGiaVeTheoChuyenTau(maGhe, chuyenTauChon.getMaChuyenTau());
-
-			giaVeTamTinh += gv.getGiaVeHienTai(loaiVe);
+			double giaVeHienTai = Double.parseDouble(((String) jTable.getValueAt(i, 13)).replace(",", ""));
+			giaVeTamTinh += giaVeHienTai;
 		}
 		return giaVeTamTinh;
 	}
@@ -1474,9 +1554,9 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		double tongTienHoaDon = roundMoney(hoaDon.tinhTongTien(dsTienChiTietVe));
 		tongTienThanhToan = roundMoney(tongTienHoaDon + tongTienHoaDon * 0.1);
 
-		thanhToan_Page.getLbl_TongTien().setText(String.format("%,.0f ₫", tongTienHoaDon));
-		thanhToan_Page.getLbl_SauThue().setText(String.format("%,.0f ₫", tongTienHoaDon * 0.1));
-		thanhToan_Page.getLbl_TongTienThanhToan().setText(String.format("%,.0f ₫", tongTienThanhToan));
+		thanhToan_Page.getLbl_TongTien().setText(String.format("%,.0f VND", tongTienHoaDon));
+		thanhToan_Page.getLbl_SauThue().setText(String.format("%,.0f VND", tongTienHoaDon * 0.1));
+		thanhToan_Page.getLbl_TongTienThanhToan().setText(String.format("%,.0f VND", tongTienThanhToan));
 
 		thanhToan_Page.getPanel_GoiYTien().removeAll();
 		thanhToan_Page.getPanel_GoiYTien().revalidate();
@@ -1627,7 +1707,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		tienKhachDua = 0;
 		ghiChu = "trống";
 		maHoaDon = null;
-
+		
 		resetHuyBoVe();
 	}
 
@@ -1865,28 +1945,49 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		} else if (obj.equals(chonGhe_View.getBtnTimKiemChuyenTau())) {
 			if (!kiemTraNgay())
 				return;
+			if (!kiemTraTinhThanh())
+				return;
+			lamMoiToaTau_GheTau();
 			timKiemChuyenTauDi(ngayDi);
 			isBtnClicked = true;
 		} else if (obj.equals(chonGhe_View.getBtn_TiepTheo())) {
 			if (!kiemTraNgay())
 				return;
-			timKiemChuyenTauDiVe(ngayVe);
+
+			if (!kiemTraTinhThanh())
+				return;
+
+			if (checkSoLuongVeChieuDi()) {
+				lamMoiToaTau_GheTau();
+				timKiemChuyenTauDiVe(ngayVe);
+				isBtnTiepTheoClick = true;
+				lamMoi_ChuyenTau_Tau_ToaTau_GheTau();
+			} else {
+				JOptionPane.showMessageDialog(null, "Vui lòng chọn ghế chiều đi!");
+			}
 		} else if (obj.equals(chonGhe_View.getBtn_QuayLai())) {
 			if (!kiemTraNgay())
 				return;
 			timKiemChuyenTauDi(ngayDi);
+			isBtnTiepTheoClick = false;
+			lamMoi_ChuyenTau_Tau_ToaTau_GheTau();
+			lamMoiToaTau_GheTau();
 		} else if (obj.equals(chonGhe_View.getRdbtn_MotChieu())) {
 			chonGhe_View.getBtn_QuayLai().setVisible(false);
 			chonGhe_View.getBtn_TiepTheo().setVisible(false);
-			chonGhe_View.getLbl_TongSoVeChieuDi().setVisible(false);
-			chonGhe_View.getLbl_TongSoVeChieuVe().setVisible(false);
+			chonGhe_View.getLbl_VeChieuDi().setVisible(false);
+			chonGhe_View.getLbl_VeChieuVe().setVisible(false);
+			chonGhe_View.getLbl_SoVeChieuDi().setVisible(false);
+			chonGhe_View.getLbl_SoVeChieuVe().setVisible(false);
 			chonGhe_View.getLbl_TongSoVeTamThoi().setVisible(true);
 			chonGhe_View.getDateChooser_NgayVe().setEnabled(false);
 		} else if (obj.equals(chonGhe_View.getRdbtn_KhuHoi())) {
 			chonGhe_View.getBtn_QuayLai().setVisible(true);
 			chonGhe_View.getBtn_TiepTheo().setVisible(true);
-			chonGhe_View.getLbl_TongSoVeChieuDi().setVisible(true);
-			chonGhe_View.getLbl_TongSoVeChieuVe().setVisible(true);
+			chonGhe_View.getLbl_VeChieuDi().setVisible(true);
+			chonGhe_View.getLbl_VeChieuVe().setVisible(true);
+			chonGhe_View.getLbl_SoVeChieuDi().setVisible(true);
+			chonGhe_View.getLbl_SoVeChieuVe().setVisible(true);
 			chonGhe_View.getLbl_TongSoVeTamThoi().setVisible(false);
 			chonGhe_View.getDateChooser_NgayVe().setEnabled(true);
 		} else if (obj.equals(chonGhe_View.getBtn_LamMoi())) {
@@ -1898,22 +1999,20 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 				danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
 				locChuyenTau(danhSachChuyenTau);
 			}
-		} else if (obj.equals(chonGhe_View.getBtn_ThemVeTau())) {
-			if (themVeTau()) {
-				capNhatTrangThaiGheTau(maGheTauDuocChon);
-				capNhatGiaoDienGheTau(toaTauChon.getMaToaTau());
-				if (!isThemVeTau) {
-					startCountdownTimer();
-				}
-				isThemVeTau = true;
-			}
-		} else if (obj.equals(chonGhe_View.getBtn_ChonNhanh())) {
+		}else if (obj.equals(chonGhe_View.getBtn_ChonNhanh())) {
 			if (chuyenTauChon != null) {
 				if (chonNhanhGheTauNgauNhien()) {
 					if (!isThemVeTau) {
+						if (chonGhe_View.getRdbtn_KhuHoi().isSelected()) {
+							if (isBtnTiepTheoClick) {
+								isThemVeTau = true;
+							}
+							isThemVeTau = false;
+						} else {
+							isThemVeTau = true;
+						}
 						startCountdownTimer();
 					}
-					isThemVeTau = true;
 				}
 			} else {
 				JOptionPane.showMessageDialog(null, "Vui lòng chọn chuyến tàu!", "Thông báo",

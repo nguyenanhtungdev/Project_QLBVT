@@ -84,6 +84,7 @@ import util.PrinterUtils;
 import view.HoaDonChiTiet_View;
 import view.QuanLyCaLam_View;
 import view.QuanLyHoaDon_View;
+import view.QuanLyKhachHang_View;
 import view.QuanLyKhuyenMai_View;
 import view.QuanLyTau_View;
 import view.View;
@@ -105,6 +106,7 @@ public class QuanLy_Controller {
 	private int currentIndex = 0;
 	private QuanLyTau_View qLTau_View;
 	private QuanLyHoaDon_View qLHoaDon_view;
+	private QuanLyKhachHang_View qlyKhachHang_View;
 	private QuanLyKhuyenMai_View qLKhuyenMai_View;
 	private QuanLyCaLam_View qLCaLam_View;
 	private HoaDonChiTiet_View qlHoaDonChiTiet;
@@ -143,6 +145,7 @@ public class QuanLy_Controller {
 		pageList.add(this.qLTau_View = new QuanLyTau_View("Tàu", "/Image/Trains.png"));
 		pageList.add(this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/Sales.png"));
 		pageList.add(this.qLCaLam_View = new QuanLyCaLam_View("Ca làm", "/Image/lichCaLam.png"));
+		pageList.add(this.qlyKhachHang_View= new QuanLyKhachHang_View("Khách hàng", "/Image/lichCaLam.png"));
 
 		this.gheTau_DAO = new GheTau_DAO();
 		this.toaTau_DAO = new ToaTau_DAO();

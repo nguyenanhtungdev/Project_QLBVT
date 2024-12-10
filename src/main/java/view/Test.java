@@ -15,6 +15,5 @@ public class Test {
 			HienThi_Controller controller = new HienThi_Controller();
 			controller.showView();
 		});
-
 	}
 }
