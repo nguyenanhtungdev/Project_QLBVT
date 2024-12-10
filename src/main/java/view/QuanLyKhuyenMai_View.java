@@ -70,20 +70,6 @@ public class QuanLyKhuyenMai_View extends View {
 	private PrimaryButton btnGuiTB;
 	private JDateChooser dateBDKM;
 
-	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					QuanLyKhuyenMai_View frame = new QuanLyKhuyenMai_View("Khuyến mãi",
-							"/Image/tabler-icon-file-settings.png");
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
-		});
-	}
-
 	public void addButtonReloadListener(ActionListener listener) {
 		btnReset.addActionListener(listener);
 	}

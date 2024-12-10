@@ -54,7 +54,7 @@ public class VeTau_View extends View {
 			"Giới tính", "CCCD", "Ngày sinh", "Loại KH", "Chi Tiết","Giá vé" };
 	private PrimaryButton btn_XoaTrang;
 	private PrimaryButton btn_CapNhatTT;
-	private PrimaryButton btn_XoaVeTau;
+	private DangerPrimaryButton btn_XoaVeTau;
 	private PrimaryButton btn_ThanhToan;
 	private JTextField txt_MaKH;
 	private JTextField txt_HoTen;
@@ -421,7 +421,7 @@ public class VeTau_View extends View {
 		btn_CapNhatTT.setFont(new Font("Arial", Font.BOLD, 18));
 		panel_3.add(btn_CapNhatTT);
 
-		btn_XoaVeTau = new PrimaryButton("Xóa trắng", "/Image/icon_XoaTrang.png");
+		btn_XoaVeTau = new DangerPrimaryButton("Xóa trắng", "/Image/icon_XoaTrang.png");
 		btn_XoaVeTau.setText("Xóa vé tàu");
 //		btn_XoaTrang.setBorder(new EmptyBorder(4, 6, 4, 6));
 		btn_XoaVeTau.setInsets(new Insets(4, 6, 4, 6));
@@ -488,7 +488,7 @@ public class VeTau_View extends View {
 
 		// Tùy chỉnh font chữ cho header của JTable
 		JTableHeader header = danhSachVeTau.getTableHeader();
-		header.setFont(new Font("Arial", Font.BOLD, 16));
+		header.setFont(new Font("Arial", Font.BOLD, 18));
 
 		// Thiết lập chiều rộng cho các cột
 		danhSachVeTau.getColumnModel().getColumn(0).setPreferredWidth(50);
@@ -725,7 +725,7 @@ public class VeTau_View extends View {
 		return lbl_ThoiGianGiuVe;
 	}
 
-	public PrimaryButton getBtn_XoaVeTau() {
+	public DangerPrimaryButton getBtn_XoaVeTau() {
 		return btn_XoaVeTau;
 	}
 	

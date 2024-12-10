@@ -88,6 +88,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 	private JMenuItem sdtItem;
 	private JPanel headerPanel;
 	private JPanel buttonPanel;
+	private JPanel panel_DsHDTable;
 
 	public void addButtonReloadListener(ActionListener listener) {
 		btnReset.addActionListener(listener);
@@ -149,7 +150,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
-		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		contentPane.setBorder(new EmptyBorder(5, 10, 5, 10));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
 
@@ -193,7 +194,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 
 		comboBoxMaHD = timKiemMaHD();
 		comboBoxMaHD.setPreferredSize(new Dimension(130, 30));
-		comboBoxMaHD.setFont(new Font("Arial", Font.PLAIN, 14));
+		comboBoxMaHD.setFont(new Font("Arial", Font.PLAIN, 16));
 		panelMaHD.add(comboBoxMaHD);
 
 		panelDate = new JPanel();
@@ -219,17 +220,17 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		panelDate.add(panel_ngayLap);
 
 		dateBD = new JDateChooser();
-		dateBD.setBackground(new Color(255, 255, 255));
-		dateBD.getCalendarButton().setBackground(new Color(235, 235, 235));
-		dateBD.getCalendarButton().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+		dateBD.setBackground(Color.WHITE);
+		dateBD.getCalendarButton().setBackground(Color.WHITE);
+		dateBD.getCalendarButton().setBorder(null);
 		dateBD.setBorder(null);
 		dateBD.setPreferredSize(new Dimension(150, 30));
-		dateBD.getCalendarButton().setFont(new Font("Arial", Font.PLAIN, 12));
+		dateBD.getCalendarButton().setFont(new Font("Arial", Font.PLAIN, 16));
 		dateBD.setFont(new Font("Arial", Font.PLAIN, 16));
 		dateBD.setDateFormatString("dd-MM-yyyy");
 		iconlich = new ImageIcon(getClass().getResource("/Image/icon_lich.png"));
+		dateBD.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 		panel_ngayLap.setLayout(new BoxLayout(panel_ngayLap, BoxLayout.X_AXIS));
-		dateBD.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
 		String placeholder = "Tạo từ ngày";
 		dateBD.setDate(null);
 		JTextField dateField = (JTextField) dateBD.getDateEditor().getUiComponent();
@@ -255,16 +256,15 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		panel_ngayLap.add(dateBD);
 
 		dateKT = new JDateChooser();
-		dateKT.setBorder(new EmptyBorder(0, 0, 0, 0));
+		dateKT.setBackground(Color.WHITE);
 		dateKT.getCalendarButton().setBorder(null);
-		dateKT.getCalendarButton().setBackground(new Color(235, 235, 235));
-		dateKT.getCalendarButton().setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 		dateKT.setBorder(null);
-		dateKT.getCalendarButton().setFont(new Font("Arial", Font.PLAIN, 12));
 		dateKT.setPreferredSize(new Dimension(150, 30));
+		dateKT.getCalendarButton().setFont(new Font("Arial", Font.PLAIN, 16));
 		dateKT.setFont(new Font("Arial", Font.PLAIN, 16));
 		dateKT.setDateFormatString("dd-MM-yyyy");
-		dateKT.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(27, 27, Image.SCALE_SMOOTH)));
+		iconlich = new ImageIcon(getClass().getResource("/Image/icon_lich.png"));
+		dateKT.setIcon(new ImageIcon(iconlich.getImage().getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
 		panel_ngayLap.add(dateKT);
 		String placeholder1 = "Đến ngày";
 		dateKT.setDate(null);
@@ -315,7 +315,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 
 		comboBoxSDT = timKiemSDT();
 		comboBoxSDT.setPreferredSize(new Dimension(130, 30));
-		comboBoxSDT.setFont(new Font("Arial", Font.PLAIN, 14));
+		comboBoxSDT.setFont(new Font("Arial", Font.PLAIN, 16));
 		comboBoxSDT.setEditable(true);
 		panelSDT.add(comboBoxSDT);
 
@@ -329,6 +329,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		panellblreload.setBackground(Color.WHITE);
 		panelReload.add(panellblreload, BorderLayout.NORTH);
 		btnReset = new JButton();
+		btnReset.setBackground(Color.WHITE);
 		btnReset.setIcon(new ImageIcon(getClass().getResource("/Image/reload.png")));
 		btnReset.setBorderPainted(false);
 		btnReset.setFocusPainted(false);
@@ -346,7 +347,8 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		panel_lblloc.setBorder(new EmptyBorder(0, 0, 25, 0));
 		panelLoc.add(panel_lblloc, BorderLayout.NORTH);
 		btnSearch = new PrimaryButton("Lọc", "/Image/search.png");
-		btnSearch.setPreferredSize(new Dimension(130, 30));
+		btnSearch.setText("Lọc nhanh");
+		btnSearch.setPreferredSize(new Dimension(160, 35));
 		btnSearch.setBorderRadius(10);
 		btnSearch.setFont(new Font("Arial", Font.BOLD, 18));
 		btnSearch.setBorder(new EmptyBorder(4, 10, 4, 10));
@@ -368,6 +370,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		});
 
 		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new EmptyBorder(0, 0, 5, 0));
 		panel_1.setBackground(new Color(255, 255, 255));
 		panel.add(panel_1, BorderLayout.WEST);
 		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.X_AXIS));
@@ -391,7 +394,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		};
 
 		tableHD = new JTable(modelTableHD);
-		tableHD.setShowGrid(true);
+		tableHD.setShowGrid(false);
 		tableHD.setGridColor(new Color(225, 225, 225));
 		tableHD.getTableHeader().setFont(headerFont);
 		tableHD.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -401,6 +404,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		tableHD.getTableHeader().setReorderingAllowed(false);
 
 		JScrollPane tableScroll = new JScrollPane(tableHD);
+		tableScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		contentPane.add(tableScroll, BorderLayout.CENTER);
 
 		buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
@@ -412,7 +416,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		buttonPanel.add(panelXemCT);
 		panelXemCT.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 
-		btnXemCT = new PrimaryButton("Xem chi tiết", "/Image/eye.png");
+		btnXemCT = new PrimaryButton("Xem chi tiết", "/Image/show_detail.png");
 		btnXemCT.setVerticalTextPosition(SwingConstants.CENTER);
 		btnXemCT.setHorizontalTextPosition(SwingConstants.RIGHT);
 		btnXemCT.setBorderRadius(10);
@@ -420,11 +424,16 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		btnXemCT.setBorder(new EmptyBorder(4, 10, 4, 10));
 		panelXemCT.add(btnXemCT);
 
-		btnInDS = new PrimaryButton("In danh sách hoá đơn", "/Image/print.png");
+		btnInDS = new PrimaryButton("In danh sách HD", "/Image/print.png");
 		btnInDS.setBorder(new EmptyBorder(4, 10, 4, 10));
 		btnInDS.setFont(new Font("Tahoma", Font.BOLD, 18));
+		btnInDS.setPreferredSize(new Dimension(230, 35));
 		btnInDS.setBorderRadius(10);
 		btnInDS.setIconSize(26, 26);
+
+		panel_DsHDTable = new JPanel();
+		contentPane.add(panel_DsHDTable, BorderLayout.WEST);
+		panel_DsHDTable.setLayout(new BoxLayout(panel_DsHDTable, BoxLayout.X_AXIS));
 		btnInDS.setHorizontalTextPosition(SwingConstants.RIGHT);
 		btnInDS.setVerticalTextPosition(SwingConstants.CENTER);
 		buttonPanel.add(btnInDS);

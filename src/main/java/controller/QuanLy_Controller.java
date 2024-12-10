@@ -8,8 +8,16 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.awt.print.PrinterException;
@@ -61,6 +69,7 @@ import model.HoaDon;
 import model.HoaDon_DAO;
 import model.KhachHang;
 import model.KhachHang.LoaiKhachHang;
+import model.KhachHang_DAO;
 import model.KhuyenMai;
 import model.KhuyenMai.TinhTrangKhuyenMai;
 import model.KhuyenMai_DAO;
@@ -89,7 +98,7 @@ import view.QuanLyKhuyenMai_View;
 import view.QuanLyTau_View;
 import view.View;
 
-public class QuanLy_Controller {
+public class QuanLy_Controller implements ActionListener, FocusListener, KeyListener, MouseListener {
 	private HoaDon_DAO hoaDon_DAO;
 	private VeTau_DAO veTau_DAO;
 	private ChuyenTau_DAO chuyenTau_DAO;
@@ -116,6 +125,8 @@ public class QuanLy_Controller {
 	private int sttTT = 1;
 	private int sttGT = 1;
 	private static QuanLy_Controller instance;
+	private DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+	private DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
 	public static QuanLy_Controller getInstance() {
 		if (instance == null)
@@ -145,7 +156,7 @@ public class QuanLy_Controller {
 		pageList.add(this.qLTau_View = new QuanLyTau_View("Tàu", "/Image/Trains.png"));
 		pageList.add(this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/Sales.png"));
 		pageList.add(this.qLCaLam_View = new QuanLyCaLam_View("Ca làm", "/Image/lichCaLam.png"));
-		pageList.add(this.qlyKhachHang_View= new QuanLyKhachHang_View("Khách hàng", "/Image/lichCaLam.png"));
+		pageList.add(this.qlyKhachHang_View = new QuanLyKhachHang_View("Khách hàng", "/Image/user-cog.png"));
 
 		this.gheTau_DAO = new GheTau_DAO();
 		this.toaTau_DAO = new ToaTau_DAO();
@@ -178,6 +189,7 @@ public class QuanLy_Controller {
 		updateTrainPanel(qLTau_View.trainContainer);
 		qLTau_View.getLblSoTrang().setText("trang: " + soTrang);
 		qLTau_View.getLblSoTau().setText("Tổng số tàu: " + soTau);
+		getDataTableDsKH();
 	}
 
 	private void themSuKien() {
@@ -185,6 +197,9 @@ public class QuanLy_Controller {
 		qLTau_View.addPrevButtonListener(e -> prevPage());
 		qLTau_View.addButtonSearchListener(e -> searchTau());
 		qLTau_View.addButtonReloadListener(e -> reloadTau());
+
+		qlyKhachHang_View.addSuKien(this, this, this);
+		qlyKhachHang_View.addSuKienTable(this);
 	}
 
 	// QL_KhuyenMai
@@ -450,7 +465,6 @@ public class QuanLy_Controller {
 				continue;
 			}
 
-			// TODO: Sửa lại đi nè
 			GheTau gheTau = gheTau_DAO.getByMaGheTau(veTau.getGheTau().getMaGheTau());
 			ToaTau toaTau = toaTau_DAO.getByMaToaTau(gheTau.getToaTau().getMaToaTau());
 			Tau tau = tau_DAO.getByMaTau(toaTau.getTau().getMaTau());
@@ -543,8 +557,6 @@ public class QuanLy_Controller {
 				if (veTau == null) {
 					continue;
 				}
-
-				// TODO: Sửa lại đi nè
 				GheTau gheTau = gheTau_DAO.getByMaGheTau(veTau.getGheTau().getMaGheTau());
 				ToaTau toaTau = toaTau_DAO.getByMaToaTau(gheTau.getToaTau().getMaToaTau());
 				Tau tau = tau_DAO.getByMaTau(toaTau.getTau().getMaTau());
@@ -1868,9 +1880,132 @@ public class QuanLy_Controller {
 		qLTau_View.getQLTau_View().repaint();
 	}
 
+	private void getDataTableDsKH() {
+		int sttKH = 0;
+		for (KhachHang khachHang : KhachHang_DAO.getInstance().getAll()) {
+			qlyKhachHang_View.getDanhSachKhachHangModel()
+					.addRow(new Object[] { ++sttKH, khachHang.getMaKhachHang(), khachHang.getHoTen(),
+							khachHang.getSoDienThoai(), khachHang.getCCCD(), khachHang.getEmail(),
+							khachHang.getNgaySinh().format(outputFormatter), khachHang.isGioiTinh() ? "Nam" : "Nữ",
+							khachHang.getLoaiKH().toString() });
+		}
+	}
+	// Thêm thông tin khách hàng vào ô input
+	public void themThongTinInputTable(int i) {
+		JTable jTable = qlyKhachHang_View.getDanhSachKhachHangJtable();
+		String maKH = (String) jTable.getValueAt(i, 1);
+		String hoTen = (String) jTable.getValueAt(i, 2);
+		String sdt = (String) jTable.getValueAt(i, 3);
+		String cccd = (String) jTable.getValueAt(i, 4);
+		String email = (String) jTable.getValueAt(i, 5);
+		String ngaySinh = (String) jTable.getValueAt(i, 6);
+		String gioiTinh = (String) jTable.getValueAt(i, 7);
+		String loaiKH = (String) jTable.getValueAt(i, 8);
+
+		qlyKhachHang_View.getTxt_MaKH().setText(maKH);
+		qlyKhachHang_View.getTxt_SDT().setText(sdt);
+		qlyKhachHang_View.getTxt_CCCD().setText(cccd);
+		qlyKhachHang_View.getTxt_HoTen().setText(hoTen);
+		qlyKhachHang_View.getTxt_Email().setText(email);
+
+		qlyKhachHang_View.getComboBox_GioiTinh().setSelectedItem((String) gioiTinh);
+
+		qlyKhachHang_View.getComboBox_LoaiKH().setSelectedItem((String) loaiKH);
+
+		qlyKhachHang_View.getTxt_NgaySinh().setText(ngaySinh);
+
+	}
+	
+	private void xoaTrangInPut() {
+		qlyKhachHang_View.getTxt_CCCD().setText("");
+		qlyKhachHang_View.getTxt_MaKH().setText("");
+		qlyKhachHang_View.getTxt_HoTen().setText("");
+		qlyKhachHang_View.getTxt_Email().setText("");
+		qlyKhachHang_View.getTxt_NgaySinh().setText("");
+		qlyKhachHang_View.getTxt_SDT().setText("");
+		qlyKhachHang_View.getComboBox_GioiTinh().setSelectedIndex(0);
+		qlyKhachHang_View.getComboBox_LoaiKH().setSelectedIndex(0);
+	}
+
 	@Override
 	public String toString() {
 		return "QuanLy_Controller [danhSachTau=" + danhSachTau + "]";
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		Object obj = e.getSource();
+		if (obj.equals(qlyKhachHang_View.getDanhSachKhachHangJtable())) {
+			int selectRow = qlyKhachHang_View.getDanhSachKhachHangJtable().getSelectedRow();
+			themThongTinInputTable(selectRow);
+		}
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+			KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
+			manager.focusNextComponent();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		Object ob = e.getSource();
+		if(ob.equals(qlyKhachHang_View.getBtn_XoaTrang())) {
+			xoaTrangInPut();
+		}
 	}
 
 }

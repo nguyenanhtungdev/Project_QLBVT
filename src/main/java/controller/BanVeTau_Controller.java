@@ -923,7 +923,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			JTable jTable = veTau_Page.getDanhSachVeTau();
 			int i = 0;
 			for (GheTau ghe : danhSachGheDuocChon) {
-				String chiTiet = (String)jTable.getValueAt(i, 12);
+				String chiTiet = (String) jTable.getValueAt(i, 12);
 				System.out.println(chiTiet);
 //				jTable.setValueAt(danhSachGheDuocChon, i, 12);
 				i++;
@@ -1162,7 +1162,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			veTau_Page.getComboBox_GioiTinh().setSelectedItem((String) gioiTinh);
 		}
 
-		if (gioiTinh.equals("{trống}")) {
+		if (hangKH.equals("{trống}")) {
 			veTau_Page.getComboBox_LoaiKH().setSelectedIndex(0);
 		} else {
 			veTau_Page.getComboBox_LoaiKH().setSelectedItem((String) hangKH);
@@ -1213,10 +1213,10 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		tongSoVeTamThoi = 0;
 		sttVeTau = 0;
 		maHoaDon = null;
-		
+
 		lamMoi_ChuyenTau_Tau_ToaTau_GheTau();
 		lamMoiToaTau_GheTau();
-		
+
 		chonGhe_View.getLbl_SoVeChieuDi().setText(0 + "");
 		chonGhe_View.getLbl_SoVeChieuVe().setText(0 + "");
 
@@ -1230,7 +1230,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			capNhatGiaoDienGheTau(toaTauChon.getMaToaTau());
 		}
 	}
-	
 
 	// Bôi đen chọn toàn bộ dự liệu trên ô text field
 	private void boiDenDuLieu() {
@@ -1277,6 +1276,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		veTau_Page.getTxt_HoTen().setEnabled(true);
 		veTau_Page.getTxt_Email().setEnabled(true);
 		veTau_Page.getTxt_NgaySinh().setEnabled(true);
+		veTau_Page.getTxt_MaKH().setEnabled(true);
 		veTau_Page.getComboBox_GioiTinh().setEnabled(true);
 		veTau_Page.getComboBox_LoaiKH().setEnabled(true);
 	}
@@ -1707,7 +1707,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		tienKhachDua = 0;
 		ghiChu = "trống";
 		maHoaDon = null;
-		
+
 		resetHuyBoVe();
 	}
 
@@ -1999,7 +1999,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 				danhSachChuyenTau = ChuyenTau_DAO.getInstance().getAll();
 				locChuyenTau(danhSachChuyenTau);
 			}
-		}else if (obj.equals(chonGhe_View.getBtn_ChonNhanh())) {
+		} else if (obj.equals(chonGhe_View.getBtn_ChonNhanh())) {
 			if (chuyenTauChon != null) {
 				if (chonNhanhGheTauNgauNhien()) {
 					if (!isThemVeTau) {
