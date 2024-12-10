@@ -73,6 +73,26 @@ public class KhachHang {
 		public static String chuyenDoiDiscountToString(double discount) {
 			return String.format("%.0f%%", discount * 100);
 		}
+
+		@Override
+		public String toString() {
+			switch (this) {
+			case TRE_EM:
+				return "Trẻ em";
+			case HOC_SINH:
+				return "Học sinh";
+			case SINH_VIEN:
+				return "Sinh viên";
+			case NGUOI_GIA:
+				return "Người già";
+			case NGUOI_KHUYET_TAT:
+				return "Khuyết tật";
+			case KHACH_THUONG:
+				return "Khách thường";
+			default:
+				return null;
+			}
+		}
 	}
 
 	// Phương thức hiển thị thông báo lỗi

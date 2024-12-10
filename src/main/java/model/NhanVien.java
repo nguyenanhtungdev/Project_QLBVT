@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDate;
+import java.time.Period;
 
 public class NhanVien {
 
@@ -70,12 +71,12 @@ public class NhanVien {
 	}
 
 	public void setNgaySinh(LocalDate ngaySinh) {
-//		int temp_Age = Period.between(ngaySinh, LocalDate.now()).getYears();
-//		if (ngaySinh.isBefore(LocalDate.now()) && (temp_Age >= 18 && temp_Age <= 60)) {
-//            this.ngaySinh = ngaySinh;
-//        } else {
-//            throw new IllegalArgumentException("Ngày sinh không hợp lệ. ");
-//        }
+		int temp_Age = Period.between(ngaySinh, LocalDate.now()).getYears();
+		if (ngaySinh.isBefore(LocalDate.now()) && (temp_Age >= 18 && temp_Age <= 60)) {
+            this.ngaySinh = ngaySinh;
+        } else {
+            throw new IllegalArgumentException("Ngày sinh không hợp lệ. ");
+        }
 	}
 
 	public String getSoDienThoai() {
