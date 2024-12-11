@@ -31,6 +31,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -38,9 +39,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.swing.BoxLayout;
@@ -87,7 +90,11 @@ import model.VeTau;
 import model.VeTau_DAO;
 import other.CustomTitleLable;
 import other.CustomTrainStatusButton;
+
 import other.EmailSender;
+
+import other.ExportExcel;
+
 import other.MultiCheckPopupMenuEditor;
 import other.SeatButton;
 import util.PrinterUtils;
@@ -190,7 +197,7 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		updateTrainPanel(qLTau_View.trainContainer);
 		qLTau_View.getLblSoTrang().setText("trang: " + soTrang);
 		qLTau_View.getLblSoTau().setText("Tổng số tàu: " + soTau);
-		getDataTableDsKH();
+		getDataTableDsKH(KhachHang_DAO.getInstance().getAll());
 	}
 
 	private void themSuKien() {
@@ -391,24 +398,24 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 	}
 
 	public void reloadHoaDon() {
-	    xoaDuLieuTableHoaDon();
-	    DocDuLieuVaoTableHoaDon();
-	    qLHoaDon_view.getCombMaHD().setSelectedItem(null);
-	    qLHoaDon_view.getCombSDT().setSelectedItem(null);
-	    int selectedRow = qLHoaDon_view.getTableHoaDon().getSelectedRow();
-	    if (selectedRow != -1 && selectedRow < qLHoaDon_view.getModelHD().getRowCount()) {
-	        qLHoaDon_view.getModelHD().removeRow(selectedRow);
-	    }
+		xoaDuLieuTableHoaDon();
+		DocDuLieuVaoTableHoaDon();
+		qLHoaDon_view.getCombMaHD().setSelectedItem(null);
+		qLHoaDon_view.getCombSDT().setSelectedItem(null);
+		int selectedRow = qLHoaDon_view.getTableHoaDon().getSelectedRow();
+		if (selectedRow != -1 && selectedRow < qLHoaDon_view.getModelHD().getRowCount()) {
+			qLHoaDon_view.getModelHD().removeRow(selectedRow);
+		}
 
-	    qLHoaDon_view.getDateBD().setDate(null);
-	    JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
-	    dateField.setText("Tạo từ ngày");
-	    dateField.setForeground(Color.GRAY);
+		qLHoaDon_view.getDateBD().setDate(null);
+		JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
+		dateField.setText("Tạo từ ngày");
+		dateField.setForeground(Color.GRAY);
 
-	    qLHoaDon_view.getDateKT().setDate(null);
-	    JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
-	    dateField1.setText("Đến ngày");
-	    dateField1.setForeground(Color.GRAY);
+		qLHoaDon_view.getDateKT().setDate(null);
+		JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
+		dateField1.setText("Đến ngày");
+		dateField1.setForeground(Color.GRAY);
 	}
 
 	private void themHoaDonVaoBang(HoaDon hd) {
@@ -709,11 +716,11 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 						.withSecond(0).withNano(0)
 				: null;
 		if (tenKhuyenMai.isEmpty()) {
-			JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Vui lòng nhập tên khuyến mãi!");
+			JOptionPane.showMessageDialog(null, "Vui lòng nhập tên khuyến mãi!");
 			return false;
 		}
 		if (soLuongToiDaStr.isEmpty()) {
-			JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Vui lòng nhập số lượng tối đa!");
+			JOptionPane.showMessageDialog(null, "Vui lòng nhập số lượng tối đa!");
 			return false;
 		}
 		int soLuongToiDa;
@@ -730,11 +737,11 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 			return false;
 		}
 		if (noiDungKhuyenMai.isEmpty()) {
-			JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Vui lòng nhập nội dung khuyến mãi!");
+			JOptionPane.showMessageDialog(null, "Vui lòng nhập nội dung khuyến mãi!");
 			return false;
 		}
 		if (giamGia.isEmpty()) {
-			JOptionPane.showMessageDialog(qLKhuyenMai_View.getContentPane(), "Vui lòng nhập giá trị giảm giá!");
+			JOptionPane.showMessageDialog(null, "Vui lòng nhập giá trị giảm giá!");
 			return false;
 		}
 		int giamGiaValue;
@@ -1013,53 +1020,52 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 	}
 
 	private void guiTBTxtKM() {
-	    int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
-	    if (selectedRow < 0) {
-	        JOptionPane.showMessageDialog(null, "Vui lòng chọn khuyến mãi thông báo!");
-	        return;
-	    }
+		int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
+		if (selectedRow < 0) {
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn khuyến mãi thông báo!");
+			return;
+		}
 
-	    String tenKM = qLKhuyenMai_View.getTxtTenkm().getText();
-	    String noiDung = qLKhuyenMai_View.getTxtNDKM().getText();
-	    int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText());
-	    LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault())
-	            .toLocalDateTime();
-	    double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", ""));
+		String tenKM = qLKhuyenMai_View.getTxtTenkm().getText();
+		String noiDung = qLKhuyenMai_View.getTxtNDKM().getText();
+		int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText());
+		LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault())
+				.toLocalDateTime();
+		double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", ""));
 
-	    KhachHang_DAO kh_DAO = new KhachHang_DAO();
-	    ArrayList<String> emailList = new ArrayList<>();
-	    List<KhachHang> khachHangs = kh_DAO.getAll();
-	    int maxEmails = 5;
-	    for (KhachHang kh : khachHangs) {
-	        if (emailList.size() >= maxEmails) {
-	            break;
-	        }
-	        if (kh.getEmail() != null && !kh.getEmail().isEmpty()) {
-	            emailList.add(kh.getEmail());
-	        }
-	    }
+		KhachHang_DAO kh_DAO = new KhachHang_DAO();
+		ArrayList<String> emailList = new ArrayList<>();
+		List<KhachHang> khachHangs = kh_DAO.getAll();
+		int maxEmails = 5;
+		for (KhachHang kh : khachHangs) {
+			if (emailList.size() >= maxEmails) {
+				break;
+			}
+			if (kh.getEmail() != null && !kh.getEmail().isEmpty()) {
+				emailList.add(kh.getEmail());
+			}
+		}
 
-	    String subject = "Chương trình khuyến mãi đặc biệt dành cho bạn!";
-	    String body = "Chào quý khách,\n\n" +
-	            "Chúng tôi xin trân trọng giới thiệu đến bạn chương trình khuyến mãi đặc biệt: \"" + tenKM + "\".\n\n" +
-	            "Nội dung khuyến mãi: " + noiDung + ".\n" +
-	            "Giảm giá đến: " + giamGia + "%" + ".\n" +
-	            "Số lượng khuyến mãi có hạn: chỉ " + soLuong + " suất.\n" +
-	            "Hạn sử dụng khuyến mãi: " + hanSuDung.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + ".\n\n" +
-	            "Đừng bỏ lỡ cơ hội này! Hãy nhanh tay săn vé tàu ngay hôm nay để nhận ưu đãi cực kỳ hấp dẫn này.\n\n" +
-	            "Trân trọng!";
+		String subject = "Chương trình khuyến mãi đặc biệt dành cho bạn!";
+		String body = "Chào quý khách,\n\n"
+				+ "Chúng tôi xin trân trọng giới thiệu đến bạn chương trình khuyến mãi đặc biệt: \"" + tenKM + "\".\n\n"
+				+ "Nội dung khuyến mãi: " + noiDung + ".\n" + "Giảm giá đến: " + giamGia + "%" + ".\n"
+				+ "Số lượng khuyến mãi có hạn: chỉ " + soLuong + " suất.\n" + "Hạn sử dụng khuyến mãi: "
+				+ hanSuDung.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + ".\n\n"
+				+ "Đừng bỏ lỡ cơ hội này! Hãy nhanh tay săn vé tàu ngay hôm nay để nhận ưu đãi cực kỳ hấp dẫn này.\n\n"
+				+ "Trân trọng!";
 
-	    for (String email : emailList) {
-	        try {
-	            EmailSender.sendPromotionEmail(subject, body, List.of(email)); 
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }
-	    }
+		for (String email : emailList) {
+			try {
+				EmailSender.sendPromotionEmail(subject, body, List.of(email));
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 
-	    JOptionPane.showMessageDialog(null, "Đã gửi thành công thông báo khuyến mãi qua email khách hàng!");
+		JOptionPane.showMessageDialog(null, "Đã gửi thành công thông báo khuyến mãi qua email khách hàng!");
 	}
-	
+
 	////// QL_CaLam_View
 	public void DocDuLieuVaoTableCaLam() {
 		List<CaLam> list;
@@ -1929,9 +1935,9 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		qLTau_View.getQLTau_View().repaint();
 	}
 
-	private void getDataTableDsKH() {
+	private void getDataTableDsKH(List<KhachHang> khachHangs) {
 		int sttKH = 0;
-		for (KhachHang khachHang : KhachHang_DAO.getInstance().getAll()) {
+		for (KhachHang khachHang : khachHangs) {
 			qlyKhachHang_View.getDanhSachKhachHangModel()
 					.addRow(new Object[] { ++sttKH, khachHang.getMaKhachHang(), khachHang.getHoTen(),
 							khachHang.getSoDienThoai(), khachHang.getCCCD(), khachHang.getEmail(),
@@ -1939,6 +1945,7 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 							khachHang.getLoaiKH().toString() });
 		}
 	}
+
 	// Thêm thông tin khách hàng vào ô input
 	public void themThongTinInputTable(int i) {
 		JTable jTable = qlyKhachHang_View.getDanhSachKhachHangJtable();
@@ -1964,7 +1971,7 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		qlyKhachHang_View.getTxt_NgaySinh().setText(ngaySinh);
 
 	}
-	
+
 	private void xoaTrangInPut() {
 		qlyKhachHang_View.getTxt_CCCD().setText("");
 		qlyKhachHang_View.getTxt_MaKH().setText("");
@@ -1974,6 +1981,93 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		qlyKhachHang_View.getTxt_SDT().setText("");
 		qlyKhachHang_View.getComboBox_GioiTinh().setSelectedIndex(0);
 		qlyKhachHang_View.getComboBox_LoaiKH().setSelectedIndex(0);
+		qlyKhachHang_View.getComboBox_LocLoaiKH().setSelectedIndex(0);
+		qlyKhachHang_View.getTxt_LocSDT().setText("");
+	}
+
+	private void timKiemLoaiKH(List<KhachHang> khachHangs2) {
+		String locLoaiKH = qlyKhachHang_View.getComboBox_LocLoaiKH().getSelectedItem().toString();
+		List<KhachHang> khTim = new ArrayList<KhachHang>();
+		for (KhachHang khachHang : khachHangs2) {
+			if (locLoaiKH.equals(khachHang.getLoaiKH().toString())) {
+				if (!khTim.contains(khachHang)) {
+					khTim.add(khachHang);
+				}
+			}
+		}
+		qlyKhachHang_View.getDanhSachKhachHangModel().setRowCount(0);
+		getDataTableDsKH(khTim);
+	}
+
+	private boolean timKiemTheoTieuChi(String tieuChi, Function<KhachHang, String> getter) {
+		List<KhachHang> khTim = new ArrayList<>();
+		for (KhachHang khachHang : KhachHang_DAO.getInstance().getAll()) {
+			if (getter.apply(khachHang).equals(tieuChi)) {
+				khTim.add(khachHang);
+			}
+		}
+		if (!khTim.isEmpty()) {
+			qlyKhachHang_View.getDanhSachKhachHangModel().setRowCount(0);
+			getDataTableDsKH(khTim);
+			return true;
+		}
+		return false;
+	}
+
+	private boolean timKiemTheoCCCD() {
+		String cccd = qlyKhachHang_View.getTxt_LocSDT().getText();
+		return timKiemTheoTieuChi(cccd, KhachHang::getCCCD);
+	}
+
+	private boolean timKiemTheoSDT() {
+		String sdt = qlyKhachHang_View.getTxt_LocSDT().getText();
+		return timKiemTheoTieuChi(sdt, KhachHang::getSoDienThoai);
+	}
+
+	private boolean capNhatThongTinKH() {
+		KhachHang khachHang = new KhachHang();
+
+		String maKH = qlyKhachHang_View.getTxt_MaKH().getText().trim();
+		String hoTen = qlyKhachHang_View.getTxt_HoTen().getText().trim();
+		String sdt = qlyKhachHang_View.getTxt_SDT().getText().trim();
+		String cccd = qlyKhachHang_View.getTxt_CCCD().getText().trim();
+		String email = qlyKhachHang_View.getTxt_Email().getText().trim();
+		String ngaySinhStr = qlyKhachHang_View.getTxt_NgaySinh().getText().trim();
+		String gioiTinhStr = (String) qlyKhachHang_View.getComboBox_GioiTinh().getSelectedItem();
+		String loaiKhachHangStr = (String) qlyKhachHang_View.getComboBox_LoaiKH().getSelectedItem();
+
+		if (maKH.isEmpty() || hoTen.isEmpty()) {
+			return false;
+		}
+
+		khachHang.setMaKhachHang(maKH);
+		khachHang.setHoTen(hoTen);
+		khachHang.setSoDienThoai(sdt);
+		khachHang.setCCCD(cccd);
+		khachHang.setEmail(email);
+
+		if (!ngaySinhStr.isEmpty() && !ngaySinhStr.equals("dd/mm/yyyy")) {
+			try {
+				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+				khachHang.setNgaySinh(LocalDate.parse(ngaySinhStr, formatter));
+			} catch (DateTimeParseException e) {
+				JOptionPane.showMessageDialog(null, "Ngày sinh không hợp lệ! Vui lòng nhập theo định dạng dd/MM/yyyy.",
+						"Lỗi", JOptionPane.ERROR_MESSAGE);
+				return false;
+			}
+		} else {
+			khachHang.setNgaySinh(null);
+		}
+
+		khachHang.setGioiTinh(gioiTinhStr.equals("Nam"));
+		KhachHang.LoaiKhachHang loaiKH = KhachHang.LoaiKhachHang.chuyenDoiLoaiKH(loaiKhachHangStr);
+		khachHang.setLoaiKH(loaiKH);
+
+		if (KhachHang_DAO.getInstance().updateKhachHang(khachHang)) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -2033,7 +2127,22 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
+		Object obj = e.getSource();
+		if (obj.equals(qlyKhachHang_View.getTxt_NgaySinh())) {
+			JTextField txtNgaySinh = qlyKhachHang_View.getTxt_NgaySinh();
+			String text = txtNgaySinh.getText().replaceAll("[^0-9/]", "");
+			int length = text.length();
 
+			if (length == 2 || length == 5) {
+				if (length < txtNgaySinh.getText().length()) {
+					txtNgaySinh.setText(text);
+				} else {
+					txtNgaySinh.setText(text + "/");
+				}
+			} else if (length > 10) {
+				txtNgaySinh.setText(text.substring(0, 10));
+			}
+		}
 	}
 
 	@Override
@@ -2045,16 +2154,63 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 	@Override
 	public void focusLost(FocusEvent e) {
 		// TODO Auto-generated method stub
-
+		Object obj = e.getSource();
+		if (obj.equals(qlyKhachHang_View.getTxt_NgaySinh())) {
+			JTextField txtNgaySinh = qlyKhachHang_View.getTxt_NgaySinh();
+			String text = txtNgaySinh.getText().trim();
+			if (!text.matches("\\d{2}/\\d{2}/\\d{4}")) {
+				JOptionPane.showMessageDialog(null, "Ngày sinh không hợp lệ! Vui lòng nhập theo định dạng dd/MM/yyyy.",
+						"Lỗi", JOptionPane.ERROR_MESSAGE);
+				txtNgaySinh.requestFocus();
+			}
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 		Object ob = e.getSource();
-		if(ob.equals(qlyKhachHang_View.getBtn_XoaTrang())) {
+		if (ob.equals(qlyKhachHang_View.getBtn_XoaTrang())) {
+			getDataTableDsKH(KhachHang_DAO.getInstance().getAll());
 			xoaTrangInPut();
+		} else if (ob.equals(qlyKhachHang_View.getBtn_TimKiem())) {
+			if (qlyKhachHang_View.getRdbtn_DienThoai().isSelected()) {
+				if (!timKiemTheoSDT()) {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy khách hàng");
+				}
+			} else {
+				if (!timKiemTheoCCCD()) {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy khách hàng");
+				}
+			}
+		} else if (ob.equals(qlyKhachHang_View.getComboBox_LocLoaiKH())) {
+			qlyKhachHang_View.getDanhSachKhachHangModel().setRowCount(0);
+			if (qlyKhachHang_View.getComboBox_LocLoaiKH().getSelectedIndex() == 0) {
+				getDataTableDsKH(KhachHang_DAO.getInstance().getAll());
+			} else {
+				timKiemLoaiKH(KhachHang_DAO.getInstance().getAll());
+			}
+		} else if (ob.equals(qlyKhachHang_View.getBtn_CapNhatTT())) {
+			if (capNhatThongTinKH()) {
+				JOptionPane.showMessageDialog(null, "Cập nhật thông tin thành công!");
+				xoaTrangInPut();
+				qlyKhachHang_View.getDanhSachKhachHangModel().setRowCount(0);
+				getDataTableDsKH(KhachHang_DAO.getInstance().getAll());
+			} else {
+				JOptionPane.showMessageDialog(null, "Cập nhật thông tin không thành công!");
+			}
+		} else if (ob.equals(qlyKhachHang_View.getBtn_XemDsHD())) {
+			String filePath = "C:\\Users\\Admin\\Documents\\DanhSachKhachHang.xlsx";
+
+			List<KhachHang> khachHangList = KhachHang_DAO.getInstance().getAll();
+
+			boolean isSuccess = ExportExcel.exportKhachHangToExcel(filePath, khachHangList);
+			if (isSuccess) {
+				JOptionPane.showMessageDialog(null, "Xuất file Excel thành công: ", "Thông báo",
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "Xuất file Excel thất bại.", "Lỗi", JOptionPane.ERROR_MESSAGE);
+			}
 		}
 	}
-
 }

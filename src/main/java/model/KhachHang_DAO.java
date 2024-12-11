@@ -104,7 +104,7 @@ public class KhachHang_DAO {
 	public boolean insertKhachHang(KhachHang khachHang) {
 		Connection con = null;
 		PreparedStatement preparedStatement = null;
-		String sql = "INSERT INTO KhachHang (maKhachHang, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKhachHang) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO KhachHang (maKH, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKhachHang) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {
 			Database.getInstance();
@@ -187,4 +187,39 @@ public class KhachHang_DAO {
 		return null;
 	}
 
+	public boolean updateKhachHang(KhachHang khachHang) {
+		String sql = "UPDATE KhachHang "
+				+ "SET hoTen = ?, soDienThoai = ?, email = ?, gioiTinh = ?, CCCD = ?, ngaySinh = ? "
+				+ "WHERE maKH = ?";
+
+		Connection con = null;
+		PreparedStatement preparedStatement = null;
+
+		try {
+			con = Database.getInstance().getConnection();
+			preparedStatement = con.prepareStatement(sql);
+			preparedStatement.setString(1, khachHang.getHoTen());
+			preparedStatement.setString(2, khachHang.getSoDienThoai());
+			preparedStatement.setString(3, khachHang.getEmail());
+			preparedStatement.setBoolean(4, khachHang.isGioiTinh());
+			preparedStatement.setString(5, khachHang.getCCCD());
+			preparedStatement.setDate(6, java.sql.Date.valueOf(khachHang.getNgaySinh()));
+			preparedStatement.setString(7, khachHang.getMaKhachHang());
+			
+
+			int rowsAffected = preparedStatement.executeUpdate();
+
+			return rowsAffected > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (preparedStatement != null)
+					preparedStatement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return false;
+	}
 }

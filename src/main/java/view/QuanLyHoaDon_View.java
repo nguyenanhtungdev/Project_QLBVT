@@ -150,7 +150,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 		setLocationRelativeTo(null);
 		contentPane = new JPanel();
 		contentPane.setBackground(Color.WHITE);
-		contentPane.setBorder(new EmptyBorder(5, 10, 5, 10));
+		contentPane.setBorder(new EmptyBorder(5, 15, 5, 15));
 		setContentPane(contentPane);
 		contentPane.setLayout(new BorderLayout());
 
@@ -159,7 +159,7 @@ public class QuanLyHoaDon_View extends View implements Printable {
 
 		JPanel panel = new JPanel();
 		panel.setBackground(new Color(255, 255, 255));
-		panel.setBorder(new EmptyBorder(15, 0, 3, 0));
+		panel.setBorder(new EmptyBorder(10, 0, 3, 0));
 		headerPanel.add(panel, BorderLayout.CENTER);
 		panel.setLayout(new BorderLayout(0, 0));
 		contentPane.add(headerPanel, BorderLayout.NORTH);

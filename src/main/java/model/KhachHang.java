@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.Objects;
 
 import javax.swing.JOptionPane;
 
@@ -213,6 +214,23 @@ public class KhachHang {
 
 	public void setLoaiKH(LoaiKhachHang loaiKH) {
 		this.loaiKH = loaiKH;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		KhachHang khachHang = (KhachHang) obj;
+		return this.maKhachHang.equals(khachHang.maKhachHang); // So sánh bằng mã khách hàng
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(maKhachHang); // Sử dụng mã khách hàng để tính hashCode
 	}
 
 	@Override

@@ -60,13 +60,14 @@ public class QuanLyKhachHang_View extends View {
 	private PrimaryButton btn_XemDsHD;
 	private JTable danhSachKhachHangJtable;
 	private DefaultTableModel danhSachKhachHangModel;
-	private String title[] = { "STT", "Mã khách hàng", "Họ tên", "Số điện thoại", "CCCD", "Email", "Ngày sinh", "Giới tính",
-			"Loại khách hàng"};
-	private JTextField textField;
+	private String title[] = { "STT", "Mã khách hàng", "Họ tên", "Số điện thoại", "CCCD", "Email", "Ngày sinh",
+			"Giới tính", "Loại khách hàng" };
+	private JTextField txt_LocSDT;
 	private PrimaryButton btn_TimKiem;
-	private JRadioButton rdbtnCCCD;
+	private JRadioButton rdbtn_CCCD;
 	private JRadioButton rdbtn_DienThoai;
-	
+	private JComboBox comboBox_LocLoaiKH;
+
 	public void addSuKien(ActionListener listener, FocusListener focusListener, KeyListener keyListener) {
 		btn_CapNhatTT.addActionListener(listener);
 		btn_XoaTrang.addActionListener(listener);
@@ -84,6 +85,8 @@ public class QuanLyKhachHang_View extends View {
 		txt_SDT.addKeyListener(keyListener);
 		txt_CCCD.addKeyListener(keyListener);
 		txt_NgaySinh.addKeyListener(keyListener);
+
+		comboBox_LocLoaiKH.addActionListener(listener);
 	}
 
 	public void addSuKienTable(MouseListener mouseListener) {
@@ -172,11 +175,12 @@ public class QuanLyKhachHang_View extends View {
 		panel_15.add(lbl_MaKH);
 		lbl_MaKH.setForeground(new Color(70, 130, 169));
 		lbl_MaKH.setFont(new Font("Arial", Font.BOLD, 18));
-		
-				txt_MaKH = new JTextField();
-				panel_9_1.add(txt_MaKH);
-				txt_MaKH.setFont(new Font("Arial", Font.PLAIN, 16));
-				txt_MaKH.setColumns(10);
+
+		txt_MaKH = new JTextField();
+		txt_MaKH.setEnabled(false);
+		panel_9_1.add(txt_MaKH);
+		txt_MaKH.setFont(new Font("Arial", Font.PLAIN, 16));
+		txt_MaKH.setColumns(10);
 
 		Component horizontalStrut_1_4_1_1 = Box.createHorizontalStrut(10);
 		panel_InputThongTin1.add(horizontalStrut_1_4_1_1);
@@ -323,7 +327,7 @@ public class QuanLyKhachHang_View extends View {
 
 		String gioTinh[] = { "trống", "Nam", "Nữ" };
 		comboBox_GioiTinh = new JComboBox(gioTinh);
-		comboBox_GioiTinh.setModel(new DefaultComboBoxModel(new String[] {"Nam", "Nữ"}));
+		comboBox_GioiTinh.setModel(new DefaultComboBoxModel(new String[] { "Nam", "Nữ" }));
 		comboBox_GioiTinh.setFont(new Font("Arial", Font.PLAIN, 16));
 		panel_TT7.add(comboBox_GioiTinh);
 
@@ -350,9 +354,10 @@ public class QuanLyKhachHang_View extends View {
 
 		String loaiKH[] = { "Khách thường", "Trẻ em", "Học sinh", "Sinh viên", "Người già", "Khuyết tật" };
 		comboBox_LoaiKH = new JComboBox(loaiKH);
+		comboBox_LoaiKH.setEnabled(false);
 		comboBox_LoaiKH.setFont(new Font("Arial", Font.PLAIN, 16));
 		panel_TT9.add(comboBox_LoaiKH);
-		
+
 		Component horizontalStrut_1_6_1 = Box.createHorizontalStrut(95);
 		panel_InputThongTin2.add(horizontalStrut_1_6_1);
 
@@ -398,7 +403,8 @@ public class QuanLyKhachHang_View extends View {
 		btn_CapNhatTT.setFont(new Font("Arial", Font.BOLD, 18));
 		panel_3.add(btn_CapNhatTT);
 
-		btn_XemDsHD = new PrimaryButton("Xem thêm", "/Image/show_detail.png");
+		btn_XemDsHD = new PrimaryButton("Xem thêm", "/Image/excel.png");
+		btn_XemDsHD.setText("Xuất Excel");
 		btn_XemDsHD.setInsets(new Insets(4, 6, 4, 6));
 		btn_XemDsHD.setBorderRadius(10);
 		btn_XemDsHD.setIconTextGap(5);
@@ -430,43 +436,40 @@ public class QuanLyKhachHang_View extends View {
 		lblNewLabel_7_1.setBorder(new EmptyBorder(5, 10, 5, 20));
 		lblNewLabel_7_1.setBackground(new Color(70, 130, 169));
 		panel_4.add(lblNewLabel_7_1);
-		
+
 		JPanel panel_7 = new JPanel();
-		panel_7.setBorder(new EmptyBorder(0, 60, 0, 0));
+		panel_7.setBorder(new EmptyBorder(0, 100, 0, 0));
 		panel_7.setBackground(Color.WHITE);
 		panel_4.add(panel_7);
-		panel_7.setLayout(new FlowLayout(FlowLayout.CENTER, 15, 5));
-		
-		JComboBox comboBox_LoaiKH_1 = new JComboBox(new Object[]{});
-		comboBox_LoaiKH_1.setModel(new DefaultComboBoxModel(new String[] {"Tất cả", "Nam", "Nữ"}));
-		panel_7.add(comboBox_LoaiKH_1);
-		comboBox_LoaiKH_1.setFont(new Font("Arial", Font.PLAIN, 16));
-		
-		JComboBox comboBox_LoaiKH_1_1 = new JComboBox(new Object[]{});
-		comboBox_LoaiKH_1_1.setModel(new DefaultComboBoxModel(new String[] {"Khách thường", "Trẻ em", "Học sinh", "Sinh viên", "Người già", "Khuyết tật"}));
-		panel_7.add(comboBox_LoaiKH_1_1);
-		comboBox_LoaiKH_1_1.setFont(new Font("Arial", Font.PLAIN, 16));
-		
-		textField = new JTextField();
-		textField.setFont(new Font("Arial", Font.PLAIN, 18));
-		textField.setPreferredSize(new Dimension(0, 30));
-		textField.setColumns(13);
-		panel_7.add(textField);
-		
+		panel_7.setLayout(new FlowLayout(FlowLayout.CENTER, 25, 5));
+
+		comboBox_LocLoaiKH = new JComboBox(new Object[] {});
+		comboBox_LocLoaiKH.setModel(new DefaultComboBoxModel(new String[] { "Tất cả", "Khách thường", "Trẻ em",
+				"Học sinh", "Sinh viên", "Người già", "Khuyết tật" }));
+		panel_7.add(comboBox_LocLoaiKH);
+		comboBox_LocLoaiKH.setFont(new Font("Arial", Font.PLAIN, 18));
+
+		txt_LocSDT = new JTextField();
+		txt_LocSDT.setFont(new Font("Arial", Font.PLAIN, 18));
+		txt_LocSDT.setPreferredSize(new Dimension(0, 30));
+		txt_LocSDT.setColumns(13);
+		panel_7.add(txt_LocSDT);
+
 		rdbtn_DienThoai = new JRadioButton("Điện thoại");
+		rdbtn_DienThoai.setSelected(true);
 		rdbtn_DienThoai.setBackground(Color.WHITE);
 		rdbtn_DienThoai.setFont(new Font("Arial", Font.PLAIN, 16));
 		panel_7.add(rdbtn_DienThoai);
-		
-		rdbtnCCCD = new JRadioButton("CCCD");
-		rdbtnCCCD.setFont(new Font("Arial", Font.PLAIN, 16));
-		rdbtnCCCD.setBackground(Color.WHITE);
-		panel_7.add(rdbtnCCCD);
-		
+
+		rdbtn_CCCD = new JRadioButton("CCCD");
+		rdbtn_CCCD.setFont(new Font("Arial", Font.PLAIN, 16));
+		rdbtn_CCCD.setBackground(Color.WHITE);
+		panel_7.add(rdbtn_CCCD);
+
 		ButtonGroup buttonGroup = new ButtonGroup();
-		buttonGroup.add(rdbtnCCCD);
+		buttonGroup.add(rdbtn_CCCD);
 		buttonGroup.add(rdbtn_DienThoai);
-		
+
 		btn_TimKiem = new PrimaryButton("Lọc nhanh", "/Image/search.png");
 		panel_7.add(btn_TimKiem);
 		btn_TimKiem.setMaximumSize(new Dimension(2147483647, 50));
@@ -476,7 +479,7 @@ public class QuanLyKhachHang_View extends View {
 		btn_TimKiem.setPreferredSize(new Dimension(150, 33));
 		btn_TimKiem.setBorderRadius(10);
 		btn_TimKiem.setAlignmentX(0.0f);
-		
+
 		JPanel panel_6 = new JPanel();
 		panel_4.add(panel_6);
 		panel_6.setLayout(new BoxLayout(panel_6, BoxLayout.X_AXIS));
@@ -500,8 +503,9 @@ public class QuanLyKhachHang_View extends View {
 		danhSachKhachHangJtable = new JTable(danhSachKhachHangModel);
 		danhSachKhachHangJtable.setRowHeight(25);
 		danhSachKhachHangJtable.setFont(new Font("Arial", Font.PLAIN, 16));
-		danhSachKhachHangJtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);// Vô hiệu hóa chế độ tự động điều chỉnh kích thước cột
-		
+		danhSachKhachHangJtable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);// Vô hiệu hóa chế độ tự động điều chỉnh kích
+																			// thước cột
+
 		// Tùy chỉnh font chữ cho header của JTable
 		JTableHeader header = danhSachKhachHangJtable.getTableHeader();
 		header.setFont(new Font("Arial", Font.BOLD, 18));
@@ -520,7 +524,8 @@ public class QuanLyKhachHang_View extends View {
 		header.setReorderingAllowed(false);
 		// Thiết lập chiều rộng và khóa không cho thay đổi kích thước cho các cột
 		for (int i = 0; i < danhSachKhachHangJtable.getColumnCount(); i++) {
-			danhSachKhachHangJtable.getColumnModel().getColumn(i).setResizable(false); // Khóa không cho thay đổi kích thước
+			danhSachKhachHangJtable.getColumnModel().getColumn(i).setResizable(false); // Khóa không cho thay đổi kích
+																						// thước
 		}
 
 		// Thêm vào JScrollPane
@@ -528,6 +533,10 @@ public class QuanLyKhachHang_View extends View {
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		panel_5.add(scrollPane);
+	}
+
+	public JTextField getTxt_LocSDT() {
+		return txt_LocSDT;
 	}
 
 	// Custom renderer với JTextArea để xuống dòng cho nội dung dài
@@ -616,5 +625,17 @@ public class QuanLyKhachHang_View extends View {
 	public JTextField getTxt_NgaySinh() {
 		return txt_NgaySinh;
 	}
-	
+
+	public JComboBox getComboBox_LocLoaiKH() {
+		return comboBox_LocLoaiKH;
+	}
+
+	public JRadioButton getRdbtn_CCCD() {
+		return rdbtn_CCCD;
+	}
+
+	public JRadioButton getRdbtn_DienThoai() {
+		return rdbtn_DienThoai;
+	}
+
 }
