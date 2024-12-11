@@ -87,6 +87,7 @@ import model.VeTau;
 import model.VeTau_DAO;
 import other.CustomTitleLable;
 import other.CustomTrainStatusButton;
+import other.EmailSender;
 import other.MultiCheckPopupMenuEditor;
 import other.SeatButton;
 import util.PrinterUtils;
@@ -215,6 +216,7 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		qLKhuyenMai_View.addButtonCapNhapListener(e -> CapNhapKM());
 		qLKhuyenMai_View.addButtonTimListener(e -> searchKM());
 		qLKhuyenMai_View.addButtonReloadListener(e -> reLoadSearchKM());
+		qLKhuyenMai_View.addButtonThongBaoListener(e -> guiTBTxtKM());
 	}
 
 	// QL_CaLam
@@ -389,22 +391,24 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 	}
 
 	public void reloadHoaDon() {
-		xoaDuLieuTableHoaDon();
-		DocDuLieuVaoTableHoaDon();
-		qLHoaDon_view.getCombMaHD().setSelectedItem(null);
-		qLHoaDon_view.getCombSDT().setSelectedItem(null);
-		int selectedRow = qLHoaDon_view.getTableHoaDon().getSelectedRow();
-		if (selectedRow != -1) {
-			qLHoaDon_view.getModelHD().removeRow(selectedRow);
-		}
-		qLHoaDon_view.getDateBD().setDate(null);
-		JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
-		dateField.setText("Tạo từ ngày");
-		dateField.setForeground(Color.GRAY);
-		qLHoaDon_view.getDateKT().setDate(null);
-		JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
-		dateField1.setText("Đến ngày");
-		dateField1.setForeground(Color.GRAY);
+	    xoaDuLieuTableHoaDon();
+	    DocDuLieuVaoTableHoaDon();
+	    qLHoaDon_view.getCombMaHD().setSelectedItem(null);
+	    qLHoaDon_view.getCombSDT().setSelectedItem(null);
+	    int selectedRow = qLHoaDon_view.getTableHoaDon().getSelectedRow();
+	    if (selectedRow != -1 && selectedRow < qLHoaDon_view.getModelHD().getRowCount()) {
+	        qLHoaDon_view.getModelHD().removeRow(selectedRow);
+	    }
+
+	    qLHoaDon_view.getDateBD().setDate(null);
+	    JTextField dateField = (JTextField) qLHoaDon_view.getDateBD().getDateEditor().getUiComponent();
+	    dateField.setText("Tạo từ ngày");
+	    dateField.setForeground(Color.GRAY);
+
+	    qLHoaDon_view.getDateKT().setDate(null);
+	    JTextField dateField1 = (JTextField) qLHoaDon_view.getDateKT().getDateEditor().getUiComponent();
+	    dateField1.setText("Đến ngày");
+	    dateField1.setForeground(Color.GRAY);
 	}
 
 	private void themHoaDonVaoBang(HoaDon hd) {
@@ -459,12 +463,10 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		double tongTienKhuyenMai = 0.0;
 
 		for (ChiTiet_HoaDon ctHD : chiTietHoaDons) {
-			// Tính tổng tiền từ các vé tàu
 			VeTau veTau = veTauDAO.getByMaVeTau(ctHD.getVeTau().getMaVeTau());
 			if (veTau == null) {
 				continue;
 			}
-
 			GheTau gheTau = gheTau_DAO.getByMaGheTau(veTau.getGheTau().getMaGheTau());
 			ToaTau toaTau = toaTau_DAO.getByMaToaTau(gheTau.getToaTau().getMaToaTau());
 			Tau tau = tau_DAO.getByMaTau(toaTau.getTau().getMaTau());
@@ -607,14 +609,13 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 			qlHoaDonChiTiet.getLblTongTienTT()
 					.setText("Tổng tiền thanh toán: " + String.format("%,.0f", tongTienSauThueRounded) + " VNĐ");
 
-			// Sau khi cập nhật dữ liệu xong, hiển thị JFrame
 			qlHoaDonChiTiet.getModelTableHDCT().fireTableDataChanged();
 			qlHoaDonChiTiet.revalidate();
 			qlHoaDonChiTiet.repaint();
 			qlHoaDonChiTiet.setLocationRelativeTo(null);
 			qlHoaDonChiTiet.setVisible(true);
 		} else {
-			JOptionPane.showMessageDialog(qLHoaDon_view, "Vui lòng chọn hoá đơn!");
+			JOptionPane.showMessageDialog(null, "Vui lòng chọn hoá đơn!");
 		}
 	}
 
@@ -1011,6 +1012,54 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		qLKhuyenMai_View.getTxtTenkm().requestFocus();
 	}
 
+	private void guiTBTxtKM() {
+	    int selectedRow = qLKhuyenMai_View.getTableKM().getSelectedRow();
+	    if (selectedRow < 0) {
+	        JOptionPane.showMessageDialog(null, "Vui lòng chọn khuyến mãi thông báo!");
+	        return;
+	    }
+
+	    String tenKM = qLKhuyenMai_View.getTxtTenkm().getText();
+	    String noiDung = qLKhuyenMai_View.getTxtNDKM().getText();
+	    int soLuong = Integer.parseInt(qLKhuyenMai_View.getTxtSLKM().getText());
+	    LocalDateTime hanSuDung = qLKhuyenMai_View.getDateKTKM().getDate().toInstant().atZone(ZoneId.systemDefault())
+	            .toLocalDateTime();
+	    double giamGia = Double.parseDouble(qLKhuyenMai_View.getTxtGiamGia().getText().replace("%", ""));
+
+	    KhachHang_DAO kh_DAO = new KhachHang_DAO();
+	    ArrayList<String> emailList = new ArrayList<>();
+	    List<KhachHang> khachHangs = kh_DAO.getAll();
+	    int maxEmails = 5;
+	    for (KhachHang kh : khachHangs) {
+	        if (emailList.size() >= maxEmails) {
+	            break;
+	        }
+	        if (kh.getEmail() != null && !kh.getEmail().isEmpty()) {
+	            emailList.add(kh.getEmail());
+	        }
+	    }
+
+	    String subject = "Chương trình khuyến mãi đặc biệt dành cho bạn!";
+	    String body = "Chào quý khách,\n\n" +
+	            "Chúng tôi xin trân trọng giới thiệu đến bạn chương trình khuyến mãi đặc biệt: \"" + tenKM + "\".\n\n" +
+	            "Nội dung khuyến mãi: " + noiDung + ".\n" +
+	            "Giảm giá đến: " + giamGia + "%" + ".\n" +
+	            "Số lượng khuyến mãi có hạn: chỉ " + soLuong + " suất.\n" +
+	            "Hạn sử dụng khuyến mãi: " + hanSuDung.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) + ".\n\n" +
+	            "Đừng bỏ lỡ cơ hội này! Hãy nhanh tay săn vé tàu ngay hôm nay để nhận ưu đãi cực kỳ hấp dẫn này.\n\n" +
+	            "Trân trọng!";
+
+	    for (String email : emailList) {
+	        try {
+	            EmailSender.sendPromotionEmail(subject, body, List.of(email)); 
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    JOptionPane.showMessageDialog(null, "Đã gửi thành công thông báo khuyến mãi qua email khách hàng!");
+	}
+	
 	////// QL_CaLam_View
 	public void DocDuLieuVaoTableCaLam() {
 		List<CaLam> list;
