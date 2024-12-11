@@ -247,7 +247,8 @@ public class QuanLyCaLam_View extends View {
 		comboBoxSoThangSaoChep.setFont(new Font("Arial", Font.PLAIN, 16));
 		panel_2_1.add(comboBoxSoThangSaoChep);
 
-		btnSaoChep = new PrimaryButton("Sao chép", "/Image/icon-Save.png");
+		btnSaoChep = new PrimaryButton("Sao chép", "/Image/icon-copy.png");
+		btnSaoChep.setIconSize(30, 30);
 		btnSaoChep.setPreferredSize(new Dimension(170, 35));
 		btnSaoChep.setFont(new Font("Arial", Font.BOLD, 18));
 		btnSaoChep.setBorderRadius(15);
@@ -319,12 +320,14 @@ public class QuanLyCaLam_View extends View {
 		panel_9.add(panel_2, BorderLayout.EAST);
 
 		btnLuu = new PrimaryButton("Lưu", "/Image/icon-Save.png");
+		btnLuu.setIconSize(30, 30);
 		btnLuu.setPreferredSize(new Dimension(170, 35));
 		btnLuu.setFont(new Font("Arial", Font.BOLD, 18));
 		btnLuu.setBorderRadius(15);
 		panel_2.add(btnLuu);
 
-		btnXoaLich = new DangerPrimaryButton("Xoá lịch  ", "/Image/Cancel.png");
+		btnXoaLich = new DangerPrimaryButton("Xoá lịch  ", "/Image/icon-XoaLich.png");
+		btnXoaLich.setIconSize(30, 30);
 		btnXoaLich.setPreferredSize(new Dimension(170, 35));
 		btnXoaLich.setFont(new Font("Arial", Font.BOLD, 18));
 		btnXoaLich.setBorderRadius(15);
@@ -332,6 +335,7 @@ public class QuanLyCaLam_View extends View {
 
 		btnHuy = new DangerPrimaryButton("Huỷ bỏ     ", "/Image/Cancel.png");
 		btnHuy.setPreferredSize(new Dimension(170, 35));
+		btnHuy.setIconSize(30, 30);
 		btnHuy.setFont(new Font("Arial", Font.BOLD, 18));
 		btnHuy.setBorderRadius(15);
 		panel_2.add(btnHuy);
