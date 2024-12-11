@@ -763,6 +763,7 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 
 	private void reLoadSearchKM() {
 		xoaDuLieuTableKM();
+		huyTxtKM();
 		JTextField textField = (JTextField) qLKhuyenMai_View.getDateBDKM().getComponent(1);
 		qLKhuyenMai_View.getDateBDKM().setEnabled(true);
 		textField.setBackground(Color.WHITE);
