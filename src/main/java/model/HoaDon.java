@@ -2,6 +2,7 @@ package model;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class HoaDon {
 
@@ -147,6 +148,21 @@ public class HoaDon {
 
 	public void setThongTinGiuCho(ThongTinGiuCho thongTinGiuCho) {
 		this.thongTinGiuCho = thongTinGiuCho;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(maHoaDon);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!(obj instanceof HoaDon))
+			return false;
+		HoaDon other = (HoaDon) obj;
+		return Objects.equals(maHoaDon, other.maHoaDon);
 	}
 
 	@Override

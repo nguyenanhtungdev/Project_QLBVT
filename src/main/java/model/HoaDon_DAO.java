@@ -11,9 +11,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import connectDB.Database;
 import model.KhachHang.LoaiKhachHang;
@@ -619,25 +621,54 @@ public class HoaDon_DAO {
 		return danhSachThongTinHoaDon;
 	}
 
-	public List<HoaDon> getByFilters(LocalDateTime start, LocalDateTime end, String loaiHoaDon) {
+	public List<HoaDon> getByFilters(LocalDateTime start, LocalDateTime end, KhachHang[] khachHangs,
+			NhanVien[] nhanViens) {
 		String sql = "SELECT * FROM HoaDon";
 		List<Object> values = new ArrayList<>();
+		boolean hasWhere = false;
 
-		if (start != null && end != null) {
-			sql += " WHERE ngayLapHoaDon BETWEEN ? AND ?";
-			values.add(start);
-			values.add(end);
-		} else if (start != null) {
-			sql += " WHERE ngayLapHoaDon >= ?";
-			values.add(start);
-		} else if (end != null) {
-			sql += " WHERE ngayLapHoaDon <= ?";
-			values.add(end);
+		if (khachHangs != null) {
+			if (!hasWhere) {
+				sql += " WHERE ";
+				hasWhere = true;
+			} else {
+				sql += " AND ";
+			}
+			List<String> list = Stream.of(khachHangs).map(KhachHang::getMaKhachHang).toList();
+			sql += "maKhachHang IN (" + String.join(",", Collections.nCopies(list.size(), "?")) + ")";
 		}
 
-		if (loaiHoaDon != null) {
-			sql += " AND loaiHoaDon = ?";
-			values.add(loaiHoaDon);
+		if (nhanViens != null) {
+			if (!hasWhere) {
+				sql += " WHERE ";
+				hasWhere = true;
+			} else {
+				sql += " AND ";
+			}
+			List<String> list = Stream.of(nhanViens).map(NhanVien::getMaNV).toList();
+			sql += "maNV IN (" + String.join(",", Collections.nCopies(list.size(), "?")) + ")";
+		}
+
+		if (start != null) {
+			if (!hasWhere) {
+				sql += " WHERE ";
+				hasWhere = true;
+			} else {
+				sql += " AND ";
+			}
+			sql += "ngayLapHoaDon >= ?";
+			values.add(start);
+		}
+
+		if (end != null) {
+			if (!hasWhere) {
+				sql += " WHERE ";
+				hasWhere = true;
+			} else {
+				sql += " AND ";
+			}
+			sql += "ngayLapHoaDon <= ?";
+			values.add(end);
 		}
 
 		Connection con = null;
@@ -658,7 +689,7 @@ public class HoaDon_DAO {
 				String ghiChu = resultSet.getString("ghiChu");
 				float thueVAT = resultSet.getFloat("thueVAT");
 				String phuongThucThanhToan = resultSet.getString("phuongThucThanhToan");
-				loaiHoaDon = resultSet.getString("loaiHoaDon");
+				String loaiHoaDon = resultSet.getString("loaiHoaDon");
 				String maKhachHang = resultSet.getString("maKH");
 				String maNhaGa = resultSet.getString("maNhaGa");
 				String maNhanVien = resultSet.getString("maNV");
