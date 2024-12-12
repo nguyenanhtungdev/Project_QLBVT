@@ -16,10 +16,11 @@ public class ThongKeFilters {
 	private Tau[] tau;
 	private TrangThaiTau[] tauStatus;
 	private ToaTau[] toaTau;
-	private boolean[] toaTauStatus;
+	private Boolean[] toaTauStatus;
 	private GheTau[] gheTau;
 	private String[] gheTauStatus;
-	private boolean[] loaiVe;
+	private Boolean[] loaiVe;
+	private Boolean[] trangThaiVe;
 	private LocalDateTime tuLuc;
 	private LocalDateTime denLuc;
 
@@ -95,11 +96,11 @@ public class ThongKeFilters {
 		this.toaTau = toaTau;
 	}
 
-	public boolean[] getToaTauStatus() {
+	public Boolean[] getToaTauStatus() {
 		return toaTauStatus;
 	}
 
-	public void setToaTauStatus(boolean[] toaTauStatus) {
+	public void setToaTauStatus(Boolean[] toaTauStatus) {
 		this.toaTauStatus = toaTauStatus;
 	}
 
@@ -119,12 +120,20 @@ public class ThongKeFilters {
 		this.gheTauStatus = gheTauStatus;
 	}
 
-	public boolean[] getLoaiVe() {
+	public Boolean[] getLoaiVe() {
 		return loaiVe;
 	}
 
-	public void setLoaiVe(boolean[] loaiVe) {
+	public void setLoaiVe(Boolean[] loaiVe) {
 		this.loaiVe = loaiVe;
+	}
+
+	public Boolean[] getTrangThaiVe() {
+		return trangThaiVe;
+	}
+
+	public void setTrangThaiVe(Boolean[] trangThaiVe) {
+		this.trangThaiVe = trangThaiVe;
 	}
 
 	public LocalDateTime getTuLuc() {
