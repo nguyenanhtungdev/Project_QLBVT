@@ -4,7 +4,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -636,6 +635,7 @@ public class HoaDon_DAO {
 			}
 			List<String> list = Stream.of(khachHangs).map(KhachHang::getMaKhachHang).toList();
 			sql += "maKhachHang IN (" + String.join(",", Collections.nCopies(list.size(), "?")) + ")";
+			values.addAll(list);
 		}
 
 		if (nhanViens != null) {
@@ -647,6 +647,7 @@ public class HoaDon_DAO {
 			}
 			List<String> list = Stream.of(nhanViens).map(NhanVien::getMaNV).toList();
 			sql += "maNV IN (" + String.join(",", Collections.nCopies(list.size(), "?")) + ")";
+			values.addAll(list);
 		}
 
 		if (start != null) {

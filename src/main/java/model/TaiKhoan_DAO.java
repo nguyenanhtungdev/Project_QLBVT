@@ -55,8 +55,6 @@ public class TaiKhoan_DAO {
 					resultSet.close();
 				if (statement != null)
 					statement.close();
-				if (con != null)
-					con.close(); // Đóng kết nối sau khi sử dụng
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
