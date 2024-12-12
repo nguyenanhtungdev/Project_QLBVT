@@ -6,6 +6,8 @@ import java.util.ArrayList;
 
 import javax.swing.JPanel;
 
+import model.NhanVien;
+import model.TaiKhoan;
 import view.HomeView;
 import view.Left_Menu;
 import view.View;
@@ -19,16 +21,31 @@ public class HienThi_Controller {
 	}
 
 	private HomeView view = new HomeView();
+	private TaiKhoan taiKhoan = new TaiKhoan();
 
 	public HienThi_Controller() {
+
+	}
+
+	public void xuLyHienThi() {
 		ArrayList<View> dsViewBanVe = BanVeTau_Controller.getInstance().getViewList();
 		ArrayList<View> dsViewQuanLy = QuanLy_Controller.getInstance().getViewList();
 		ArrayList<View> dsViewThongKe = ThongKe_Controller.getInstance().getViewList();
 
-		for (View page : dsViewBanVe)
+		QuanLy_Controller.getInstance().addView(taiKhoan.getNhanVien().getTenChucVu().trim());
+
+		for (View page : dsViewBanVe) {
 			view.addView(page.getName(), (JPanel) page.getContentPane());
-		for (View page : dsViewQuanLy)
-			view.addView(page.getName(), (JPanel) page.getContentPane());
+		}
+		for (View page : dsViewQuanLy) {
+			if (taiKhoan.getNhanVien().getTenChucVu().trim().equals("NVBV")) {
+				if (page.getName().equals("Hóa đơn") || page.getName().equals("Khách hàng")) {
+					view.addView(page.getName(), (JPanel) page.getContentPane());
+				}
+			} else {
+				view.addView(page.getName(), (JPanel) page.getContentPane());
+			}
+		}
 		for (View page : dsViewThongKe)
 			view.addView(page.getName(), (JPanel) page.getContentPane());
 
@@ -63,11 +80,20 @@ public class HienThi_Controller {
 			}
 		});
 
-		view.showView("Home");
+		if(!taiKhoan.getNhanVien().getTenChucVu().trim().equals("NVBV")) {
+			view.getLbl_BanVe().setVisible(false);
+			view.showView(dsViewQuanLy.get(0).getName());
+			view.showLeft_Menu("QuanLy");
+		}else {
+			view.showView("Home");			
+		}
 	}
 
 	public void showView() {
 		view.setVisible(true);
 	}
 
+	public void setTaiKhoan(TaiKhoan taiKhoan) {
+		this.taiKhoan = taiKhoan;
+	}
 }

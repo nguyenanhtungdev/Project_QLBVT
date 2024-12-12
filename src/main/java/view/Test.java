@@ -13,6 +13,7 @@ public class Test {
 			FlatLightLaf.setup();
 
 			HienThi_Controller controller = new HienThi_Controller();
+			controller.xuLyHienThi();
 			controller.showView();
 		});
 	}

@@ -41,7 +41,7 @@ public class VeTau_DAO {
 
 				GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
 
-				list.add(new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau,new KhachHang(maKH)));
+				list.add(new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau, new KhachHang(maKH)));
 			}
 
 			return list;
@@ -95,7 +95,7 @@ public class VeTau_DAO {
 				LocalDateTime ngayHetHan = resultSet.getTimestamp("ngayHetHan").toLocalDateTime();
 				boolean daHuy = resultSet.getBoolean("daHuy");
 				String maKH = resultSet.getString("maKH");
-				
+
 				GheTau gheTau = new GheTau(resultSet.getString("maGheTau"));
 
 				return new VeTau(maVeTau, loaiVe, ngayHetHan, daHuy, gheTau, new KhachHang(maKH));
@@ -147,4 +147,22 @@ public class VeTau_DAO {
 		return false;
 	}
 
+	public boolean capNhatTrangThaiVeTau(String maKH, String maHoaDon) {
+		Connection con = null;
+		PreparedStatement statement = null;
+		String sql = "UPDATE VeTau SET daHuy = 1 WHERE maKH = ? AND maVeTau IN (SELECT maVeTau FROM ChiTiet_HoaDon WHERE maHoaDon = ?) AND daHuy = 0";
+		try {
+
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maKH);
+			statement.setString(2, maHoaDon);
+
+			int rowsUpdated = statement.executeUpdate();
+			return rowsUpdated > 0;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
 }

@@ -35,19 +35,21 @@ public class HoaDon_DAO {
 
 		try {
 			con = Database.getInstance().getConnection();
-			String sql = "SELECT hd.*, kh.hoTen, kh.soDienThoai " + "FROM HoaDon hd "
-					+ "JOIN KhachHang kh ON hd.maKH = kh.maKH " + "WHERE kh.soDienThoai = ? OR kh.CCCD = ?";
+			String sql = "SELECT DISTINCT hd.*, kh.maKH, kh.hoTen, kh.soDienThoai " + "FROM HoaDon hd "
+					+ "JOIN KhachHang kh ON hd.maKH = kh.maKH "
+					+ "JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon "
+					+ "JOIN VeTau vt ON cthd.maVeTau = vt.maVeTau "
+					+ "WHERE (kh.soDienThoai = ? OR kh.CCCD = ?) AND vt.daHuy = 0";
 			ps = con.prepareStatement(sql);
 			ps.setString(1, soDienThoaiOrCCCD);
 			ps.setString(2, soDienThoaiOrCCCD);
+
 			rs = ps.executeQuery();
 
 			while (rs.next()) {
+				// Lấy dữ liệu từ ResultSet
 				String maHoaDon = rs.getString("maHoaDon");
-				String hoTen = rs.getString("hoTen");
 				float thueVAT = rs.getFloat("thueVAT");
-
-				// Định dạng ngày lập hóa đơn
 				Timestamp timestamp = rs.getTimestamp("ngayLapHoaDon");
 				LocalDateTime ngayLapHoaDon = timestamp.toLocalDateTime();
 
@@ -57,11 +59,14 @@ public class HoaDon_DAO {
 				hoaDon.setNgayLapHoaDon(ngayLapHoaDon);
 				hoaDon.setThueVAT(thueVAT);
 
-				// Thêm thông tin khách hàng
+				// Tạo đối tượng KhachHang và gán vào HoaDon
 				KhachHang khachHang = new KhachHang();
-				khachHang.setHoTen(hoTen);
+				khachHang.setMaKhachHang(rs.getString("maKH"));
+				khachHang.setHoTen(rs.getString("hoTen"));
+				khachHang.setSoDienThoai(rs.getString("soDienThoai"));
 				hoaDon.setKhachHang(khachHang);
 
+				// Thêm hóa đơn vào danh sách kết quả
 				hoaDons.add(hoaDon);
 			}
 
@@ -551,70 +556,67 @@ public class HoaDon_DAO {
 	}
 
 	public List<Map<String, Object>> getThongTinHoaDon(String maHoaDon) {
-	    List<Map<String, Object>> danhSachThongTinHoaDon = new ArrayList<>();
-	    Connection con = null;
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
+		List<Map<String, Object>> danhSachThongTinHoaDon = new ArrayList<>();
+		Connection con = null;
+		PreparedStatement stmt = null;
+		ResultSet rs = null;
 
-	    try {
-	        Database.getInstance();
-	        con = Database.getInstance().getConnection();
+		try {
+			Database.getInstance();
+			con = Database.getInstance().getConnection();
 
-	        String sql = "SELECT " + 
-	                     "ttt.tenNhaGa, ttt.dienThoai, ttt.diaChi, " + 
-	                     "kh.hoTen, kh.soDienThoai, kh.CCCD, " +
-	                     "vt.maVeTau, vt.loaiVe, " + 
-	                     "ct.gaKhoiHanh, ct.gaDen, ct.thoiGianKhoiHanh, " + 
-	                     "gt.soThuTuGhe, tt.soThuTuToa, t.maTau " +
-	                     "FROM HoaDon hd " +
-	                     "INNER JOIN ThongTinTram ttt ON ttt.maNhaGa = hd.maNhaGa " +
-	                     "INNER JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon " +
-	                     "INNER JOIN VeTau vt ON cthd.maVeTau = vt.maVeTau " +
-	                     "INNER JOIN KhachHang kh ON kh.maKH = vt.maKH " +
-	                     "INNER JOIN GheTau gt ON gt.maGheTau = vt.maGheTau " + 
-	                     "INNER JOIN ToaTau tt ON tt.maToaTau = gt.maToaTau " + 
-	                     "INNER JOIN Tau t ON t.maTau = tt.maTau " + 
-	                     "INNER JOIN ChuyenTau ct ON ct.maChuyenTau = t.maChuyenTau " + 
-	                     "WHERE hd.maHoaDon = ?";
+			String sql = "SELECT " + "ttt.tenNhaGa, ttt.dienThoai, ttt.diaChi, " + "kh.hoTen, kh.soDienThoai, kh.CCCD, "
+					+ "vt.maVeTau, vt.loaiVe, " + "ct.gaKhoiHanh, ct.gaDen, ct.thoiGianKhoiHanh, "
+					+ "gt.soThuTuGhe, tt.soThuTuToa, t.maTau " + "FROM HoaDon hd "
+					+ "INNER JOIN ThongTinTram ttt ON ttt.maNhaGa = hd.maNhaGa "
+					+ "INNER JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon "
+					+ "INNER JOIN VeTau vt ON cthd.maVeTau = vt.maVeTau "
+					+ "INNER JOIN KhachHang kh ON kh.maKH = vt.maKH "
+					+ "INNER JOIN GheTau gt ON gt.maGheTau = vt.maGheTau "
+					+ "INNER JOIN ToaTau tt ON tt.maToaTau = gt.maToaTau " + "INNER JOIN Tau t ON t.maTau = tt.maTau "
+					+ "INNER JOIN ChuyenTau ct ON ct.maChuyenTau = t.maChuyenTau " + "WHERE hd.maHoaDon = ?";
 
-	        stmt = con.prepareStatement(sql);
-	        stmt.setString(1, maHoaDon);
+			stmt = con.prepareStatement(sql);
+			stmt.setString(1, maHoaDon);
 
-	        rs = stmt.executeQuery();
+			rs = stmt.executeQuery();
 
-	        while (rs.next()) {
-	            Map<String, Object> thongTinHoaDon = new HashMap<>();
-	            thongTinHoaDon.put("tenNhaGa", rs.getString("tenNhaGa"));
-	            thongTinHoaDon.put("dienThoaiNhaGa", rs.getString("dienThoai"));
-	            thongTinHoaDon.put("diaChiNhaGa", rs.getString("diaChi"));
-	            thongTinHoaDon.put("hoTenKhachHang", rs.getString("hoTen"));
-	            thongTinHoaDon.put("soDienThoaiKH", rs.getString("soDienThoai"));
-	            thongTinHoaDon.put("cccdKH", rs.getString("CCCD"));
-	            thongTinHoaDon.put("maVeTau", rs.getString("maVeTau"));
-	            thongTinHoaDon.put("loaiVe", rs.getString("loaiVe"));
-	            thongTinHoaDon.put("gaKhoiHanh", rs.getString("gaKhoiHanh"));
-	            thongTinHoaDon.put("gaDen", rs.getString("gaDen"));
-	            thongTinHoaDon.put("thoiGianKhoiHanh", rs.getString("thoiGianKhoiHanh"));
-	            thongTinHoaDon.put("soThuTuGhe", rs.getString("soThuTuGhe"));
-	            thongTinHoaDon.put("soThuTuToa", rs.getString("soThuTuToa"));
-	            thongTinHoaDon.put("maTau", rs.getString("maTau"));
+			while (rs.next()) {
+				Map<String, Object> thongTinHoaDon = new HashMap<>();
+				thongTinHoaDon.put("tenNhaGa", rs.getString("tenNhaGa"));
+				thongTinHoaDon.put("dienThoaiNhaGa", rs.getString("dienThoai"));
+				thongTinHoaDon.put("diaChiNhaGa", rs.getString("diaChi"));
+				thongTinHoaDon.put("hoTenKhachHang", rs.getString("hoTen"));
+				thongTinHoaDon.put("soDienThoaiKH", rs.getString("soDienThoai"));
+				thongTinHoaDon.put("cccdKH", rs.getString("CCCD"));
+				thongTinHoaDon.put("maVeTau", rs.getString("maVeTau"));
+				thongTinHoaDon.put("loaiVe", rs.getString("loaiVe"));
+				thongTinHoaDon.put("gaKhoiHanh", rs.getString("gaKhoiHanh"));
+				thongTinHoaDon.put("gaDen", rs.getString("gaDen"));
+				thongTinHoaDon.put("thoiGianKhoiHanh", rs.getString("thoiGianKhoiHanh"));
+				thongTinHoaDon.put("soThuTuGhe", rs.getString("soThuTuGhe"));
+				thongTinHoaDon.put("soThuTuToa", rs.getString("soThuTuToa"));
+				thongTinHoaDon.put("maTau", rs.getString("maTau"));
 
-	            danhSachThongTinHoaDon.add(thongTinHoaDon); // Thêm vào danh sách
-	        }
+				danhSachThongTinHoaDon.add(thongTinHoaDon); // Thêm vào danh sách
+			}
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            if (rs != null) rs.close();
-	            if (stmt != null) stmt.close();
-	            if (con != null) con.close();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+				if (stmt != null)
+					stmt.close();
+				if (con != null)
+					con.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 
-	    return danhSachThongTinHoaDon;
+		return danhSachThongTinHoaDon;
 	}
 
 	public List<HoaDon> getByFilters(LocalDateTime start, LocalDateTime end, String loaiHoaDon) {
@@ -688,4 +690,33 @@ public class HoaDon_DAO {
 		return null;
 	}
 
+	public int laySoLuongHoaDon(String maHoaDon) {
+		String sql = "SELECT COUNT(*) FROM HoaDon hd " + "JOIN ChiTiet_HoaDon cthd ON hd.maHoaDon = cthd.maHoaDon "
+				+ "WHERE hd.maHoaDon = ? ";
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet resultSet = null;
+		int soLuong = 0;
+		try {
+			con = Database.getInstance().getConnection();
+			statement = con.prepareStatement(sql);
+			statement.setString(1, maHoaDon);
+			resultSet = statement.executeQuery();
+			if (resultSet.next()) {
+				soLuong = resultSet.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (resultSet != null)
+					resultSet.close();
+				if (statement != null)
+					statement.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return soLuong;
+	}
 }

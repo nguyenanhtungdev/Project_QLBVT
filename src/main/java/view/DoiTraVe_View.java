@@ -2,6 +2,7 @@ package view;
 
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 import java.text.SimpleDateFormat;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -16,6 +17,7 @@ import constant.ColorConstants;
 import javax.swing.table.DefaultTableCellRenderer;
 
 import other.PrimaryButton;
+import java.awt.event.ActionEvent;
 
 public class DoiTraVe_View extends View {
 	private static final long serialVersionUID = 1L;
@@ -25,13 +27,16 @@ public class DoiTraVe_View extends View {
 	private PrimaryButton timKiemButton, xacNhanButton;
 	private JRadioButton soDienThoaiRadioButton, cccdRadioButton;
 	private ButtonGroup buttonGroup;
+	private PrimaryButton lamMoiButton;
 
 	// Thêm sự kiện cho lớp hoàn tiền view
-	public void addSuKien(ActionListener listener) {
+	public void addSuKien(ActionListener listener, MouseListener mouseListener) {
 		soDienThoaiRadioButton.addActionListener(listener);
 		cccdRadioButton.addActionListener(listener);
 		timKiemButton.addActionListener(listener);
 		xacNhanButton.addActionListener(listener);
+		lamMoiButton.addActionListener(listener);
+		danhSachVeTable.addMouseListener(mouseListener);
 	}
 
 	public DoiTraVe_View(String name, String iconPath) {
@@ -90,7 +95,9 @@ public class DoiTraVe_View extends View {
 		panel_InputThongTin.add(panel_InputThongTin1);
 		panel_InputThongTin1.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
 
-		panel_InputThongTin1.add(new JLabel("Tên khách hàng:"));
+		JLabel label = new JLabel("Tên khách hàng:");
+		label.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		panel_InputThongTin1.add(label);
 		tenKhachHangField = new JTextField(15);
 		tenKhachHangField.putClientProperty("JTextField.placeholderText", "Nhập tên khách hàng");
 		tenKhachHangField.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -98,7 +105,9 @@ public class DoiTraVe_View extends View {
 
 		// Radio buttons for selecting search by phone or CCCD
 		soDienThoaiRadioButton = new JRadioButton("Số điện thoại", false);
+		soDienThoaiRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		cccdRadioButton = new JRadioButton("CCCD");
+		cccdRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		buttonGroup = new ButtonGroup();
 		buttonGroup.add(soDienThoaiRadioButton);
 		buttonGroup.add(cccdRadioButton);
@@ -106,13 +115,17 @@ public class DoiTraVe_View extends View {
 		panel_InputThongTin1.add(soDienThoaiRadioButton);
 		panel_InputThongTin1.add(cccdRadioButton);
 
-		panel_InputThongTin1.add(new JLabel("Số điện thoại:"));
+		JLabel label_1 = new JLabel("Số điện thoại:");
+		label_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		panel_InputThongTin1.add(label_1);
 		soDienThoaiField = new JTextField(15);
 		soDienThoaiField.putClientProperty("JTextField.placeholderText", "Nhập số điện thoại");
 		soDienThoaiField.setFont(new Font("Arial", Font.PLAIN, 16));
 		panel_InputThongTin1.add(soDienThoaiField);
 
-		panel_InputThongTin1.add(new JLabel("CCCD:"));
+		JLabel label_2 = new JLabel("CCCD:");
+		label_2.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		panel_InputThongTin1.add(label_2);
 		cccdField = new JTextField(15);
 		cccdField.putClientProperty("JTextField.placeholderText", "Nhập CCCD");
 		cccdField.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -131,7 +144,7 @@ public class DoiTraVe_View extends View {
 		timKiemButton = new PrimaryButton("Tìm kiếm", "/Image/search.png");
 		timKiemButton.setBackground(new Color(0, 123, 255));
 //		timKiemButton.setForeground(Color.WHITE);
-		timKiemButton.setFont(new Font("Arial", Font.BOLD, 14));
+		timKiemButton.setFont(new Font("Tahoma", Font.BOLD, 16));
 //		timKiemButton.setFocusPainted(false);
 //		timKiemButton.setBorder(new EmptyBorder(4, 6, 4, 6));
 		timKiemButton.setInsets(new Insets(4, 6, 4, 6));
@@ -139,6 +152,18 @@ public class DoiTraVe_View extends View {
 		timKiemButton.setIconTextGap(5);
 		timKiemButton.setIconSize(22, 22);
 		panel_InputThongTin1.add(timKiemButton);
+		
+		lamMoiButton = new PrimaryButton("Làm mới", "/Image/search.png");
+		lamMoiButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		lamMoiButton.setInsets(new Insets(4, 6, 4, 6));
+		lamMoiButton.setIconTextGap(5);
+		lamMoiButton.setFont(new Font("Tahoma", Font.BOLD, 16));
+		lamMoiButton.setBorderRadius(10);
+		lamMoiButton.setBackground(new Color(0, 123, 255));
+		panel_InputThongTin1.add(lamMoiButton);
 
 		// Phần giữa chứa bảng
 		JPanel panel_center = new JPanel();
@@ -169,7 +194,7 @@ public class DoiTraVe_View extends View {
 		panel_center.add(panel_Table);
 		panel_Table.setLayout(new BoxLayout(panel_Table, BoxLayout.X_AXIS));
 
-		String[] columnNames = { "STT", "Mã Hóa Đơn", "Tên Khách Hàng", "Ngày Lập Hóa Đơn", "Thành Tiền" };
+		String[] columnNames = { "STT", "Mã Hóa Đơn", "Mã Khách Hàng", "Tên Khách Hàng", "Ngày Lập Hóa Đơn", "Thành Tiền" };
 		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -223,7 +248,7 @@ public class DoiTraVe_View extends View {
 		xacNhanButton = new PrimaryButton("Xác nhận trả vé");
 		xacNhanButton.setNormalColor(new Color(70, 130, 180));
 //		xacNhanButton.setForeground(Color.WHITE);
-		xacNhanButton.setFont(new Font("Arial", Font.BOLD, 14));
+		xacNhanButton.setFont(new Font("Arial", Font.BOLD, 18));
 //		xacNhanButton.setFocusPainted(false);
 //		xacNhanButton.setBorder(new EmptyBorder(4, 6, 4, 6));
 		xacNhanButton.setInsets(new Insets(4, 6, 4, 6));
@@ -260,6 +285,28 @@ public class DoiTraVe_View extends View {
 	public PrimaryButton getXacNhanButton() {
 		return xacNhanButton;
 	}
+
+	
+	public JPanel getMainPanel() {
+		return mainPanel;
+	}
+
+	public JTextField getTenKhachHangField() {
+		return tenKhachHangField;
+	}
+
+	public JRadioButton getCccdRadioButton() {
+		return cccdRadioButton;
+	}
+
+	public ButtonGroup getButtonGroup() {
+		return buttonGroup;
+	}
+
+	public PrimaryButton getLamMoiButton() {
+		return lamMoiButton;
+	}
+
 
 	// Custom renderer với JTextArea để xuống dòng cho nội dung dài
 	class MultiLineCellRenderer extends JTextArea implements TableCellRenderer {

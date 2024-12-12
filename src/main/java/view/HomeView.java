@@ -320,5 +320,5 @@ public class HomeView extends JFrame implements MouseListener {
 			jLabel.repaint();
 		}
 	}
-
+	
 }

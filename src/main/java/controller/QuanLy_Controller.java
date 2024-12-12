@@ -80,6 +80,7 @@ import model.NhanVien;
 import model.NhanVien_CaLam;
 import model.NhanVien_CaLam_DAO;
 import model.NhanVien_DAO;
+import model.TaiKhoan;
 import model.Tau;
 import model.Tau.TrangThaiTau;
 import model.Tau_DAO;
@@ -158,14 +159,27 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		this.pageList = pageList;
 	}
 
+	public void addView(String quyen) {
+		if(quyen.equals("NVBV")) {
+			pageList.add(qLHoaDon_view);
+			pageList.add(qlyKhachHang_View);			
+		}else {
+			pageList.add(qLHoaDon_view);
+			pageList.add(qLKhuyenMai_View);
+			pageList.add(qLTau_View);
+			pageList.add(qLCaLam_View);
+		}
+	}
+	
 	// QL_Tau
 	public QuanLy_Controller() throws SQLException {
-		pageList.add(this.qLHoaDon_view = new QuanLyHoaDon_View("Hóa đơn", "/Image/iconHoaDon.png"));
-		pageList.add(this.qLTau_View = new QuanLyTau_View("Tàu", "/Image/Trains.png"));
-		pageList.add(this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/Sales.png"));
-		pageList.add(this.qLCaLam_View = new QuanLyCaLam_View("Ca làm", "/Image/lichCaLam.png"));
-		pageList.add(this.qlyKhachHang_View = new QuanLyKhachHang_View("Khách hàng", "/Image/user-cog.png"));
-
+		this.qLHoaDon_view = new QuanLyHoaDon_View("Hóa đơn", "/Image/iconHoaDon.png");
+		this.qLTau_View = new QuanLyTau_View("Tàu", "/Image/tabler-icon-file-settings.png");
+		this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/Sales.png");
+		this.qLCaLam_View = new QuanLyCaLam_View("Ca làm", "/Image/lichCaLam.png");
+		this.qlyKhachHang_View = new QuanLyKhachHang_View("Khách hàng", "/Image/user-cog.png");
+				
+				
 		this.gheTau_DAO = new GheTau_DAO();
 		this.toaTau_DAO = new ToaTau_DAO();
 		this.tau_DAO = new Tau_DAO();

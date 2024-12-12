@@ -7,11 +7,15 @@ import java.awt.Font;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import constant.ColorConstants;
+
 public class DetailRow {
 	private String label;
 	private String value;
 	private JPanel rowPanel;
 	private JLabel valueLabel;
+	private Color color_Label = Color.BLACK;
+	private JLabel labelLabel;
 
 	public DetailRow(String label, String value) {
 		this.label = label;
@@ -23,11 +27,12 @@ public class DetailRow {
 		JPanel row = new JPanel(new BorderLayout());
 		row.setBackground(Color.WHITE);
 
-		JLabel labelLabel = new JLabel(label);
-		labelLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		labelLabel = new JLabel(label);
+		labelLabel.setFont(new Font("Tahoma", Font.BOLD, 18));
+		labelLabel.setForeground(color_Label);
 
 		valueLabel = new JLabel(value);
-		valueLabel.setFont(new Font("Tahoma", Font.BOLD, 14));
+		valueLabel.setFont(new Font("Tahoma", Font.PLAIN, 18));
 
 		row.add(labelLabel, BorderLayout.WEST);
 		row.add(valueLabel, BorderLayout.CENTER);
@@ -53,6 +58,15 @@ public class DetailRow {
 		if (valueLabel != null) {
 			valueLabel.setText(value);
 		}
+	}
+
+	public Color getColor_Label() {
+		return color_Label;
+	}
+
+	public void setColor_Label(Color color_Label) {
+		this.color_Label = color_Label;
+		labelLabel.setForeground(this.color_Label);
 	}
 
 	public JPanel getRowPanel() {

@@ -104,7 +104,7 @@ public class KhachHang_DAO {
 	public boolean insertKhachHang(KhachHang khachHang) {
 		Connection con = null;
 		PreparedStatement preparedStatement = null;
-		String sql = "INSERT INTO KhachHang (maKH, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKhachHang) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO KhachHang (maKH, hoTen, soDienThoai, email, gioiTinh, CCCD, ngaySinh, loaiKH) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
 		try {
 			Database.getInstance();

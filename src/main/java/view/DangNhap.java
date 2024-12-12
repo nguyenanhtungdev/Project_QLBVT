@@ -25,35 +25,14 @@ import other.RoundField;
 import other.RoundPassField;
 import other.TextFont;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.EmptyBorder;
-
-import other.RoundedButton;
-import other.RoundField;
-import other.RoundPassField;
-import other.TextFont;
-
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
-import java.awt.Font;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.JCheckBox;
-import javax.swing.JComponent;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
-import javax.swing.InputMap;
+import javax.swing.JCheckBox;
+
 
 public class DangNhap extends JFrame {
 
@@ -160,7 +139,6 @@ public class DangNhap extends JFrame {
 		checkbox_hienMK.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// Nếu checkbox được chọn, hiển thị mật khẩu dưới dạng văn bản
 				if (checkbox_hienMK.isSelected()) {
 					txt_passWord.setEchoChar((char) 0);
 				} else {

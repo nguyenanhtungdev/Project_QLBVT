@@ -15,6 +15,7 @@ import java.text.Normalizer;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -85,6 +86,8 @@ import model.KhachHang;
 import model.KhachHang.LoaiKhachHang;
 import model.KhachHang_DAO;
 import model.NhanVien;
+import model.PhieuHoanTien;
+import model.PhieuHoanTien_DAO;
 import model.Tau;
 import model.Tau_DAO;
 import model.ThongTinTram;
@@ -101,7 +104,6 @@ import view.DoiTraVe_View;
 import view.KhuyenMai;
 import view.ThanhToan_View;
 import view.ThongTinVe;
-import view.ThongTin;
 import view.ChonGhe_View;
 import view.VeTau_View;
 import view.View;
@@ -160,6 +162,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	private int[] timeLeft;
 	private DefaultTableModel model;
 	private JLabel soLuongGheTrongChuyen;
+	private ThongTinVe thongTinVe = new ThongTinVe();
 
 	// ThanhToan
 	private ArrayList<Double> dsTienChiTietVe;
@@ -198,45 +201,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 				}
 			}
 		});
-
-		hoanTien_view.getXacNhanButton().addActionListener(e -> {
-			int selectedRow = hoanTien_view.getDanhSachVeTable().getSelectedRow();
-			if (selectedRow != -1 && selectedRow < hoanTien_view.getDanhSachVeTable().getRowCount()) {
-				// Lấy thông tin khách hàng từ bảng
-				String maHoaDon = hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 1).toString();
-				String tenKhachHang = hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 2).toString();
-				String soDienThoai = hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 3).toString();
-				String soTien = hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 4).toString();
-
-				// Hiển thị cửa sổ thông tin vé tàu
-				ThongTinVe thongTinVe = new ThongTinVe();
-				thongTinVe.setMaHoaDon(maHoaDon);
-				thongTinVe.setTenKhachHang(tenKhachHang);
-				thongTinVe.setSoDienThoai(soDienThoai);
-				thongTinVe.setSoTien(soTien);
-
-				thongTinVe.setVisible(true);
-
-				// Thêm sự kiện cho các nút trong cửa sổ thông tin vé tàu
-				thongTinVe.getHoanVeButton().addActionListener(ev -> {
-					// Xử lý hoàn vé
-					JOptionPane.showMessageDialog(thongTinVe, "Hoàn vé thành công!", "Thông báo",
-							JOptionPane.INFORMATION_MESSAGE);
-				});
-
-				thongTinVe.getTraVeButton().addActionListener(ev -> {
-					// Xử lý trả vé
-					JOptionPane.showMessageDialog(thongTinVe, "Trả vé thành công!", "Thông báo",
-							JOptionPane.INFORMATION_MESSAGE);
-				});
-
-				thongTinVe.getInPDFButton().addActionListener(ev -> {
-					// Xử lý in PDF
-					JOptionPane.showMessageDialog(thongTinVe, "In PDF thành công!", "Thông báo",
-							JOptionPane.INFORMATION_MESSAGE);
-				});
-			}
-		});
 	}
 
 	private void initController() throws SQLException {
@@ -251,7 +215,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		chonGhe_View.addNextButtonListener(e -> nextPage());
 		chonGhe_View.addPrevButtonListener(e -> prevPage());
 		chonGhe_View.addSuKien(this);
-		hoanTien_view.addSuKien(this);
+		thongTinVe.addSuKien(this);
+		hoanTien_view.addSuKien(this, this);
 		veTau_Page.addSuKien(this, this, this); // Gọi hàm thêm sự kiện cho lớp Vé tàu tạm thời
 		veTau_Page.addSuKienTable(this);
 		veTau_Page.getTxt_NgaySinh().addKeyListener(this);
@@ -950,7 +915,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	}
 
 	private void capNhatVeTauKhuHoi(ArrayList<GheTau> danhSachGheDuocChon) {
-		// TODO Auto-generated method stub
 		JTable jTable = veTau_Page.getDanhSachVeTau();
 		int i = 0;
 		for (GheTau gheTau : danhSachGheDuocChon) {
@@ -1276,7 +1240,6 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		veTau_Page.getTxt_HoTen().setEnabled(true);
 		veTau_Page.getTxt_Email().setEnabled(true);
 		veTau_Page.getTxt_NgaySinh().setEnabled(true);
-		veTau_Page.getTxt_MaKH().setEnabled(true);
 		veTau_Page.getComboBox_GioiTinh().setEnabled(true);
 		veTau_Page.getComboBox_LoaiKH().setEnabled(true);
 	}
@@ -1342,6 +1305,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 	private void xoaTrangInputVeTauTam1() {
 		veTau_Page.getTxt_SDT().setText("{trống}");
+		veTau_Page.getTxt_MaKH().setText("{trống}");
 		veTau_Page.getTxt_CCCD().setText("{trống}");
 		veTau_Page.getTxt_HoTen().setText("{trống}");
 		veTau_Page.getTxt_Email().setText("{trống}");
@@ -1375,6 +1339,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		model.setValueAt(kh.getCCCD(), selectedRow, 9);
 		model.setValueAt(kh.getNgaySinh() != null ? kh.getNgaySinh().toString() : "", selectedRow, 10);
 		model.setValueAt(KhachHang.LoaiKhachHang.chuyenDoiTuEnumSangChuoi(kh.getLoaiKH()), selectedRow, 11);
+
+		themThongTinInputTable(selectedRow);
 
 		JOptionPane.showMessageDialog(null, "Cập nhật thông tin vé thành công!", "Thông báo",
 				JOptionPane.INFORMATION_MESSAGE);
@@ -1492,7 +1458,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	}
 
 	// Xử lý hoàn vé
-	private void timKiemHoaDon() {
+	private boolean timKiemHoaDon() {
 		String soDienThoaiOrCCCD = hoanTien_view.getSoDienThoaiRadioButton().isSelected()
 				? hoanTien_view.getSoDienThoaiField().getText()
 				: hoanTien_view.getCccdField().getText();
@@ -1507,9 +1473,191 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		for (HoaDon hoaDon : hoaDons) {
 			String formattedNgayLap = hoaDon.getNgayLapHoaDon().format(formatter);
 
-			tableModel.addRow(new Object[] { stt++, hoaDon.getMaHoaDon(), hoaDon.getKhachHang().getHoTen(),
-					formattedNgayLap, hoaDon.getThueVAT() });
+			tableModel.addRow(new Object[] { stt++, hoaDon.getMaHoaDon(), hoaDon.getKhachHang().getMaKhachHang(),
+					hoaDon.getKhachHang().getHoTen(), formattedNgayLap,
+					String.format("%,.0f ₫", tinhTienHoaDon(hoaDon.getMaHoaDon())) });
 		}
+
+		return !hoaDons.isEmpty();
+	}
+
+	// mới thêm vào
+	private static double tinhTienHoaDon(String maHD) {
+		double tongTien = 0;
+		List<ChiTiet_HoaDon> dsChiTiet = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHD);
+		for (ChiTiet_HoaDon chiTiet_HoaDon : dsChiTiet) {
+			double giaVe = chiTiet_HoaDon.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe()
+					.getGiaVeHienTai(chiTiet_HoaDon.getVeTau().getGheTau().getTenLoaiGheTau());
+			double giamGia = chiTiet_HoaDon.getKhuyenMai() == null ? 0 : chiTiet_HoaDon.getKhuyenMai().getGiamGia();
+			double thanhTien = chiTiet_HoaDon.tinhThanhTien(giaVe, giamGia / 100);
+			tongTien += thanhTien;
+
+		}
+
+		return tongTien;
+	}
+
+	private static boolean kiemTraThoiGianMuaVe(LocalDateTime thoiGian) {
+
+		LocalDateTime now = LocalDateTime.now();
+		Duration duration = Duration.between(thoiGian, now);
+
+		return duration.toHours() > 24;
+	}
+
+	private static double tinhTiLeHoanTien(String maHD) {
+		HoaDon hoaDon = HoaDon_DAO.getInstance().getByMaHoaDon(maHD);
+		return kiemTraThoiGianMuaVe(hoaDon.getNgayLapHoaDon()) ? 0.8 : 0;
+	}
+
+	private static double tinhTienHoanVe(String maHD) {
+		double tiLeHoanTien = tinhTiLeHoanTien(maHD);
+		return tinhTienHoaDon(maHD) * tiLeHoanTien;
+	}
+
+	public String taoMaPhieuHoanTien(String maPhieuHoanTien) {
+		String preFix = "PHT";
+		int newNumber = 1;
+		if (maPhieuHoanTien != null && maPhieuHoanTien.startsWith(preFix)) {
+			String currentNumber = maPhieuHoanTien.substring(3);
+			newNumber = Integer.parseInt(currentNumber) + 1;
+		}
+
+		String maPhieu = preFix + String.format("%05d", newNumber);
+		return maPhieu;
+	}
+
+	private PhieuHoanTien taoPhieuHoanTien() {
+		String maPhieuHoanTienTemp = PhieuHoanTien_DAO.getInstance().getMaPhieuHoanTienMax();
+		String maPhieuHoanTien = taoMaPhieuHoanTien(maPhieuHoanTienTemp);
+		DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+		DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+		LocalDateTime ngayHoanTien = LocalDateTime.parse(thongTinVe.getNgayHoanTienLabel().getValue(), inputFormatter);
+		String formattedNgayHoanTien = ngayHoanTien.format(outputFormatter);
+		LocalDateTime finalNgayHoanTien = LocalDateTime.parse(formattedNgayHoanTien, outputFormatter);
+//		    String lyDoChinh =  thongTinVe. .getSelectedItem().toString();
+		String lyDoHoanTien = thongTinVe.getLyDoNgoaiLeTextArea().getText();
+		String ghiChu = thongTinVe.getGhiChuLabel().getValue();
+		float tiLeHoanTien = Float.parseFloat(thongTinVe.getTiLeHoanTienField().getText().replace("%", ""));
+		KhachHang khachHang = new KhachHang(thongTinVe.getMaKhachHangLabel().getValue());
+
+		return new PhieuHoanTien(maPhieuHoanTien, finalNgayHoanTien, (tiLeHoanTien / 100), lyDoHoanTien, ghiChu,
+				khachHang);
+	}
+
+	private boolean themPhieuHoanTienMoi(PhieuHoanTien phieuHoanTien) {
+		phieuHoanTien = taoPhieuHoanTien();
+		boolean daThem = PhieuHoanTien_DAO.getInstance().themPhieuHoanTien(phieuHoanTien);
+		if (daThem) {
+			thayDoiTrangThaiDaHuy(thongTinVe.getMaKhachHangLabel().getValue(),
+					thongTinVe.getMaHoaDonLabel().getValue());
+		}
+		return daThem;
+	}
+
+	private void lamMoiDoiTraVe() {
+		hoanTien_view.getTenKhachHangField().setText("");
+		hoanTien_view.getSoDienThoaiField().setText("");
+		hoanTien_view.getSoDienThoaiRadioButton().setSelected(false);
+		hoanTien_view.getCccdRadioButton().setSelected(false);
+		hoanTien_view.getCccdField().setText("");
+		((DefaultTableModel) hoanTien_view.getDanhSachVeTable().getModel()).setRowCount(0);
+		hoanTien_view.getTenKhachHangField().requestFocus();
+	}
+
+	private boolean thayDoiTrangThaiDaHuy(String maKH, String maHoaDon) {
+		return VeTau_DAO.getInstance().capNhatTrangThaiVeTau(maKH, maHoaDon);
+	}
+
+	private boolean kiemTraVeNhom(String maHoaDon) {
+		return HoaDon_DAO.getInstance().laySoLuongHoaDon(maHoaDon) > 1 ? true : false;
+	}
+
+	public static void inPhieuHoanTien(String maPhieuHoanTien) {
+		try {
+			PrintService[] printServices = PrintServiceLookup.lookupPrintServices(null, null);
+			if (printServices.length > 0) {
+				PrintService printer = printServices[1];
+
+				PhieuHoanTien phieuHoanTien = PhieuHoanTien_DAO.getInstance().layPhieuHoanTienBangMa(maPhieuHoanTien);
+				if (phieuHoanTien == null) {
+					System.out.println("Không tìm thấy phiếu hoàn tiền nào!");
+					return;
+				}
+
+				StringBuilder hoanTienContent = new StringBuilder();
+				String maHoaDon = PhieuHoanTien_DAO.getInstance().getMaHoaDonByMaPhieuHoanTien(maPhieuHoanTien);
+				double tienHoan = tinhTienHoanVe(maHoaDon);
+
+				hoanTienContent.append("PHIEU HOAN TIEN\n\n");
+				hoanTienContent.append(String.format("Ma phieu hoan tien: %s\n", phieuHoanTien.getMaPhieuHoanTien()));
+				hoanTienContent.append(String.format("Ten khach hang: %s\n", phieuHoanTien.getKhachHang().getHoTen()));
+				hoanTienContent
+						.append(String.format("Ngay hoan tien: %s\n", phieuHoanTien.getNgayHoanTien().toString()));
+				hoanTienContent.append("---------------------------------\n");
+				hoanTienContent.append(String.format("Ly do hoan tra: %s\n", phieuHoanTien.getLyDoHoanTien()));
+				hoanTienContent.append(String.format("Ghi chu: %s\n", phieuHoanTien.getGhiChu()));
+				hoanTienContent.append(String.format("So tien hoan tra: %.2f\n", tienHoan));
+				hoanTienContent.append("\n\n");
+				hoanTienContent.append("Cam on quy khach da su dung dich vu cua chung toi!\n");
+				hoanTienContent.append("\n");
+				hoanTienContent.append("\n");
+				hoanTienContent.append("\n");
+				hoanTienContent.append("\n");
+				hoanTienContent.append("\n");
+
+				DocPrintJob job = printer.createPrintJob();
+				InputStream stream = new ByteArrayInputStream(hoanTienContent.toString().getBytes());
+				Doc doc = new SimpleDoc(stream, DocFlavor.INPUT_STREAM.AUTOSENSE, null);
+				job.print(doc, null);
+
+				System.out.println("In phiếu hoàn tiền thành công!");
+			} else {
+				System.out.println("Không tìm thấy máy in nào!");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public String formatPhieuHoanTien(PhieuHoanTien phieuHoanTien) {
+		StringBuilder hoanTienContent = new StringBuilder();
+		String maHoaDon = PhieuHoanTien_DAO.getInstance()
+				.getMaHoaDonByMaPhieuHoanTien(phieuHoanTien.getMaPhieuHoanTien());
+		double tienHoan = tinhTienHoanVe(maHoaDon);
+		String tenKH = PhieuHoanTien_DAO.getInstance()
+				.getTenKhachHangByMaPhieuHoanTien(phieuHoanTien.getMaPhieuHoanTien());
+		hoanTienContent.append("PHIEU HOAN TIEN\n\n");
+		hoanTienContent.append(String.format("Ma phieu hoan tien: %s\n", phieuHoanTien.getMaPhieuHoanTien()));
+		hoanTienContent.append(String.format("Ten khach hang: %s\n", tenKH));
+		hoanTienContent.append(String.format("Ngay hoan tien: %s\n", phieuHoanTien.getNgayHoanTien().toString()));
+		hoanTienContent.append("---------------------------------\n");
+		hoanTienContent.append(String.format("Ly do hoan tra: %s\n", phieuHoanTien.getLyDoHoanTien()));
+		hoanTienContent.append(String.format("Ti le hoan tien: %.2f%%\n", phieuHoanTien.getTiLeHoanTien() * 100));
+		hoanTienContent.append(String.format("So tien hoan tra: %.2f\n", tienHoan));
+		hoanTienContent.append(String.format("Ghi chu: %s\n", phieuHoanTien.getGhiChu()));
+		hoanTienContent.append("\n\n");
+		hoanTienContent.append("Cam on quy khach da su dung dich vu cua chung toi!\n");
+		hoanTienContent.append("\n");
+		hoanTienContent.append("\n");
+		hoanTienContent.append("\n");
+		hoanTienContent.append("\n");
+		hoanTienContent.append("\n");
+
+		return hoanTienContent.toString();
+	}
+
+	public void showPhieuHoanTienPreview(String maPhieuHoanTien) {
+		PhieuHoanTien phieuHoanTien = PhieuHoanTien_DAO.getInstance().layPhieuHoanTienBangMa(maPhieuHoanTien);
+		if (phieuHoanTien == null) {
+			JOptionPane.showMessageDialog(null, "Không tìm thấy phiếu hoàn tiền nào!", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
+		String formattedPhieuHoanTien = formatPhieuHoanTien(phieuHoanTien);
+		JOptionPane.showMessageDialog(null, formattedPhieuHoanTien, "Xem trước biên lai",
+				JOptionPane.INFORMATION_MESSAGE);
 	}
 
 	// Xử lý thanh toán
@@ -1933,6 +2081,24 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		return masked.toString();
 	}
 
+	public String capitalizeName(String name) {
+		if (name == null || name.isEmpty()) {
+			return name;
+		}
+
+		String[] words = name.split(" ");
+		StringBuilder capitalizedName = new StringBuilder();
+
+		for (String word : words) {
+			if (!word.isEmpty()) {
+				capitalizedName.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1).toLowerCase())
+						.append(" ");
+			}
+		}
+
+		return capitalizedName.toString().trim();
+	}
+
 	// Xử lý sự kiện
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -2073,7 +2239,65 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 		// Xử lý sự kiện hoàn vé
 		else if (obj.equals(hoanTien_view.getTimKiemButton())) {
-			timKiemHoaDon();
+			if (!timKiemHoaDon()) {
+				JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào!", "Thông báo",
+						javax.swing.JOptionPane.INFORMATION_MESSAGE);
+			}
+
+		} else if (obj.equals(thongTinVe.getHoanVeButton())) {
+			PhieuHoanTien phieuHoanTien = taoPhieuHoanTien();
+			if (themPhieuHoanTienMoi(phieuHoanTien)) {
+				JOptionPane.showMessageDialog(null, "Thêm phiếu hoàn tiền thành công!", "Thông báo",
+						JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				JOptionPane.showMessageDialog(null, "Thêm phiếu hoàn tiền thất bại!", "Thông báo",
+						JOptionPane.ERROR_MESSAGE);
+			}
+
+		} else if (obj.equals(hoanTien_view.getLamMoiButton())) {
+			lamMoiDoiTraVe();
+		} else if (obj.equals(hoanTien_view.getXacNhanButton())) {
+			int selectedRow = hoanTien_view.getDanhSachVeTable().getSelectedRow();
+			if (selectedRow != -1) {
+
+				// Hiển thị cửa sổ thông tin vé tàu
+				thongTinVe.getMaHoaDonLabel()
+						.setValue(hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 1).toString());
+				thongTinVe.getMaKhachHangLabel()
+						.setValue(hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 2).toString());
+				thongTinVe.getTenKhachHangLabel()
+						.setValue(hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 3).toString());
+				thongTinVe.getNgayMuaLabel()
+						.setValue(hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 4).toString());
+				thongTinVe.getNgayHoanTienLabel().setValue(LocalDateTime.now().format(formatterNgayGio));
+				thongTinVe.getSoTienDaThanhToanLabel()
+						.setValue(hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 5).toString());
+				thongTinVe.getSoDienThoaiLabel().setValue(hoanTien_view.getSoDienThoaiField().getText());
+				String maHD = hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 1).toString();
+				double tienHoan = tinhTienHoanVe(maHD);
+				double tiLeHoanTien = tinhTiLeHoanTien(maHD);
+				if (tiLeHoanTien == 0) {
+					thongTinVe.getLyDoNgoaiLeTextArea().setText("Thời gian trả vé đã hết hạn");
+				}
+				thongTinVe.getTiLeHoanTienField().setText(tiLeHoanTien * 100 + "%");
+				thongTinVe.getTienHoanField().setText(String.format("%,.0f ₫", tienHoan));
+				thongTinVe.setVisible(true);
+
+			}
+		} else if (obj.equals(thongTinVe.getInPDFButton())) {
+			String maPhieuHoanTien = PhieuHoanTien_DAO.getInstance()
+					.getMaPhieuHoanTienByMaHoaDon(thongTinVe.getMaHoaDonLabel().getValue());
+			try {
+				inPhieuHoanTien(maPhieuHoanTien);
+				thongTinVe.setVisible(false);
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(null, "Không thể in phiếu hoàn tiền!", "Thông báo",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		} else if (obj.equals(thongTinVe.getHoanVeButton_1())) {
+			String maPhieuHoanTien = PhieuHoanTien_DAO.getInstance()
+					.getMaPhieuHoanTienByMaHoaDon(thongTinVe.getMaHoaDonLabel().getValue());
+			showPhieuHoanTienPreview(maPhieuHoanTien);
 		}
 
 		// Xử lý sự kiện thanh toán
@@ -2118,7 +2342,17 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 				veTau_Page.getTxt_NgaySinh().setSelectionStart(0);
 				veTau_Page.getTxt_NgaySinh().setSelectionEnd(2);
 			});
+		} else if (obj.equals(hoanTien_view.getDanhSachVeTable())) {
+			int selectedRow = hoanTien_view.getDanhSachVeTable().getSelectedRow();
+			if (selectedRow != -1) {
+				String maHoaDon = hoanTien_view.getDanhSachVeTable().getValueAt(selectedRow, 1).toString();
+				if (kiemTraVeNhom(maHoaDon)) {
+					JOptionPane.showMessageDialog(null, "Vé nhóm không được hoàn tiền!", "Thông báo",
+							JOptionPane.INFORMATION_MESSAGE);
+				}
+			}
 		}
+
 	}
 
 	@Override
@@ -2164,6 +2398,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 	@Override
 	public void keyPressed(KeyEvent e) {
 		Object obj = e.getSource();
+
 		if (e.getKeyCode() == KeyEvent.VK_ENTER) {
 			KeyboardFocusManager manager = KeyboardFocusManager.getCurrentKeyboardFocusManager();
 			manager.focusNextComponent();
@@ -2184,7 +2419,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 					veTau_Page.getTxt_CCCD().requestFocus();
 				}
 			} else if (source.equals(veTau_Page.getTxt_HoTen())) {
-				String hoTen = veTau_Page.getTxt_HoTen().getText();
+				String hoTen = capitalizeName(veTau_Page.getTxt_HoTen().getText());
+				veTau_Page.getTxt_HoTen().setText(hoTen);
 				if (!hoTen.matches("^[a-zA-Z\\p{L} ]+$")) {
 					JOptionPane.showMessageDialog(null, "Họ tên không hợp lệ! Chỉ chứa chữ cái và khoảng trắng.", "Lỗi",
 							JOptionPane.ERROR_MESSAGE);
