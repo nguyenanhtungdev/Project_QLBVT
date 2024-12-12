@@ -626,7 +626,7 @@ public class HoaDon_DAO {
 		List<Object> values = new ArrayList<>();
 		boolean hasWhere = false;
 
-		if (khachHangs != null) {
+		if (khachHangs != null && khachHangs.length > 0) {
 			if (!hasWhere) {
 				sql += " WHERE ";
 				hasWhere = true;
@@ -634,11 +634,11 @@ public class HoaDon_DAO {
 				sql += " AND ";
 			}
 			List<String> list = Stream.of(khachHangs).map(KhachHang::getMaKhachHang).toList();
-			sql += "maKhachHang IN (" + String.join(",", Collections.nCopies(list.size(), "?")) + ")";
+			sql += "maKH IN (" + String.join(",", Collections.nCopies(list.size(), "?")) + ")";
 			values.addAll(list);
 		}
 
-		if (nhanViens != null) {
+		if (nhanViens != null && nhanViens.length > 0) {
 			if (!hasWhere) {
 				sql += " WHERE ";
 				hasWhere = true;
@@ -671,6 +671,8 @@ public class HoaDon_DAO {
 			sql += "ngayLapHoaDon <= ?";
 			values.add(end);
 		}
+
+		sql += " ORDER BY ngayLapHoaDon ASC";
 
 		Connection con = null;
 		PreparedStatement statement = null;
