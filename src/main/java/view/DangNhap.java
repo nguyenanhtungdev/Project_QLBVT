@@ -3,24 +3,18 @@ package view;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import constant.ColorConstants;
-import controller.HienThi_Controller;
 import controller.DangNhap_Controller;
-import other.DangerPrimaryButton;
 import other.PrimaryButton;
 import other.RoundedButton;
-import other.SecondaryButton;
 import other.RoundField;
 import other.RoundPassField;
 import other.TextFont;
