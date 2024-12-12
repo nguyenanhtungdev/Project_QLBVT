@@ -38,6 +38,15 @@ public class Tau {
 			throw new IllegalArgumentException("No enum constant for value: " + i);
 		}
 
+		public static TrangThaiTau toEnum(String value) {
+			for (TrangThaiTau tt : values()) {
+				if (tt.toString().equals(value)) {
+					return tt;
+				}
+			}
+			throw new IllegalArgumentException("No enum constant for value: " + value);
+		}
+
 		@Override
 		public String toString() {
 			switch (this) {
