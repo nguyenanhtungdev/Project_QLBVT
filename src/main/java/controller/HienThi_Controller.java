@@ -80,17 +80,21 @@ public class HienThi_Controller {
 			}
 		});
 
-		if(!taiKhoan.getNhanVien().getTenChucVu().trim().equals("NVBV")) {
+		if (!taiKhoan.getNhanVien().getTenChucVu().trim().equals("NVBV")) {
 			view.getLbl_BanVe().setVisible(false);
 			view.showView(dsViewQuanLy.get(0).getName());
 			view.showLeft_Menu("QuanLy");
-		}else {
-			view.showView("Home");			
+		} else {
+			view.showView("Home");
 		}
 	}
 
 	public void showView() {
 		view.setVisible(true);
+	}
+
+	public TaiKhoan getTaiKhoan() {
+		return taiKhoan;
 	}
 
 	public void setTaiKhoan(TaiKhoan taiKhoan) {

@@ -100,7 +100,7 @@ public class DangNhap_Controller implements ActionListener, KeyListener {
 				choDangNhap.dispose();
 				SwingUtilities.invokeLater(() -> {
 					FlatLightLaf.setup();
-					HienThi_Controller controller = new HienThi_Controller();
+					HienThi_Controller controller = HienThi_Controller.getInstance();
 					controller.setTaiKhoan(xuLyDangNhap());
 					controller.xuLyHienThi();
 					controller.showView();
