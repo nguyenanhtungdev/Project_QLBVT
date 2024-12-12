@@ -26,6 +26,7 @@ public class TrainScrollPane extends JScrollPane {
 		setOpaque(false);
 		getVerticalScrollBar().setUnitIncrement(16);
 		getHorizontalScrollBar().setUnitIncrement(16);
+		setAlignmentX(LEFT_ALIGNMENT);
 	}
 
 	@Override

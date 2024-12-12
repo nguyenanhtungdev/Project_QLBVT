@@ -2,7 +2,7 @@ package component.thongke;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
+//import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
@@ -232,8 +232,8 @@ public class ThongKeTableSelectorDialog extends JDialog {
 		}
 
 		// Adjust table container dimensions
-		table.setPreferredScrollableViewportSize(
-				new Dimension(table.getPreferredSize().width, table.getPreferredSize().height));
+//		table.setPreferredScrollableViewportSize(
+//				new Dimension(table.getPreferredSize().width, table.getPreferredSize().height));
 		table.revalidate();
 		table.repaint();
 	}

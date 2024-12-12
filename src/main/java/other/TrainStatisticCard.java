@@ -1,6 +1,5 @@
 package other;
 
-import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -42,11 +41,10 @@ public class TrainStatisticCard extends JPanel {
 
 	private void init() {
 		setOpaque(false);
-		setPreferredSize(new Dimension(300, 125));
 		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
 		add(lName = new JLabel());
-		add(Box.createVerticalGlue());
+		add(Box.createVerticalStrut(8));
 		add(lValue = new JLabel());
 		add(lChanges = new JLabel());
 
