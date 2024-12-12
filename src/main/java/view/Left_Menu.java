@@ -31,19 +31,24 @@ public class Left_Menu extends JFrame {
 		setLocationRelativeTo(null);
 		setContentPane(contentPane);
 
-		taoMenuTuDanhSach(); // Tạo các item menu từ danh sách Page
+		taoMenuTuDanhSach();
 	}
 
-	// Phương thức tạo menu từ danh sách Page
 	private void taoMenuTuDanhSach() {
 		for (View page : danhSachPage) {
 			JLabel label = taoLabelChoPage(page);
 			contentPane.add(label);
 
-			// Thêm sự kiện cho label
 			label.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent e) {
+					if (page.getName().equals("Đăng xuất")) {
+						int confirm = JOptionPane.showConfirmDialog(null, "Bạn có chắc chắn muốn đăng xuất không?",
+								"Xác nhận", JOptionPane.YES_NO_OPTION);
+						if (confirm == JOptionPane.YES_OPTION) {
+							home.setVisible(false);
+						}
+					}
 					home.showView(page.getName());
 
 					// Tải lại dữ liệu khi chuyển sang view khác

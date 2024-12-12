@@ -153,4 +153,167 @@ public class NhanVien_DAO {
 		return false;
 	}
 
+	public List<NhanVien> findNhanVienByTen(String ten) {
+		String sql = "SELECT * FROM NhanVien WHERE hoTenNV = ?";
+		Connection con = null;
+		PreparedStatement preparedStatement = null;
+		List<NhanVien> list = new ArrayList<>();
+
+		try {
+			con = Database.getInstance().getConnection();
+			preparedStatement = con.prepareStatement(sql);
+			preparedStatement.setString(1, ten);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				String maNhanVien = resultSet.getString(1);
+				String hoTenNV = resultSet.getString(2);
+				LocalDate ngaySinh = resultSet.getDate(3).toLocalDate();
+				String soDienThoai = resultSet.getString(4);
+				String email = resultSet.getString(5);
+				String diaChi = resultSet.getString(6);
+				boolean gioiTinh = resultSet.getBoolean(7);
+				String CCCD = resultSet.getString(8);
+				float heSoLuong = resultSet.getFloat(9);
+				boolean trangThai = resultSet.getBoolean(10);
+				String maChucVu = resultSet.getString(12);
+				LocalDate ngayVaoLam = resultSet.getDate(11).toLocalDate();
+
+				NhanVien nhanVien = new NhanVien(maNhanVien, hoTenNV, ngaySinh, soDienThoai, email, diaChi, gioiTinh,
+						CCCD, heSoLuong, trangThai, maChucVu, ngayVaoLam);
+				list.add(nhanVien);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public List<NhanVien> findNhanVienBySdt(String sdt) {
+		String sql = "SELECT * FROM NhanVien WHERE soDienThoai = ?";
+		Connection con = null;
+		PreparedStatement preparedStatement = null;
+		List<NhanVien> list = new ArrayList<>();
+
+		try {
+			con = Database.getInstance().getConnection();
+			preparedStatement = con.prepareStatement(sql);
+			preparedStatement.setString(1, sdt);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				String maNhanVien = resultSet.getString(1);
+				String hoTenNV = resultSet.getString(2);
+				LocalDate ngaySinh = resultSet.getDate(3).toLocalDate();
+				String soDienThoai = resultSet.getString(4);
+				String email = resultSet.getString(5);
+				String diaChi = resultSet.getString(6);
+				boolean gioiTinh = resultSet.getBoolean(7);
+				String CCCD = resultSet.getString(8);
+				float heSoLuong = resultSet.getFloat(9);
+				boolean trangThai = resultSet.getBoolean(10);
+				String maChucVu = resultSet.getString(12);
+				LocalDate ngayVaoLam = resultSet.getDate(11).toLocalDate();
+
+				NhanVien nhanVien = new NhanVien(maNhanVien, hoTenNV, ngaySinh, soDienThoai, email, diaChi, gioiTinh,
+						CCCD, heSoLuong, trangThai, maChucVu, ngayVaoLam);
+				list.add(nhanVien);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public List<NhanVien> findNhanVienByCCCD(String cccd) {
+		String sql = "SELECT * FROM NhanVien WHERE CCCD = ?";
+		Connection con = null;
+		PreparedStatement preparedStatement = null;
+		List<NhanVien> list = new ArrayList<>();
+
+		try {
+			con = Database.getInstance().getConnection();
+			preparedStatement = con.prepareStatement(sql);
+			preparedStatement.setString(1, cccd);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			while (resultSet.next()) {
+				String maNhanVien = resultSet.getString(1);
+				String hoTenNV = resultSet.getString(2);
+				LocalDate ngaySinh = resultSet.getDate(3).toLocalDate();
+				String soDienThoai = resultSet.getString(4);
+				String email = resultSet.getString(5);
+				String diaChi = resultSet.getString(6);
+				boolean gioiTinh = resultSet.getBoolean(7);
+				String CCCD = resultSet.getString(8);
+				float heSoLuong = resultSet.getFloat(9);
+				boolean trangThai = resultSet.getBoolean(10);
+				String maChucVu = resultSet.getString(12);
+				LocalDate ngayVaoLam = resultSet.getDate(11).toLocalDate();
+
+				NhanVien nhanVien = new NhanVien(maNhanVien, hoTenNV, ngaySinh, soDienThoai, email, diaChi, gioiTinh,
+						CCCD, heSoLuong, trangThai, maChucVu, ngayVaoLam);
+				list.add(nhanVien);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public boolean insertNhanVien(NhanVien nhanVien) {
+		Connection con = null;
+		PreparedStatement preparedStatement = null;
+		String sql = "INSERT INTO NhanVien (maNV,hoTenNV,ngaySinh,soDienThoai,email,diaChi,gioiTinh,CCCD,heSoLuong,trangThai,ngayVaoLam,tenChucVu) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+
+		try {
+			con = Database.getInstance().getConnection();
+			preparedStatement = con.prepareStatement(sql);
+
+			preparedStatement.setString(1, nhanVien.getMaNV());
+			preparedStatement.setString(2, nhanVien.getHoTenNV());
+			preparedStatement.setDate(3, java.sql.Date.valueOf(nhanVien.getNgaySinh()));
+			preparedStatement.setString(4, nhanVien.getSoDienThoai());
+			preparedStatement.setString(5, nhanVien.getEmail());
+			preparedStatement.setString(6, nhanVien.getDiaChi());
+			preparedStatement.setBoolean(7, nhanVien.isGioiTinh());
+			preparedStatement.setString(8, nhanVien.getCCCD());
+			preparedStatement.setFloat(9, nhanVien.getHeSoLuong());
+			preparedStatement.setBoolean(10, nhanVien.isTrangThai());
+			preparedStatement.setDate(11, java.sql.Date.valueOf(nhanVien.getNgayVaoLam()));
+			preparedStatement.setString(12, nhanVien.getTenChucVu());
+
+			int rowsInserted = preparedStatement.executeUpdate();
+
+			return rowsInserted > 0;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public boolean insertNhanVien(Object[] nhanVien) {
+		Connection con = null;
+		PreparedStatement preparedStatement = null;
+		String sql = "INSERT INTO NhanVien (hoTenNV,soDienThoai,email,CCCD,gioiTinh,ngaySinh) Where maNV = ? VALUES (?,?,?,?,?,?)";
+
+		try {
+			con = Database.getInstance().getConnection();
+			preparedStatement = con.prepareStatement(sql);
+
+			preparedStatement.setString(1, (String) nhanVien[1]);
+			preparedStatement.setString(2, (String) nhanVien[2]);
+			preparedStatement.setString(3, (String) nhanVien[3]);
+			preparedStatement.setString(4, (String) nhanVien[4]);
+			preparedStatement.setBoolean(5, (Boolean) nhanVien[5]);
+			preparedStatement.setDate(6, java.sql.Date.valueOf((LocalDate) nhanVien[7]));
+			preparedStatement.setString(7, (String) nhanVien[0]);
+
+			int rowsInserted = preparedStatement.executeUpdate();
+
+			return rowsInserted > 0;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 }

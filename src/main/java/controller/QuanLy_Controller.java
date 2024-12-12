@@ -104,6 +104,7 @@ import view.QuanLyCaLam_View;
 import view.QuanLyHoaDon_View;
 import view.QuanLyKhachHang_View;
 import view.QuanLyKhuyenMai_View;
+import view.QuanLyNhanVien_View;
 import view.QuanLyTau_View;
 import view.View;
 
@@ -136,6 +137,8 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 	private static QuanLy_Controller instance;
 	private DateTimeFormatter inputFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 	private DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+	private QuanLyNhanVien_View qLNhanVien_View;
+	private String maNv;
 
 	public static QuanLy_Controller getInstance() {
 		if (instance == null)
@@ -160,17 +163,27 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 	}
 
 	public void addView(String quyen) {
-		if(quyen.equals("NVBV")) {
+		if (quyen.equals("NVBV")) {
 			pageList.add(qLHoaDon_view);
-			pageList.add(qlyKhachHang_View);			
-		}else {
+			pageList.add(qlyKhachHang_View);
+		} else {
 			pageList.add(qLHoaDon_view);
 			pageList.add(qLKhuyenMai_View);
 			pageList.add(qLTau_View);
 			pageList.add(qLCaLam_View);
+			pageList.add(qLNhanVien_View);
 		}
 	}
-	
+
+//	public void addView() {
+//		pageList.add(qLHoaDon_view);
+//		pageList.add(qlyKhachHang_View);
+//		pageList.add(qLKhuyenMai_View);
+//		pageList.add(qLTau_View);
+//		pageList.add(qLCaLam_View);
+//		pageList.add(qLNhanVien_View);
+//	}
+
 	// QL_Tau
 	public QuanLy_Controller() throws SQLException {
 		this.qLHoaDon_view = new QuanLyHoaDon_View("Hóa đơn", "/Image/iconHoaDon.png");
@@ -178,8 +191,8 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		this.qLKhuyenMai_View = new QuanLyKhuyenMai_View("Khuyến mãi", "/Image/Sales.png");
 		this.qLCaLam_View = new QuanLyCaLam_View("Ca làm", "/Image/lichCaLam.png");
 		this.qlyKhachHang_View = new QuanLyKhachHang_View("Khách hàng", "/Image/user-cog.png");
-				
-				
+		this.qLNhanVien_View = new QuanLyNhanVien_View("Nhân viên", "/Image/user-square.png");
+
 		this.gheTau_DAO = new GheTau_DAO();
 		this.toaTau_DAO = new ToaTau_DAO();
 		this.tau_DAO = new Tau_DAO();
@@ -202,6 +215,14 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		this.nhanVien_CaLam_DAO = new NhanVien_CaLam_DAO();
 		this.caLam_DAO = new CaLam_DAO();
 		initControllerCaLam();
+
+		initControllerNV();
+	}
+
+	private void initControllerNV() {
+		themSuKienNV();
+		loadDataToTable();
+		layDataTuBangNV();
 	}
 
 	// QL_Tau
@@ -2083,6 +2104,193 @@ public class QuanLy_Controller implements ActionListener, FocusListener, KeyList
 		}
 
 		return false;
+	}
+
+	// Xu ly su kien Quan ly nhan vien
+	private void layDataTuBangNV() {
+		qLNhanVien_View.getDanhSachNhanVienJtable().addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int row = qLNhanVien_View.getDanhSachNhanVienJtable().getSelectedRow();
+				if (row == -1) {
+					return;
+				}
+				DefaultTableModel model = (DefaultTableModel) qLNhanVien_View.getDanhSachNhanVienJtable().getModel();
+				qLNhanVien_View.getTxt_MaNV().setText(model.getValueAt(row, 1).toString());
+				qLNhanVien_View.getTxt_HoTen().setText(model.getValueAt(row, 2).toString());
+				qLNhanVien_View.getTxt_NgaySinh().setText(model.getValueAt(row, 3).toString());
+				qLNhanVien_View.getTxt_SDT().setText(model.getValueAt(row, 4).toString());
+				qLNhanVien_View.getTxt_Email().setText(model.getValueAt(row, 5).toString());
+				qLNhanVien_View.getTxt_DiaChi().setText(model.getValueAt(row, 6).toString());
+				qLNhanVien_View.getTxt_CCCD().setText(model.getValueAt(row, 7).toString());
+				String gioiTinh = model.getValueAt(row, 8).toString();
+				qLNhanVien_View.getComboBox_GioiTinh().setSelectedItem(gioiTinh);
+			}
+
+		});
+	}
+
+	public void loadDataToTable() {
+
+		try {
+			NhanVien_DAO nhanVien_DAO = new NhanVien_DAO();
+			List<NhanVien> nhanVienList = nhanVien_DAO.getAll();
+			DefaultTableModel model = (DefaultTableModel) qLNhanVien_View.getDanhSachNhanVienJtable().getModel(); // Lấy
+			// JTable
+			model.setRowCount(0); // Xóa dữ liệu cũ trong bảng
+
+			int stt = 1; // Biến đếm số thứ tự
+			for (NhanVien nv : nhanVienList) {
+				model.addRow(new Object[] { stt++, // Số thứ tự
+						nv.getMaNV(), // Mã nhân viên
+						nv.getHoTenNV(), nv.getNgaySinh(), // Họ tên
+						nv.getSoDienThoai(), // Số điện thoại
+						nv.getEmail(), nv.getDiaChi(), nv.getCCCD(), // Email
+						nv.isGioiTinh() ? "Nam" : "Nữ", nv.getHeSoLuong(), nv.getTenChucVu(), // Chức vụ
+						nv.isTrangThai() ? "Đang làm" : "Đã nghỉ", nv.getNgayVaoLam() });
+			}
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(qLNhanVien_View, "Lỗi khi tải dữ liệu nhân viên: " + e.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
+		}
+
+	}
+
+	private void themSuKienNV() {
+		qLNhanVien_View.addBtnHuyBo(e -> huyBoNV());
+		qLNhanVien_View.addBtnXacNhan(e -> xacNhanNV());
+//		qLNhanVien_View.addBtnCapNhat(e -> capNhatNV());
+		qLNhanVien_View.addBtnTimKiem(e -> timKiemNV());
+
+	}
+
+	private void timKiemNV() {
+		String timKiemText = qLNhanVien_View.getTxt_Loc().getText().trim();
+		if (timKiemText.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Vui lòng nhập thông tin tìm kiếm!", "Thông báo",
+					JOptionPane.WARNING_MESSAGE);
+			return;
+		}
+		try {
+			List<NhanVien> danhSachNV = new ArrayList<>();
+			if (qLNhanVien_View.getRdbtn_TenNV().isSelected()) {
+				List<NhanVien> dsTenNhanVien = NhanVien_DAO.getInstance().findNhanVienByTen(timKiemText);
+				if (!dsTenNhanVien.isEmpty()) {
+					danhSachNV.addAll(dsTenNhanVien);
+				} else {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy tên nhân viên");
+				}
+			} else if (qLNhanVien_View.getRdbtn_DienThoai().isSelected()) {
+				List<NhanVien> dsSdtNhanVien = NhanVien_DAO.getInstance().findNhanVienBySdt(timKiemText);
+				if (!dsSdtNhanVien.isEmpty()) {
+					danhSachNV.addAll(dsSdtNhanVien);
+				} else {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy số nhân viên");
+				}
+			} else if (qLNhanVien_View.getRdbtn_CCCD().isSelected()) {
+				List<NhanVien> dsCCCDNhanVien = NhanVien_DAO.getInstance().findNhanVienByCCCD(timKiemText);
+				if (!dsCCCDNhanVien.isEmpty()) {
+					danhSachNV.addAll(dsCCCDNhanVien);
+				} else {
+					JOptionPane.showMessageDialog(null, "Không tìm thấy cccd nhân viên");
+				}
+			}
+			danhSachNV = danhSachNV.stream().distinct().collect(Collectors.toList());
+			xoaDuLieuTableNV();
+			for (NhanVien nv : danhSachNV) {
+				themNhanVienVaoBang(nv);
+			}
+			huyBoNV();
+			if (qLNhanVien_View.getRdbtn_TatCa().isSelected()) {
+				reLoadSearchNV();
+			}
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			JOptionPane.showMessageDialog(null, "Dữ liệu không hợp lệ!");
+		}
+	}
+
+	private void xoaDuLieuTableNV() {
+		DefaultTableModel dm = (DefaultTableModel) qLNhanVien_View.getDanhSachNhanVienJtable().getModel();
+		dm.getDataVector().removeAllElements();
+	}
+
+	private void reLoadSearchNV() {
+		xoaDuLieuTableNV();
+		try {
+			for (NhanVien nv : NhanVien_DAO.getInstance().getAll()) {
+				themNhanVienVaoBang(nv);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		qLNhanVien_View.getComboBox_GioiTinh().setSelectedItem(null);
+	}
+
+	private void xacNhanNV() {
+		try {
+			String hoTen = qLNhanVien_View.getTxt_HoTen().getText().trim();
+			String sdt = qLNhanVien_View.getTxt_SDT().getText().trim();
+			String email = qLNhanVien_View.getTxt_Email().getText().trim();
+			String cccd = qLNhanVien_View.getTxt_CCCD().getText().trim();
+			String ngaySinh = qLNhanVien_View.getTxt_NgaySinh().getText().trim();
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			LocalDate ldNgaySinh = LocalDate.parse(ngaySinh, formatter);
+			String gioiTinhText = (String) qLNhanVien_View.getComboBox_GioiTinh().getSelectedItem();
+			boolean gioiTinh = gioiTinhText.equalsIgnoreCase("Nam");
+			String diaChi = qLNhanVien_View.getTxt_DiaChi().getText().trim();
+			float heSoLuong = 2; // CHỈNH NÀY THÀNH FLOAT GIÚP T VS
+			String chucVu = "NVBV";
+			String trangThaiText = "Đang làm";
+			boolean trangThai = trangThaiText.equalsIgnoreCase("Đang làm");
+			LocalDate ngayVaoLam = LocalDate.now();
+
+			String maNV = taoMaNhanVien();
+			NhanVien nv = new NhanVien(maNV, hoTen, ldNgaySinh, sdt, email, diaChi, gioiTinh, cccd, heSoLuong,
+					trangThai, chucVu, ngayVaoLam);
+			boolean result = NhanVien_DAO.getInstance().insertNhanVien(nv);
+
+			if (result) {
+				themNhanVienVaoBang(nv);
+				JOptionPane.showMessageDialog(qLNhanVien_View, "Thêm nhân viên thành công!", "Thông báo",
+						JOptionPane.INFORMATION_MESSAGE);
+				huyBoNV();
+			} else {
+				JOptionPane.showMessageDialog(qLNhanVien_View, "Thêm nhân viên không thành công!", "Lỗi",
+						JOptionPane.ERROR_MESSAGE);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			JOptionPane.showMessageDialog(qLNhanVien_View, "Lỗi khi thêm khách hàng: " + e.getMessage(), "Lỗi",
+					JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void huyBoNV() {
+		qLNhanVien_View.getTxt_MaNV().setText("");
+		qLNhanVien_View.getTxt_HoTen().setText("");
+		qLNhanVien_View.getTxt_SDT().setText("");
+		qLNhanVien_View.getTxt_Email().setText("");
+		qLNhanVien_View.getTxt_DiaChi().setText("");
+		qLNhanVien_View.getTxt_CCCD().setText("");
+		qLNhanVien_View.getComboBox_GioiTinh().setSelectedIndex(0);
+		qLNhanVien_View.getTxt_NgaySinh().setText("");
+	}
+
+	private void themNhanVienVaoBang(NhanVien nhanVien) {
+		DefaultTableModel model = (DefaultTableModel) qLNhanVien_View.getDanhSachNhanVienJtable().getModel();
+		model.addRow(new Object[] { model.getRowCount() + 1, nhanVien.getMaNV(), nhanVien.getHoTenNV(),
+				nhanVien.getNgaySinh(), nhanVien.getSoDienThoai(), nhanVien.getEmail(), nhanVien.getDiaChi(),
+				nhanVien.getCCCD(), nhanVien.isGioiTinh() ? "Nam" : "Nữ", nhanVien.getHeSoLuong(),
+				nhanVien.getTenChucVu(), nhanVien.isTrangThai() ? "Đang làm" : "Đã nghỉ", nhanVien.getNgayVaoLam() });
+	}
+
+	private String taoMaNhanVien() {
+		DefaultTableModel model = (DefaultTableModel) qLNhanVien_View.getDanhSachNhanVienJtable().getModel();
+		int soLuongNhanVien = model.getRowCount();
+		String maNhanVien = "NV" + String.format("%05d", soLuongNhanVien + 1);
+		return maNhanVien;
 	}
 
 	@Override

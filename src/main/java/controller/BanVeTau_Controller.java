@@ -101,7 +101,6 @@ import other.RoundedPanel;
 import other.ShortcutManager;
 import view.BaoMat_view;
 import view.DoiTraVe_View;
-import view.KhuyenMai;
 import view.ThanhToan_View;
 import view.ThongTinVe;
 import view.ChonGhe_View;
@@ -1472,10 +1471,11 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 
 		for (HoaDon hoaDon : hoaDons) {
 			String formattedNgayLap = hoaDon.getNgayLapHoaDon().format(formatter);
-
-			tableModel.addRow(new Object[] { stt++, hoaDon.getMaHoaDon(), hoaDon.getKhachHang().getMaKhachHang(),
-					hoaDon.getKhachHang().getHoTen(), formattedNgayLap,
-					String.format("%,.0f ₫", tinhTienHoaDon(hoaDon.getMaHoaDon())) });
+			if (!kiemTraVeNhom(hoaDon.getMaHoaDon())) {
+				tableModel.addRow(new Object[] { stt++, hoaDon.getMaHoaDon(), hoaDon.getKhachHang().getMaKhachHang(),
+						hoaDon.getKhachHang().getHoTen(), formattedNgayLap,
+						String.format("%,.0f ₫", tinhTienHoaDon(hoaDon.getMaHoaDon())) });
+			}
 		}
 
 		return !hoaDons.isEmpty();
@@ -1563,6 +1563,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		hoanTien_view.getCccdField().setText("");
 		((DefaultTableModel) hoanTien_view.getDanhSachVeTable().getModel()).setRowCount(0);
 		hoanTien_view.getTenKhachHangField().requestFocus();
+		hoanTien_view.getXacNhanButton().setVisible(false);
 	}
 
 	private boolean thayDoiTrangThaiDaHuy(String maKH, String maHoaDon) {
@@ -1620,22 +1621,18 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		}
 	}
 
-	public String formatPhieuHoanTien(PhieuHoanTien phieuHoanTien) {
+	public String formatPhieuHoanTien() {
 		StringBuilder hoanTienContent = new StringBuilder();
-		String maHoaDon = PhieuHoanTien_DAO.getInstance()
-				.getMaHoaDonByMaPhieuHoanTien(phieuHoanTien.getMaPhieuHoanTien());
-		double tienHoan = tinhTienHoanVe(maHoaDon);
-		String tenKH = PhieuHoanTien_DAO.getInstance()
-				.getTenKhachHangByMaPhieuHoanTien(phieuHoanTien.getMaPhieuHoanTien());
+
 		hoanTienContent.append("PHIEU HOAN TIEN\n\n");
-		hoanTienContent.append(String.format("Ma phieu hoan tien: %s\n", phieuHoanTien.getMaPhieuHoanTien()));
-		hoanTienContent.append(String.format("Ten khach hang: %s\n", tenKH));
-		hoanTienContent.append(String.format("Ngay hoan tien: %s\n", phieuHoanTien.getNgayHoanTien().toString()));
+
+		hoanTienContent.append(String.format("Ten khach hang: %s\n", thongTinVe.getTenKhachHangLabel().getValue()));
+		hoanTienContent.append(String.format("Ngay hoan tien: %s\n", thongTinVe.getNgayHoanTienLabel().getValue()));
 		hoanTienContent.append("---------------------------------\n");
-		hoanTienContent.append(String.format("Ly do hoan tra: %s\n", phieuHoanTien.getLyDoHoanTien()));
-		hoanTienContent.append(String.format("Ti le hoan tien: %.2f%%\n", phieuHoanTien.getTiLeHoanTien() * 100));
-		hoanTienContent.append(String.format("So tien hoan tra: %.2f\n", tienHoan));
-		hoanTienContent.append(String.format("Ghi chu: %s\n", phieuHoanTien.getGhiChu()));
+		hoanTienContent.append(String.format("Ly do hoan tra: %s\n", thongTinVe.getLyDoNgoaiLeTextArea().getText()));
+		hoanTienContent.append(String.format("Ti le hoan tien: %s\n", thongTinVe.getTiLeHoanTienField().getText()));
+		hoanTienContent.append(String.format("So tien hoan tra: %s\n", thongTinVe.getTienHoanField().getText()));
+		hoanTienContent.append(String.format("Ghi chu: %s\n", thongTinVe.getGhiChuLabel().getValue()));
 		hoanTienContent.append("\n\n");
 		hoanTienContent.append("Cam on quy khach da su dung dich vu cua chung toi!\n");
 		hoanTienContent.append("\n");
@@ -1647,15 +1644,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 		return hoanTienContent.toString();
 	}
 
-	public void showPhieuHoanTienPreview(String maPhieuHoanTien) {
-		PhieuHoanTien phieuHoanTien = PhieuHoanTien_DAO.getInstance().layPhieuHoanTienBangMa(maPhieuHoanTien);
-		if (phieuHoanTien == null) {
-			JOptionPane.showMessageDialog(null, "Không tìm thấy phiếu hoàn tiền nào!", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-
-		String formattedPhieuHoanTien = formatPhieuHoanTien(phieuHoanTien);
+	public void showPhieuHoanTienPreview() {
+		String formattedPhieuHoanTien = formatPhieuHoanTien();
 		JOptionPane.showMessageDialog(null, formattedPhieuHoanTien, "Xem trước biên lai",
 				JOptionPane.INFORMATION_MESSAGE);
 	}
@@ -2242,6 +2232,8 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			if (!timKiemHoaDon()) {
 				JOptionPane.showMessageDialog(null, "Không tìm thấy hóa đơn nào!", "Thông báo",
 						javax.swing.JOptionPane.INFORMATION_MESSAGE);
+			} else {
+				hoanTien_view.getXacNhanButton().setVisible(true);
 			}
 
 		} else if (obj.equals(thongTinVe.getHoanVeButton())) {
@@ -2249,6 +2241,9 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 			if (themPhieuHoanTienMoi(phieuHoanTien)) {
 				JOptionPane.showMessageDialog(null, "Thêm phiếu hoàn tiền thành công!", "Thông báo",
 						JOptionPane.INFORMATION_MESSAGE);
+				timKiemHoaDon();
+				thongTinVe.setVisible(false);
+				
 			} else {
 				JOptionPane.showMessageDialog(null, "Thêm phiếu hoàn tiền thất bại!", "Thông báo",
 						JOptionPane.ERROR_MESSAGE);
@@ -2295,9 +2290,7 @@ public class BanVeTau_Controller implements ActionListener, MouseListener, Focus
 						JOptionPane.ERROR_MESSAGE);
 			}
 		} else if (obj.equals(thongTinVe.getHoanVeButton_1())) {
-			String maPhieuHoanTien = PhieuHoanTien_DAO.getInstance()
-					.getMaPhieuHoanTienByMaHoaDon(thongTinVe.getMaHoaDonLabel().getValue());
-			showPhieuHoanTienPreview(maPhieuHoanTien);
+			showPhieuHoanTienPreview();
 		}
 
 		// Xử lý sự kiện thanh toán

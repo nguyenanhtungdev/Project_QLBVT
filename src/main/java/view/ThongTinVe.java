@@ -30,38 +30,38 @@ import javax.swing.border.CompoundBorder;
 
 import other.PrimaryButton;
 import other.RoundedPanel;
+import other.DangerPrimaryButton;
 import other.DetailRow;
 import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
 
 public class ThongTinVe extends JFrame {
 
-    private static final long serialVersionUID = 1L;
-    private JPanel panelLogo;
-    private JLabel lbl_Icon;
-    private ImageIcon iconLogo;
-    private JPanel panelTrong1;
-    private JPanel panelTableAndTotal;
-    private JPanel panelTableHDCT;
-    private JPanel panelTotal;
-    private JPanel panelTongtien;
-    private JPanel panelThueVAT;
-    private JLabel lblThueVAT;
-    private JPanel panelTongTienTT;
-    private JLabel lblTongTienTT;
-    private JPanel panel;
-    private JPanel panel_1;
-    private PrimaryButton hoanVeButton, inPDFButton;
-    private JScrollPane scrollPane;
-    private JLabel dateLabel;
-    private DetailRow maHoaDonLabel;
-    private DetailRow tenKhachHangLabel;
-    private DetailRow soDienThoaiLabel;
-    private DetailRow soTienLabel;
-    private DetailRow soTienTraLabel;
+	private static final long serialVersionUID = 1L;
+	private JPanel panelLogo;
+	private JLabel lbl_Icon;
+	private ImageIcon iconLogo;
+	private JPanel panelTrong1;
+	private JPanel panelTableAndTotal;
+	private JPanel panelTableHDCT;
+	private JPanel panelTotal;
+	private JPanel panelTongtien;
+	private JPanel panelThueVAT;
+	private JLabel lblThueVAT;
+	private JPanel panelTongTienTT;
+	private JLabel lblTongTienTT;
+	private JPanel panel;
+	private JPanel panel_1;
+	private PrimaryButton hoanVeButton;
+	private DangerPrimaryButton inPDFButton;
+	private JScrollPane scrollPane;
+	private JLabel dateLabel;
+	private DetailRow maHoaDonLabel;
+	private DetailRow tenKhachHangLabel;
+	private DetailRow soDienThoaiLabel;
+	private DetailRow soTienLabel;
+	private DetailRow soTienTraLabel;
 	private JTextArea lydoHoanTienField;
-	private JCheckBox ckLyDo1;
-	private JCheckBox ckLyDo2;
-	private JCheckBox ckLyDo3;
 	private ButtonGroup lydoButtonGroup;
 	private JTextField tenKhachHangField;
 	private JTextField soDienThoaiField;
@@ -78,202 +78,164 @@ public class ThongTinVe extends JFrame {
 	private DetailRow ngayHoanTienLabel;
 	private DetailRow maKhachHangLabel;
 	private PrimaryButton hoanVeButton_1;
-	
+
 	public void addSuKien(ActionListener listener) {
 		hoanVeButton.addActionListener(listener);
 		hoanVeButton_1.addActionListener(listener);
+		inPDFButton.addActionListener(listener);
 	}
 
-    public ThongTinVe() {
-        setTitle("Thông tin vé tàu");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setBounds(100, 100, 1100, 700);
-        setLocationRelativeTo(null);
+	public ThongTinVe() {
+		setTitle("Thông tin vé tàu");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 1100, 800);
+		setLocationRelativeTo(null);
 
-        JPanel panelChiTiet = new JPanel();
-        panelChiTiet.setBackground(Color.WHITE);
-        panelChiTiet.setLayout(new BorderLayout());
-        panelChiTiet.setBackground(Color.WHITE);
-        panelChiTiet.setBorder(
-                new CompoundBorder(new LineBorder(new Color(70, 130, 169), 1, true), new EmptyBorder(20, 20, 20, 20)));
+		JPanel panelChiTiet = new JPanel();
+		panelChiTiet.setBackground(Color.WHITE);
+		panelChiTiet.setLayout(new BorderLayout());
+		panelChiTiet.setBackground(Color.WHITE);
+		panelChiTiet.setBorder(
+				new CompoundBorder(new LineBorder(new Color(70, 130, 169), 1, true), new EmptyBorder(20, 20, 20, 20)));
 
-        // Header Panel
-        JPanel headerPanelCT = new JPanel(new BorderLayout());
-        headerPanelCT.setBorder(new EmptyBorder(0, 0, 25, 0));
-        headerPanelCT.setBackground(Color.WHITE);
-        panelLogo = new JPanel();
-        panelLogo.setBackground(Color.WHITE);
-        lbl_Icon = new JLabel("");
-        iconLogo = new ImageIcon(getClass().getResource("/Image/logo1.png"));
-        lbl_Icon.setPreferredSize(new Dimension(250, 70));
-        lbl_Icon.setMaximumSize(new Dimension(250, 70));
-        lbl_Icon.setIcon(new ImageIcon(iconLogo.getImage().getScaledInstance(130, 70, Image.SCALE_SMOOTH)));
+		// Header Panel
+		JPanel headerPanelCT = new JPanel(new BorderLayout());
+		headerPanelCT.setBorder(new EmptyBorder(0, 0, 25, 0));
+		headerPanelCT.setBackground(Color.WHITE);
+		panelLogo = new JPanel();
+		panelLogo.setBackground(Color.WHITE);
+		lbl_Icon = new JLabel("");
+		iconLogo = new ImageIcon(getClass().getResource("/Image/logo1.png"));
+		lbl_Icon.setPreferredSize(new Dimension(250, 70));
+		lbl_Icon.setMaximumSize(new Dimension(250, 70));
+		lbl_Icon.setIcon(new ImageIcon(iconLogo.getImage().getScaledInstance(130, 70, Image.SCALE_SMOOTH)));
 
-        RoundedPanel panelChuaLogo = new RoundedPanel(20);
-        panelChuaLogo.setPreferredSize(new Dimension(265, 65));
-        panelChuaLogo.setBackground(new Color(70, 130, 169));
-        panelChuaLogo.setBorder(new EmptyBorder(5, 5, 5, 5));
-        panelChuaLogo.setLayout(new BoxLayout(panelChuaLogo, BoxLayout.X_AXIS));
-        lbl_Icon.setIcon(new ImageIcon(iconLogo.getImage().getScaledInstance(270, 80, Image.SCALE_SMOOTH)));
-        panelChuaLogo.add(lbl_Icon);
-        panelLogo.add(panelChuaLogo);
-        headerPanelCT.add(panelLogo, BorderLayout.WEST);
+		RoundedPanel panelChuaLogo = new RoundedPanel(20);
+		panelChuaLogo.setPreferredSize(new Dimension(265, 65));
+		panelChuaLogo.setBackground(new Color(70, 130, 169));
+		panelChuaLogo.setBorder(new EmptyBorder(5, 5, 5, 5));
+		panelChuaLogo.setLayout(new BoxLayout(panelChuaLogo, BoxLayout.X_AXIS));
+		lbl_Icon.setIcon(new ImageIcon(iconLogo.getImage().getScaledInstance(270, 80, Image.SCALE_SMOOTH)));
+		panelChuaLogo.add(lbl_Icon);
+		panelLogo.add(panelChuaLogo);
+		headerPanelCT.add(panelLogo, BorderLayout.WEST);
 
-        JLabel titleLabel = new JLabel("THÔNG TIN VÉ TÀU", JLabel.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(Color.BLUE);
+		JLabel titleLabel = new JLabel("THÔNG TIN VÉ TÀU", JLabel.CENTER);
+		titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
+		titleLabel.setForeground(Color.BLUE);
 
-        dateLabel = new JLabel("", JLabel.CENTER);
-        dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
-        JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBackground(Color.WHITE);
-        titlePanel.add(titleLabel, BorderLayout.CENTER);
-        titlePanel.add(dateLabel, BorderLayout.SOUTH);
-        headerPanelCT.add(titlePanel, BorderLayout.CENTER);
+		dateLabel = new JLabel("", JLabel.CENTER);
+		dateLabel.setFont(new Font("Arial", Font.PLAIN, 14));
+		JPanel titlePanel = new JPanel(new BorderLayout());
+		titlePanel.setBackground(Color.WHITE);
+		titlePanel.add(titleLabel, BorderLayout.CENTER);
+		titlePanel.add(dateLabel, BorderLayout.SOUTH);
+		headerPanelCT.add(titlePanel, BorderLayout.CENTER);
 
+		// Content Panel
+		JPanel contentPanel = new JPanel();
+		contentPanel.setBorder(new EmptyBorder(0, 0, 0, 10));
+		contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+		contentPanel.setBackground(Color.WHITE);
 
+		maKhachHangLabel = new DetailRow("Mã khách hàng: ", "");
+		maKhachHangLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		maKhachHangLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		contentPanel.add(maKhachHangLabel.getRowPanel());
+		contentPanel.add(Box.createVerticalStrut(20));
 
+		maHoaDonLabel = new DetailRow("Mã hóa đơn: ", "");
+		maHoaDonLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		maHoaDonLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		contentPanel.add(maHoaDonLabel.getRowPanel());
+		contentPanel.add(Box.createVerticalStrut(20));
 
+		tenKhachHangLabel = new DetailRow("Tên khách hàng: ", "");
+		tenKhachHangLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		tenKhachHangLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		contentPanel.add(tenKhachHangLabel.getRowPanel());
+		contentPanel.add(Box.createVerticalStrut(20));
 
-        // Content Panel
-        JPanel contentPanel = new JPanel();
-        contentPanel.setBorder(new EmptyBorder(0, 0, 25, 10));
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
-        contentPanel.setBackground(Color.WHITE);
+		soDienThoaiLabel = new DetailRow("Số điện thoại: ", "");
+		soDienThoaiLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		soDienThoaiLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		contentPanel.add(soDienThoaiLabel.getRowPanel());
+		contentPanel.add(Box.createVerticalStrut(20));
 
-//        tenKhachHangField = new JTextField(20);
-//        tenKhachHangField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-//        tenKhachHangField.setBackground(new Color(255, 255, 255));
-//        tenKhachHangField.setEditable(false);
-//        tenKhachHangField.setBorder(null);
-//        soDienThoaiField = new JTextField(20);
-//        soDienThoaiField.setBackground(new Color(255, 255, 255));
-//        soDienThoaiField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-//        soDienThoaiField.setEditable(false);
-//        soDienThoaiField.setBorder(null);
-//        ngayMuaField = new JTextField(20);
-//        ngayMuaField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-//        ngayMuaField.setBackground(new Color(255, 255, 255));
-//        ngayMuaField.setEditable(false);
-//        ngayMuaField.setBorder(null);
-//        soTienDaThanhToanField = new JTextField(20);
-//        soTienDaThanhToanField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-//        soTienDaThanhToanField.setBackground(new Color(255, 255, 255));
-//        soTienDaThanhToanField.setEditable(false);
-//        soTienDaThanhToanField.setBorder(null);
-        maKhachHangLabel = new DetailRow("Mã khách hàng: ", "");
-        maKhachHangLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        maKhachHangLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        contentPanel.add(maKhachHangLabel.getRowPanel());
-        contentPanel.add(Box.createVerticalStrut(20));
-        
-        maHoaDonLabel = new DetailRow("Mã hóa đơn: ", "");
-        maHoaDonLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        maHoaDonLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        contentPanel.add(maHoaDonLabel.getRowPanel());
-        contentPanel.add(Box.createVerticalStrut(20));
-        
-        tenKhachHangLabel = new DetailRow("Tên khách hàng: ", "");
-        tenKhachHangLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        tenKhachHangLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        contentPanel.add(tenKhachHangLabel.getRowPanel());       
-        contentPanel.add(Box.createVerticalStrut(20));
+		ngayMuaLabel = new DetailRow("Thời gian mua: ", "");
+		ngayMuaLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		ngayMuaLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		contentPanel.add(ngayMuaLabel.getRowPanel());
+		contentPanel.add(Box.createVerticalStrut(20));
 
-        soDienThoaiLabel = new DetailRow("Số điện thoại: ", "");
-        soDienThoaiLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        soDienThoaiLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        contentPanel.add(soDienThoaiLabel.getRowPanel());        
-        contentPanel.add(Box.createVerticalStrut(20));
+		ngayHoanTienLabel = new DetailRow("Thời gian hoàn tiền: ", "");
+		ngayHoanTienLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		ngayHoanTienLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		contentPanel.add(ngayHoanTienLabel.getRowPanel());
+		contentPanel.add(Box.createVerticalStrut(20));
 
-        ngayMuaLabel = new DetailRow("Thời gian mua: ", "");
-        ngayMuaLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        ngayMuaLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        contentPanel.add(ngayMuaLabel.getRowPanel());
-        contentPanel.add(Box.createVerticalStrut(20));
+		soTienDaThanhToanLabel = new DetailRow("Số tiền đã thanh toán: ", "");
+		soTienDaThanhToanLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		soTienDaThanhToanLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		contentPanel.add(soTienDaThanhToanLabel.getRowPanel());
 
-        ngayHoanTienLabel = new DetailRow("Thời gian hoàn tiền: ", "");
-        ngayHoanTienLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        ngayHoanTienLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        contentPanel.add(ngayHoanTienLabel.getRowPanel());
-        contentPanel.add(Box.createVerticalStrut(20));
-        
-        soTienDaThanhToanLabel = new DetailRow("Số tiền đã thanh toán: ", "");
-        soTienDaThanhToanLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        soTienDaThanhToanLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        contentPanel.add(soTienDaThanhToanLabel.getRowPanel());
-        
-        contentPanel.add(Box.createVerticalStrut(20));
-        
-        lydoHoanTienLabel = new DetailRow("Lý do hoàn tiền: ", "");
-        lydoHoanTienLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        lydoHoanTienLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        contentPanel.add(lydoHoanTienLabel.getRowPanel());
-        
-        panel_2 = new JPanel();
-        panel_2.setBackground(Color.WHITE);
-        contentPanel.add(panel_2);
-        panel_2.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
-        ckLyDo1 = new JCheckBox("Thay đổi kế hoạch");
-        ckLyDo1.setBackground(Color.WHITE);
-        panel_2.add(ckLyDo1);
-        ckLyDo1.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        ckLyDo2 = new JCheckBox("Vấn đề về vé");
-        ckLyDo2.setBackground(Color.WHITE);
-        panel_2.add(ckLyDo2);
-        ckLyDo2.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        ckLyDo3 = new JCheckBox("Các vấn đề khác");
-        ckLyDo3.setBackground(Color.WHITE);
-        panel_2.add(ckLyDo3);
-        ckLyDo3.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        
-        lyDoNgoaiLeTextArea = new JTextArea(3, 20);
-        lyDoNgoaiLeTextArea.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        lyDoNgoaiLeTextArea.setLineWrap(true);
-        lyDoNgoaiLeTextArea.setWrapStyleWord(true);
-        lyDoNgoaiLeTextArea.setBorder(new LineBorder(Color.BLACK, 1, true));
-        contentPanel.add(lyDoNgoaiLeTextArea);
-        
-        contentPanel.add(Box.createVerticalStrut(20));
-        
-        ghiChuLabel = new DetailRow("Ghi chú: ", "");
-        ghiChuLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
-        ghiChuLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
-        lydoHoanTienField = new JTextArea();
-        lydoHoanTienField.setFont(new Font("Tahoma", Font.PLAIN, 16));
-        lydoHoanTienField.setLineWrap(true);
-        lydoHoanTienField.setWrapStyleWord(true);
-        lydoHoanTienField.setPreferredSize(new Dimension(lydoHoanTienField.getPreferredSize().width, 100));
-        lydoHoanTienField.setBorder(new LineBorder(Color.BLACK, 1, true));
-        contentPanel.add(ghiChuLabel.getRowPanel());
-        contentPanel.add(lydoHoanTienField);
-        contentPanel.add(Box.createVerticalStrut(10));
-        
-      
-        panelChiTiet.add(contentPanel, BorderLayout.CENTER);
+		contentPanel.add(Box.createVerticalStrut(20));
 
-        panelTableAndTotal = new JPanel();
-        panelTableAndTotal.setBorder(new EmptyBorder(0, 0, 0, 10));
-        panelTableAndTotal.setBackground(Color.WHITE);
-        panelChiTiet.add(panelTableAndTotal, BorderLayout.SOUTH);
-        panelTableAndTotal.setLayout(new BorderLayout(0, 0));
+		lydoHoanTienLabel = new DetailRow("Lý do hoàn tiền: ", "");
+		lydoHoanTienLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		lydoHoanTienLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		contentPanel.add(lydoHoanTienLabel.getRowPanel());
 
-        panelTotal = new JPanel();
-        FlowLayout flowLayout_1 = (FlowLayout) panelTotal.getLayout();
-        flowLayout_1.setAlignment(FlowLayout.RIGHT);
-        panelTotal.setBorder(new EmptyBorder(20, 0, 0, 5));
-        panelTotal.setBackground(Color.WHITE);
-        panelTableAndTotal.add(panelTotal, BorderLayout.SOUTH);
+		panel_2 = new JPanel();
+		panel_2.setBackground(Color.WHITE);
+		contentPanel.add(panel_2);
+		panel_2.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
+		lyDoNgoaiLeTextArea = new JTextArea(3, 20);
+		lyDoNgoaiLeTextArea.setFont(new Font("Arial", Font.PLAIN, 18));
+		lyDoNgoaiLeTextArea.setLineWrap(true);
+		lyDoNgoaiLeTextArea.setWrapStyleWord(true);
+		lyDoNgoaiLeTextArea.setBorder(new LineBorder(ColorConstants.PRIMARY_COLOR, 1, true));
+		contentPanel.add(lyDoNgoaiLeTextArea);
+
+		contentPanel.add(Box.createVerticalStrut(20));
+
+		ghiChuLabel = new DetailRow("Ghi chú: ", "");
+		ghiChuLabel.getRowPanel().setFont(new Font("Arial", Font.PLAIN, 18));
+		ghiChuLabel.setColor_Label(ColorConstants.PRIMARY_COLOR);
+		lydoHoanTienField = new JTextArea();
+		lydoHoanTienField.setFont(new Font("Arial", Font.PLAIN, 18));
+		lydoHoanTienField.setLineWrap(true);
+		lydoHoanTienField.setWrapStyleWord(true);
+		lydoHoanTienField.setPreferredSize(new Dimension(lydoHoanTienField.getPreferredSize().width, 100));
+		lydoHoanTienField.setBorder(new LineBorder(ColorConstants.PRIMARY_COLOR, 1, true));
+		contentPanel.add(ghiChuLabel.getRowPanel());
+		contentPanel.add(lydoHoanTienField);
+
+		panelChiTiet.add(contentPanel, BorderLayout.CENTER);
+
+		panelTableAndTotal = new JPanel();
+		panelTableAndTotal.setBorder(new EmptyBorder(0, 0, 0, 10));
+		panelTableAndTotal.setBackground(Color.WHITE);
+		panelChiTiet.add(panelTableAndTotal, BorderLayout.SOUTH);
+		panelTableAndTotal.setLayout(new BorderLayout(0, 0));
+
+		panelTotal = new JPanel();
+		panelTotal.setBorder(new EmptyBorder(10, 0, 0, 0));
+		panelTotal.setBackground(Color.WHITE);
+		panelTableAndTotal.add(panelTotal, BorderLayout.SOUTH);
+		panelTotal.setLayout(new FlowLayout(FlowLayout.RIGHT, 0, 5));
 
 		panelTongtien = new JPanel();
 		panelTongtien.setBackground(Color.WHITE);
-		panelTongtien.setBorder(new LineBorder(new Color(53, 154, 255), 1, true));
+		panelTongtien.setBorder(new LineBorder(ColorConstants.PRIMARY_COLOR, 1, true));
 		panelTongtien.setPreferredSize(new Dimension(350, 120));
 		panelTotal.add(panelTongtien);
 		panelTongtien.setLayout(new BoxLayout(panelTongtien, BoxLayout.Y_AXIS));
-		
+
 		panelThueVAT = new JPanel();
+		panelThueVAT.setBorder(new EmptyBorder(0, 10, 0, 10));
 		panelThueVAT.setBackground(Color.WHITE);
 		panelThueVAT.setLayout(new BorderLayout(0, 0));
 		lblThueVAT = new JLabel("Tỉ lệ hoàn tiền:");
@@ -286,19 +248,20 @@ public class ThongTinVe extends JFrame {
 		tiLeHoanTienField.setEditable(false);
 		tiLeHoanTienField.setBorder(null);
 		panelThueVAT.add(tiLeHoanTienField, BorderLayout.EAST);
-		
+
 		panelThueVAT.add(lblThueVAT, BorderLayout.CENTER);
 		panelTongtien.add(panelThueVAT);
-		
+
 		panelTongTienTT = new JPanel();
+		panelTongTienTT.setBorder(new EmptyBorder(0, 10, 0, 10));
 		panelTongTienTT.setBackground(Color.WHITE);
 		panelTongTienTT.setLayout(new BorderLayout(0, 0));
 		lblTongTienTT = new JLabel("Số tiền trả lại:");
 		lblTongTienTT.setForeground(new Color(70, 130, 169));
-		lblTongTienTT.setFont(new Font("Arial", Font.BOLD, 16));
+		lblTongTienTT.setFont(new Font("Arial", Font.BOLD, 18));
 		tienHoanField = new JTextField();
 		tienHoanField.setHorizontalAlignment(SwingConstants.RIGHT);
-		tienHoanField.setFont(new Font("Tahoma", Font.PLAIN,16));
+		tienHoanField.setFont(new Font("Tahoma", Font.PLAIN, 16));
 		tienHoanField.setBackground(Color.WHITE);
 		tienHoanField.setEditable(false);
 		tienHoanField.setBorder(null);
@@ -306,55 +269,48 @@ public class ThongTinVe extends JFrame {
 		panelTongTienTT.add(lblTongTienTT, BorderLayout.CENTER);
 		panelTongtien.add(panelTongTienTT);
 
+		scrollPane = new JScrollPane(panelChiTiet);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        scrollPane = new JScrollPane(panelChiTiet);
-        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		getContentPane().add(scrollPane, BorderLayout.CENTER);
 
-        getContentPane().add(scrollPane, BorderLayout.CENTER);
+		panel = new JPanel();
+		FlowLayout flowLayout = (FlowLayout) panel.getLayout();
+		flowLayout.setAlignment(FlowLayout.RIGHT);
+		panel.setBackground(Color.WHITE);
+		getContentPane().add(panel, BorderLayout.SOUTH);
 
-        panel = new JPanel();
-        FlowLayout flowLayout = (FlowLayout) panel.getLayout();
-        flowLayout.setAlignment(FlowLayout.RIGHT);
-        panel.setBackground(Color.WHITE);
-        getContentPane().add(panel, BorderLayout.SOUTH);
+		panel_1 = new JPanel();
+		panel_1.setBackground(Color.WHITE);
+		panel.add(panel_1);
 
-        panel_1 = new JPanel();
-        panel_1.setBackground(Color.WHITE);
-        panel.add(panel_1);
+		hoanVeButton = new PrimaryButton("Hoàn vé", "/Image/return.png");
+		hoanVeButton.setForeground(Color.WHITE);
+		hoanVeButton.setFont(new Font("Arial", Font.BOLD, 14));
+		hoanVeButton.setPreferredSize(new Dimension(170, 40));
+		panel_1.add(hoanVeButton);
 
-        hoanVeButton = new PrimaryButton("Hoàn vé");
-        hoanVeButton.setBackground(new Color(34, 139, 34));
-        hoanVeButton.setForeground(Color.WHITE);
-        hoanVeButton.setFont(new Font("Arial", Font.BOLD, 14));
-        hoanVeButton.setPreferredSize(new Dimension(150, 50));
-        panel_1.add(hoanVeButton);
-        
-        hoanVeButton_1 = new PrimaryButton("Hoàn vé");
-        hoanVeButton_1.setText("Xem trước PDF");
-        hoanVeButton_1.setPreferredSize(new Dimension(150, 50));
-        hoanVeButton_1.setForeground(Color.WHITE);
-        hoanVeButton_1.setFont(new Font("Arial", Font.BOLD, 14));
-        hoanVeButton_1.setBackground(new Color(34, 139, 34));
-        panel_1.add(hoanVeButton_1);
+		hoanVeButton_1 = new PrimaryButton("Xem trước PDF", "/Image/show_detail.png");
+		hoanVeButton_1.setPreferredSize(new Dimension(170, 40));
+		hoanVeButton_1.setForeground(Color.WHITE);
+		hoanVeButton_1.setFont(new Font("Arial", Font.BOLD, 14));
+		panel_1.add(hoanVeButton_1);
 
-        inPDFButton = new PrimaryButton("In PDF");
-        inPDFButton.setBackground(new Color(0, 123, 255));
-        inPDFButton.setForeground(Color.WHITE);
-        inPDFButton.setFont(new Font("Arial", Font.BOLD, 14));
-        inPDFButton.setPreferredSize(new Dimension(150, 50));
-        panel_1.add(inPDFButton);
-    }
+		inPDFButton = new DangerPrimaryButton("In PDF", "/Image/printer.png");
+		inPDFButton.setForeground(Color.WHITE);
+		inPDFButton.setFont(new Font("Arial", Font.BOLD, 14));
+		inPDFButton.setPreferredSize(new Dimension(170, 40));
+		panel_1.add(inPDFButton);
+	}
 
-    public PrimaryButton getHoanVeButton() {
-        return hoanVeButton;
-    }
+	public PrimaryButton getHoanVeButton() {
+		return hoanVeButton;
+	}
 
-   
-
-    public PrimaryButton getInPDFButton() {
-        return inPDFButton;
-    }
+	public DangerPrimaryButton getInPDFButton() {
+		return inPDFButton;
+	}
 
 	public static long getSerialversionuid() {
 		return serialVersionUID;
@@ -424,8 +380,6 @@ public class ThongTinVe extends JFrame {
 		return dateLabel;
 	}
 
-
-
 	public DetailRow getTenKhachHangLabel() {
 		return tenKhachHangLabel;
 	}
@@ -444,20 +398,6 @@ public class ThongTinVe extends JFrame {
 
 	public JTextArea getLydoHoanTienField() {
 		return lydoHoanTienField;
-	}
-
-	
-
-	public JCheckBox getCkLyDo1() {
-		return ckLyDo1;
-	}
-
-	public JCheckBox getCkLyDo2() {
-		return ckLyDo2;
-	}
-
-	public JCheckBox getCkLyDo3() {
-		return ckLyDo3;
 	}
 
 	public ButtonGroup getLydoButtonGroup() {
@@ -527,7 +467,5 @@ public class ThongTinVe extends JFrame {
 	public PrimaryButton getHoanVeButton_1() {
 		return hoanVeButton_1;
 	}
-    
-    
-    
+
 }

@@ -204,6 +204,8 @@ public class QuanLyTau_View extends View {
 
 		///////// tàu
 		panel_TableTau = new JPanel();
+		panel_TableTau.setBackground(Color.WHITE);
+		panel_TableTau.setBorder(new EmptyBorder(0, 10, 0, 10));
 		contentPane.add(panel_TableTau, BorderLayout.CENTER);
 		panel_TableTau.setLayout(new BorderLayout(0, 0));
 

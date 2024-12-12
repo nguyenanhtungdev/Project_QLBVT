@@ -37,6 +37,7 @@ public class DoiTraVe_View extends View {
 		xacNhanButton.addActionListener(listener);
 		lamMoiButton.addActionListener(listener);
 		danhSachVeTable.addMouseListener(mouseListener);
+		
 	}
 
 	public DoiTraVe_View(String name, String iconPath) {
@@ -83,87 +84,160 @@ public class DoiTraVe_View extends View {
 		inputPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
 		inputPanel.setLayout(new BoxLayout(inputPanel, BoxLayout.X_AXIS));
 
-		JPanel panel_InputThongTin = new JPanel();
-		panel_InputThongTin
-				.setBorder(new CompoundBorder(new LineBorder(new Color(70, 130, 169)), new EmptyBorder(10, 5, 5, 5)));
-		panel_InputThongTin.setBackground(Color.WHITE);
-		inputPanel.add(panel_InputThongTin);
-		panel_InputThongTin.setLayout(new BoxLayout(panel_InputThongTin, BoxLayout.Y_AXIS));
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(
+				new CompoundBorder(new LineBorder(ColorConstants.PRIMARY_COLOR), new EmptyBorder(5, 5, 5, 5)));
+		panel_1.setBackground(Color.WHITE);
+		inputPanel.add(panel_1);
+		panel_1.setLayout(new BoxLayout(panel_1, BoxLayout.Y_AXIS));
 
-		JPanel panel_InputThongTin1 = new JPanel();
-		panel_InputThongTin1.setBackground(Color.WHITE);
-		panel_InputThongTin.add(panel_InputThongTin1);
-		panel_InputThongTin1.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 10));
+		JPanel panel_2 = new JPanel();
+		panel_2.setBackground(Color.WHITE);
+		panel_1.add(panel_2);
+		panel_2.setLayout(new BoxLayout(panel_2, BoxLayout.X_AXIS));
+
+		buttonGroup = new ButtonGroup();
+
+		JPanel panel_4 = new JPanel();
+		panel_2.add(panel_4);
+		panel_4.setLayout(new BoxLayout(panel_4, BoxLayout.Y_AXIS));
+
+		Component horizontalStrut_1_5_1 = Box.createHorizontalStrut(80);
+		panel_2.add(horizontalStrut_1_5_1);
+
+		JPanel panel_8 = new JPanel();
+		panel_8.setBackground(Color.WHITE);
+		panel_4.add(panel_8);
+		panel_8.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 
 		JLabel label = new JLabel("Tên khách hàng:");
-		label.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		panel_InputThongTin1.add(label);
+		panel_8.add(label);
+		label.setFont(new Font("Arial", Font.BOLD, 18));
+		label.setForeground(ColorConstants.PRIMARY_COLOR);
 		tenKhachHangField = new JTextField(15);
+		panel_4.add(tenKhachHangField);
 		tenKhachHangField.putClientProperty("JTextField.placeholderText", "Nhập tên khách hàng");
 		tenKhachHangField.setFont(new Font("Arial", Font.PLAIN, 16));
-		panel_InputThongTin1.add(tenKhachHangField);
+
+		JPanel panel_5 = new JPanel();
+		panel_5.setBackground(Color.WHITE);
+		panel_5.setBorder(new EmptyBorder(20, 0, 0, 0));
+		panel_2.add(panel_5);
+		panel_5.setLayout(new BoxLayout(panel_5, BoxLayout.X_AXIS));
+
+		Component horizontalStrut_1_5_2 = Box.createHorizontalStrut(255);
+		panel_2.add(horizontalStrut_1_5_2);
 
 		// Radio buttons for selecting search by phone or CCCD
-		soDienThoaiRadioButton = new JRadioButton("Số điện thoại", false);
-		soDienThoaiRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		cccdRadioButton = new JRadioButton("CCCD");
-		cccdRadioButton.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		buttonGroup = new ButtonGroup();
+		soDienThoaiRadioButton = new JRadioButton("Số điện thoại", true);
+		panel_5.add(soDienThoaiRadioButton);
+		soDienThoaiRadioButton.setBackground(Color.WHITE);
+		soDienThoaiRadioButton.setFont(new Font("Arial", Font.BOLD, 18));
+		soDienThoaiRadioButton.setForeground(ColorConstants.PRIMARY_COLOR);
 		buttonGroup.add(soDienThoaiRadioButton);
+		cccdRadioButton = new JRadioButton("CCCD");
+		panel_5.add(cccdRadioButton);
+		cccdRadioButton.setBackground(Color.WHITE);
+		cccdRadioButton.setForeground(ColorConstants.PRIMARY_COLOR);
+		cccdRadioButton.setFont(new Font("Arial", Font.BOLD, 18));
 		buttonGroup.add(cccdRadioButton);
-
-		panel_InputThongTin1.add(soDienThoaiRadioButton);
-		panel_InputThongTin1.add(cccdRadioButton);
-
-		JLabel label_1 = new JLabel("Số điện thoại:");
-		label_1.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		panel_InputThongTin1.add(label_1);
-		soDienThoaiField = new JTextField(15);
-		soDienThoaiField.putClientProperty("JTextField.placeholderText", "Nhập số điện thoại");
-		soDienThoaiField.setFont(new Font("Arial", Font.PLAIN, 16));
-		panel_InputThongTin1.add(soDienThoaiField);
-
-		JLabel label_2 = new JLabel("CCCD:");
-		label_2.setFont(new Font("Tahoma", Font.PLAIN, 16));
-		panel_InputThongTin1.add(label_2);
-		cccdField = new JTextField(15);
-		cccdField.putClientProperty("JTextField.placeholderText", "Nhập CCCD");
-		cccdField.setFont(new Font("Arial", Font.PLAIN, 16));
-		panel_InputThongTin1.add(cccdField);
+		cccdRadioButton.addActionListener(e -> {
+			soDienThoaiField.setEnabled(false);
+			cccdField.setEnabled(true);
+		});
 
 		// Add action listener to radio buttons to enable/disable fields
 		soDienThoaiRadioButton.addActionListener(e -> {
 			soDienThoaiField.setEnabled(true);
 			cccdField.setEnabled(false);
 		});
-		cccdRadioButton.addActionListener(e -> {
-			soDienThoaiField.setEnabled(false);
-			cccdField.setEnabled(true);
-		});
+
+		JPanel panel_3 = new JPanel();
+		panel_3.setBackground(Color.WHITE);
+		panel_1.add(panel_3);
+		panel_3.setLayout(new BoxLayout(panel_3, BoxLayout.X_AXIS));
+
+		JPanel panel_6 = new JPanel();
+		panel_3.add(panel_6);
+		panel_6.setLayout(new BoxLayout(panel_6, BoxLayout.Y_AXIS));
+
+		Component horizontalStrut_1_5_11 = Box.createHorizontalStrut(80);
+		panel_3.add(horizontalStrut_1_5_11);
+
+		JPanel panel_9 = new JPanel();
+		panel_9.setBackground(Color.WHITE);
+		panel_6.add(panel_9);
+		panel_9.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+
+		JLabel label_1 = new JLabel("Số điện thoại:");
+		panel_9.add(label_1);
+		label_1.setFont(new Font("Arial", Font.BOLD, 18));
+		label_1.setForeground(ColorConstants.PRIMARY_COLOR);
+		soDienThoaiField = new JTextField(15);
+		panel_6.add(soDienThoaiField);
+		soDienThoaiField.putClientProperty("JTextField.placeholderText", "Nhập số điện thoại");
+		soDienThoaiField.setFont(new Font("Arial", Font.PLAIN, 16));
+
+		JPanel panel_7 = new JPanel();
+		panel_3.add(panel_7);
+		panel_7.setLayout(new BoxLayout(panel_7, BoxLayout.Y_AXIS));
+
+		JPanel panel_InputThongTin1 = new JPanel();
+		panel_7.add(panel_InputThongTin1);
+		panel_InputThongTin1.setBorder(null);
+		panel_InputThongTin1.setBackground(Color.WHITE);
+		panel_InputThongTin1.setLayout(new BoxLayout(panel_InputThongTin1, BoxLayout.Y_AXIS));
+
+		JPanel panel_10 = new JPanel();
+		panel_10.setBackground(Color.WHITE);
+		panel_InputThongTin1.add(panel_10);
+		panel_10.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
+
+		JLabel label_2 = new JLabel("CCCD:");
+		label_2.setForeground(new Color(70, 130, 169));
+		label_2.setFont(new Font("Arial", Font.BOLD, 18));
+		panel_10.add(label_2);
+		cccdField = new JTextField(15);
+		cccdField.setEnabled(false);
+		cccdField.putClientProperty("JTextField.placeholderText", "Nhập CCCD");
+		cccdField.setFont(new Font("Arial", Font.PLAIN, 16));
+		panel_InputThongTin1.add(cccdField);
+
+		JPanel panel_InputThongTin = new JPanel();
+		panel_InputThongTin
+				.setBorder(new CompoundBorder(new LineBorder(new Color(70, 130, 169), 0), new EmptyBorder(0, 0, 0, 0)));
+		panel_InputThongTin.setBackground(Color.WHITE);
+		inputPanel.add(panel_InputThongTin);
+		panel_InputThongTin.setLayout(new BoxLayout(panel_InputThongTin, BoxLayout.X_AXIS));
+
+		JPanel panel = new JPanel();
+		panel.setBackground(Color.WHITE);
+		panel_InputThongTin.add(panel);
+		panel.setPreferredSize(new Dimension(180, 0));
+		panel.setMaximumSize(new Dimension(180, Integer.MAX_VALUE));
+		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 20));
+
+		lamMoiButton = new PrimaryButton("Làm mới", "/Image/restore.png");
+		panel.add(lamMoiButton);
+		lamMoiButton.setFont(new Font("Arial", Font.BOLD, 18));
+		lamMoiButton.setInsets(new Insets(4, 6, 4, 6));
+		lamMoiButton.setBorderRadius(10);
+		lamMoiButton.setIconTextGap(5);
+		lamMoiButton.setIconSize(22, 22);
+		lamMoiButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+		lamMoiButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+		lamMoiButton.setPreferredSize(new Dimension(135, 35));
 
 		timKiemButton = new PrimaryButton("Tìm kiếm", "/Image/search.png");
-		timKiemButton.setBackground(new Color(0, 123, 255));
-//		timKiemButton.setForeground(Color.WHITE);
-		timKiemButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-//		timKiemButton.setFocusPainted(false);
-//		timKiemButton.setBorder(new EmptyBorder(4, 6, 4, 6));
+		panel.add(timKiemButton);
+		timKiemButton.setFont(new Font("Arial", Font.BOLD, 18));
 		timKiemButton.setInsets(new Insets(4, 6, 4, 6));
 		timKiemButton.setBorderRadius(10);
 		timKiemButton.setIconTextGap(5);
 		timKiemButton.setIconSize(22, 22);
-		panel_InputThongTin1.add(timKiemButton);
-		
-		lamMoiButton = new PrimaryButton("Làm mới", "/Image/search.png");
-		lamMoiButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-		lamMoiButton.setInsets(new Insets(4, 6, 4, 6));
-		lamMoiButton.setIconTextGap(5);
-		lamMoiButton.setFont(new Font("Tahoma", Font.BOLD, 16));
-		lamMoiButton.setBorderRadius(10);
-		lamMoiButton.setBackground(new Color(0, 123, 255));
-		panel_InputThongTin1.add(lamMoiButton);
+		timKiemButton.setAlignmentX(Component.LEFT_ALIGNMENT);
+		timKiemButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
+		timKiemButton.setPreferredSize(new Dimension(135, 35));
 
 		// Phần giữa chứa bảng
 		JPanel panel_center = new JPanel();
@@ -194,7 +268,8 @@ public class DoiTraVe_View extends View {
 		panel_center.add(panel_Table);
 		panel_Table.setLayout(new BoxLayout(panel_Table, BoxLayout.X_AXIS));
 
-		String[] columnNames = { "STT", "Mã Hóa Đơn", "Mã Khách Hàng", "Tên Khách Hàng", "Ngày Lập Hóa Đơn", "Thành Tiền" };
+		String[] columnNames = { "STT", "Mã Hóa Đơn", "Mã Khách Hàng", "Tên Khách Hàng", "Ngày Lập Hóa Đơn",
+				"Thành Tiền" };
 		DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
 			@Override
 			public boolean isCellEditable(int row, int column) {
@@ -235,10 +310,11 @@ public class DoiTraVe_View extends View {
 		JScrollPane tableScrollPane = new JScrollPane(danhSachVeTable);
 		tableScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		tableScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		
 		panel_Table.add(tableScrollPane);
 
 		// Phần dưới dùng FlowLayout
-		JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+		JPanel bottomPanel = new JPanel();
 		bottomPanel.setBorder(new EmptyBorder(0, 10, 0, 50));
 		bottomPanel.setPreferredSize(new Dimension(0, 60));
 		bottomPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
@@ -247,14 +323,11 @@ public class DoiTraVe_View extends View {
 
 		xacNhanButton = new PrimaryButton("Xác nhận trả vé");
 		xacNhanButton.setNormalColor(new Color(70, 130, 180));
-//		xacNhanButton.setForeground(Color.WHITE);
 		xacNhanButton.setFont(new Font("Arial", Font.BOLD, 18));
-//		xacNhanButton.setFocusPainted(false);
-//		xacNhanButton.setBorder(new EmptyBorder(4, 6, 4, 6));
 		xacNhanButton.setInsets(new Insets(4, 6, 4, 6));
-//		xacNhanButton.setHeSoBoGoc(10);
-//		xacNhanButton.setKhoangCachIcon(5);
-//		xacNhanButton.setIconSize(22, 22);
+		xacNhanButton.setPreferredSize(new Dimension(160, 35));
+		xacNhanButton.setVisible(false);
+		bottomPanel.setLayout(new FlowLayout(FlowLayout.RIGHT, 5, 5));
 		bottomPanel.add(xacNhanButton);
 	}
 
@@ -286,7 +359,6 @@ public class DoiTraVe_View extends View {
 		return xacNhanButton;
 	}
 
-	
 	public JPanel getMainPanel() {
 		return mainPanel;
 	}
@@ -306,7 +378,6 @@ public class DoiTraVe_View extends View {
 	public PrimaryButton getLamMoiButton() {
 		return lamMoiButton;
 	}
-
 
 	// Custom renderer với JTextArea để xuống dòng cho nội dung dài
 	class MultiLineCellRenderer extends JTextArea implements TableCellRenderer {
@@ -336,4 +407,5 @@ public class DoiTraVe_View extends View {
 			return this;
 		}
 	}
+
 }

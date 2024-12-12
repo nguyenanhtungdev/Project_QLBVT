@@ -359,7 +359,7 @@ public class QuanLyKhuyenMai_View extends View {
 		panelBtnCapNhap.setLayout(new BorderLayout(0, 0));
 
 		btnCapNhap = new PrimaryButton("Cập nhập", "/Image/update.png");
-		btnCapNhap.setText("Cập nhập");
+		btnCapNhap.setText("Cập nhật");
 		btnCapNhap.setPreferredSize(new Dimension(170, 35));
 		btnCapNhap.setFont(new Font("Arial", Font.BOLD, 18));
 		btnCapNhap.setBorderRadius(15);

@@ -223,7 +223,7 @@ public class HomeView extends JFrame implements MouseListener {
 		lbl_TroGiup.setBackground(ColorConstants.PRIMARY_COLOR);
 		lbl_TroGiup.setOpaque(true);
 		lbl_TroGiup.addMouseListener(this);
-		header_Center.add(lbl_TroGiup);
+//		header_Center.add(lbl_TroGiup);
 
 		lbl_CaiDat = new JLabel("Cài đặt");
 		lbl_CaiDat.setForeground(Color.WHITE);

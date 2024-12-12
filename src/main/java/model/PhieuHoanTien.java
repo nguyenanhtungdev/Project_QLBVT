@@ -109,8 +109,9 @@ public class PhieuHoanTien {
 
 	@Override
 	public String toString() {
-		return "PhieuHoanTien{" + "maPhieuHoanTien='" + maPhieuHoanTien + '\'' + ", ngayHoanTien=" + ngayHoanTien
-				+ ", lyDoHoanTra='" + lyDoHoanTien + '\'' + ", ghiChu='" + ghiChu + '\'' + ", tiLeHoanTien="
-				+ tiLeHoanTien + '}';
+		return "PhieuHoanTien [maPhieuHoanTien=" + maPhieuHoanTien + ", ngayHoanTien=" + ngayHoanTien
+				+ ", lyDoHoanTien=" + lyDoHoanTien + ", ghiChu=" + ghiChu + ", tiLeHoanTien=" + tiLeHoanTien
+				+ ", khachHang=" + khachHang + "]";
 	}
+
 }
