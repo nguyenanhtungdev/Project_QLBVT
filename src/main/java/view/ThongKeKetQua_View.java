@@ -51,6 +51,7 @@ public class ThongKeKetQua_View extends JDialog implements Printable {
 		setContentPane(new TrainPanel(new BorderLayout(16, 16), new Insets(16, 16, 16, 16)));
 
 		add(new TrainScrollPane(pMain = new TrainPanel(new BorderLayout(), new Insets(16, 16, 16, 16))));
+		pMain.setMaximumSize(new Dimension(1900, Integer.MAX_VALUE));
 
 		String createdBy = nhanVien.getHoTenNV();
 		String createdTime = LocalDateTime.now().format(ThongKe_Controller.FMT_DATETIME);
@@ -84,14 +85,17 @@ public class ThongKeKetQua_View extends JDialog implements Printable {
 				: Arrays.stream(tieuChi.getToaTau()).map(tt -> tt.getMaToaTau() + " - " + tt.getTenToaTau())
 						.collect(Collectors.joining(", "));
 		String toaTauStatus = tieuChi.getToaTauStatus() == null ? "Tất cả"
-				: convertArrayToList(tieuChi.getToaTauStatus()).stream().map(tts -> tts ? "Còn trống" : "Đã đầy")
+				: Arrays.stream(tieuChi.getToaTauStatus()).map(tts -> tts == true ? "Còn trống" : "Đã đầy")
 						.collect(Collectors.joining(", "));
 		String gheTaus = tieuChi.getGheTauStatus() == null ? "Tất cả"
 				: Arrays.stream(tieuChi.getGheTauStatus()).map(gt -> gt).collect(Collectors.joining(", "));
 		String gheTauStatus = tieuChi.getGheTauStatus() == null ? "Tất cả"
 				: Arrays.stream(tieuChi.getGheTauStatus()).map(ts -> ts).collect(Collectors.joining(", "));
+		String veCategory = tieuChi.getLoaiVe() == null ? "Tất cả"
+				: Arrays.stream(tieuChi.getLoaiVe()).map(lv -> lv ? "Vé VIP" : "Vé thường")
+						.collect(Collectors.joining(", "));
 		String veStatus = tieuChi.getLoaiVe() == null ? "Tất cả"
-				: convertArrayToList(tieuChi.getLoaiVe()).stream().map(lv -> lv ? "Đã hủy" : "Chưa hủy")
+				: Arrays.stream(tieuChi.getLoaiVe()).map(lv -> lv ? "Đã hủy" : "Chưa hủy")
 						.collect(Collectors.joining(", "));
 
 		pMain.add(pNorth = Box.createVerticalBox(), BorderLayout.NORTH);
@@ -107,7 +111,7 @@ public class ThongKeKetQua_View extends JDialog implements Printable {
 		pNorth.add(createRow("Toa tàu được thống kê", toaTaus, "Trạng thái toa tàu", toaTauStatus));
 		pNorth.add(createRow("Tàu được thống kê", taus, "Trạng thái tàu", tauStatus));
 		pNorth.add(createRow("Ghế tàu được thống kê", gheTaus, "Trạng thái ghế tàu", gheTauStatus));
-		pNorth.add(createRow("Trạng thái vé tàu", veStatus));
+		pNorth.add(createRow("Loại vé tàu", veCategory, "Trạng thái vé tàu", veStatus));
 
 		pMain.add(pCharts = new TrainPanel(new GridLayout(0, 2)), BorderLayout.CENTER);
 
@@ -131,8 +135,26 @@ public class ThongKeKetQua_View extends JDialog implements Printable {
 			tc = TrainChart.createLineChart(dataset, title, xLabel, yLabel);
 		}
 
-		tc.getPanel().setPreferredSize(new Dimension(0, 0));
+		tc.getPanel().setPreferredSize(new Dimension(0, 400));
 		pCharts.add(tc.getPanel());
+	}
+
+	public void addTable(String title, String[] columnNames, List<Object[]> data) {
+		JTable table = new JTable(data.size(), columnNames.length);
+
+		for (int i = 0; i < columnNames.length; i++) {
+			table.getColumnModel().getColumn(i).setHeaderValue(columnNames[i]);
+		}
+
+		for (int i = 0; i < data.size(); i++) {
+			for (int j = 0; j < columnNames.length; j++) {
+				table.setValueAt(data.get(i)[j], i, j);
+			}
+		}
+
+		TrainScrollPane scrollPane = new TrainScrollPane(table);
+		scrollPane.setPreferredSize(new Dimension(0, 0));
+		pCharts.add(scrollPane);
 	}
 
 	private Box createRow(String label, String value) {
@@ -155,14 +177,6 @@ public class ThongKeKetQua_View extends JDialog implements Printable {
 		row.add(Box.createHorizontalGlue());
 		row.add(new JLabel(label2 + ": " + value2));
 		return row;
-	}
-
-	private List<Boolean> convertArrayToList(boolean[] array) {
-		List<Boolean> list = new ArrayList<>();
-		for (boolean b : array) {
-			list.add(b);
-		}
-		return list;
 	}
 
 	@Override

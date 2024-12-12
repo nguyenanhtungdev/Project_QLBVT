@@ -1,17 +1,12 @@
 package controller;
 
-import java.awt.Insets;
 import java.text.NumberFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -19,15 +14,12 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.swing.UIManager;
+import javax.swing.JOptionPane;
 
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import com.formdev.flatlaf.FlatLightLaf;
-
 import component.thongke.ThongKeListSelectorDialog;
 import component.thongke.ThongKeTableSelectorDialog;
-import constant.FontConstants;
 import model.CaLam;
 import model.CaLam_DAO;
 import model.ChiTiet_HoaDon;
@@ -44,7 +36,7 @@ import model.KhuyenMai_DAO;
 import model.NhanVien;
 import model.NhanVien_DAO;
 import model.StatisticData;
-import model.TaiKhoan;
+import model.StatisticDataSummary;
 import model.Tau;
 import model.Tau_DAO;
 import model.ThongKeFilters;
@@ -52,7 +44,6 @@ import model.ToaTau;
 import model.ToaTau_DAO;
 import model.KhachHang.LoaiKhachHang;
 import model.Tau.TrangThaiTau;
-import util.PrinterUtils;
 import view.View;
 import view.ThongKeKetQua_View;
 import view.ThongKeTaoMoi_View;
@@ -77,10 +68,8 @@ public class ThongKe_Controller {
 	private ThongKeFilters filter = new ThongKeFilters();
 
 	public ThongKe_Controller() {
-		viewList = new ArrayList<>();
-		viewList.add(tongQuanView = new ThongKeTongQuan_View("Tổng quan", "/Image/tabler-icon-report-analytics.png"));
-
-		viewList.add(taoMoiView = new ThongKeTaoMoi_View("Tạo mới", "/Image/tabler-icon-report-medical.png"));
+		tongQuanView = new ThongKeTongQuan_View("Tổng quan", "/Image/tabler-icon-report-analytics.png");
+		taoMoiView = new ThongKeTaoMoi_View("Tạo mới", "/Image/tabler-icon-report-medical.png");
 		taoMoiView.addBtnKhachHangSelectorCallback(this::onBtnKhachHangSelector);
 		taoMoiView.addBtnKhachHangCategoryCallback(this::onBtnKhachHangCategory);
 		taoMoiView.addBtnNhanVienSelectorCallback(this::onBtnNhanVienSelector);
@@ -93,50 +82,179 @@ public class ThongKe_Controller {
 		taoMoiView.addBtnToaTauStatusCallback(this::onBtnToaTauStatus);
 		taoMoiView.addBtnGheTauSelectorCallback(this::onBtnGheTauSelector);
 		taoMoiView.addBtnGheTauStatusCallback(this::onBtnGheTauStatus);
+		taoMoiView.addBtnVeTauCategoryCallback(this::onBtnVeTauCategory);
 		taoMoiView.addBtnVeTauStatusCallback(this::onBtnVeTauStatus);
 
 		taoMoiView.addBtnXemBaoCaoCallback(() -> {
 			List<HoaDon> hoaDons = HoaDon_DAO.getInstance().getByFilters(filter.getTuLuc(), filter.getDenLuc(),
 					filter.getKhachHang(), filter.getNhanVien());
-			List<String> maHoaDons = hoaDons.stream().map(hd -> hd.getMaHoaDon()).toList();
+			if (filter.getKhachHangCategory() != null && filter.getKhachHangCategory().length > 0) {
+				hoaDons = hoaDons.stream().filter(
+						p -> Stream.of(filter.getKhachHangCategory()).anyMatch(f -> f == p.getKhachHang().getLoaiKH()))
+						.toList();
+			}
+			if (filter.getNhanVien() != null && filter.getNhanVien().length > 0) {
+				hoaDons = hoaDons.stream().filter(p -> Stream.of(filter.getNhanVien())
+						.anyMatch(f -> f.getMaNV().equals(p.getNhanVien().getMaNV()))).toList();
+			}
+
+			if (filter.getCaLam() != null && filter.getCaLam().length > 0) {
+				List<HoaDon> temp = new ArrayList<HoaDon>();
+				for (HoaDon hoaDon : hoaDons) {
+					LocalTime time = hoaDon.getNgayLapHoaDon().toLocalTime();
+					for (CaLam caLam : filter.getCaLam()) {
+						if (caLam.getThoiGianBatDau().isBefore(time) && caLam.getThoiGianKetThuc().isAfter(time)) {
+							temp.add(hoaDon);
+							break;
+						}
+					}
+				}
+				hoaDons = temp;
+			}
+
+			List<String> maHoaDons = hoaDons.stream().map(HoaDon::getMaHoaDon).toList();
 			if (maHoaDons.isEmpty()) {
+				JOptionPane.showMessageDialog(null, "Không tìm thấy dữ liệu phù hợp với tiêu chí đã chọn", "Thông báo",
+						JOptionPane.INFORMATION_MESSAGE);
 				return;
 			}
 
-			List<ChiTiet_HoaDon> chiTiets = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDons);
-			Map<Object, List<ChiTiet_HoaDon>> map = chiTiets.stream()
-					.collect(Collectors.groupingBy(
-							m -> m.getHoaDon().getNgayLapHoaDon().truncatedTo(ChronoUnit.DAYS).toLocalDate(),
-							TreeMap::new, Collectors.toList()));
+			ThongKeKetQua_View dialog = new ThongKeKetQua_View(taoMoiView, "Báo cáo", filter,
+					HienThi_Controller.getInstance().getTaiKhoan().getNhanVien());
 
-			map.entrySet().stream().map(pair -> {
-				List<ChiTiet_HoaDon> list = pair.getValue();
+			addChartsToTaoMoiView("Giờ", maHoaDons, dialog);
+			addChartsToTaoMoiView("Ngày", maHoaDons, dialog);
 
-				double sumDoanhThu = list.stream()
-						.map(ct -> ct.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe().getGiaVe())
-						.collect(Collectors.summingDouble(Double::doubleValue));
-				int soLuongHoaDon = list.stream().map(m1 -> m1.getHoaDon()).distinct().toList().size();
-				int soLuongVeBan = list.size();
-				int soLuongVeHuy = list.stream().filter(p -> p.getVeTau().isDaHuy()).toList().size();
-				int soLuongKhuyenMai = list.stream().map(ct -> ct.getKhuyenMai()).toList().size();
+			if (filter.getKhachHang() != null && filter.getKhachHang().length > 0 && filter.getKhachHang().length < 6) {
+				addChartsToTaoMoiView("Khách hàng", maHoaDons, dialog);
+			}
 
-				return new StatisticData(pair.getKey(), sumDoanhThu, soLuongHoaDon, soLuongVeBan, soLuongVeHuy,
-						soLuongKhuyenMai);
-			}).toList();
+			if (filter.getNhanVien() != null && filter.getNhanVien().length > 0 && filter.getNhanVien().length < 6) {
+				addChartsToTaoMoiView("Nhân viên", maHoaDons, dialog);
+			}
 
-//			ThongKeKetQua_View dialog = new ThongKeKetQua_View(taoMoiView, "Báo cáo", filters,
-//					NhanVien_DAO.getInstance().getByMaNhanVien("NV00004"));
-//
-//			DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-//			data.forEach(d -> dataset.addValue(d.getDoanhThu(), "Doanh thu", d.getTarget().toString()));
-//
-//			DefaultCategoryDataset dataset2 = new DefaultCategoryDataset();
-//			data.forEach(d -> dataset2.addValue(d.getSoLuongHoaDon(), "Số hóa đơn", d.getTarget().toString()));
-//
-//			dialog.addChart(dataset, "Doanh thu theo ngày", "Ngày", "Doanh thu (VNĐ)", "bar");
-//			dialog.addChart(dataset2, "Số lượng hóa đơn theo ngày", "Ngày", "Số hóa đơn", "line");
-//			dialog.setVisible(true);
+			dialog.setVisible(true);
 		});
+	}
+
+	private String truncateTo(ChiTiet_HoaDon ct, String groupBy) {
+		if (groupBy.equals("Khách hàng")) {
+			return ct.getHoaDon().getKhachHang().getMaKhachHang();
+		} else if (groupBy.equals("Nhân viên")) {
+			return ct.getHoaDon().getNhanVien().getHoTenNV();
+		}
+
+		return "";
+	}
+
+	private LocalDateTime truncateTo(LocalDateTime dateTime, String groupBy) {
+		ChronoUnit unit = null;
+		if (groupBy.equals("Giờ")) {
+			unit = ChronoUnit.HOURS;
+		} else if (groupBy.equals("Ngày")) {
+			unit = ChronoUnit.DAYS;
+		}
+
+		return dateTime.truncatedTo(unit);
+	}
+
+	private void addChartsToTaoMoiView(String groupBy, List<String> maHoaDons, ThongKeKetQua_View dialog) {
+		List<ChiTiet_HoaDon> chiTiets = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDons);
+		if (filter.getKhuyenMai() != null && filter.getKhuyenMai().length > 0) {
+			chiTiets = chiTiets.stream()
+					.filter(p -> Stream.of(filter.getKhuyenMai()).anyMatch(f -> f == p.getKhuyenMai())).toList();
+		}
+		if (filter.getChuyenTau() != null && filter.getChuyenTau().length > 0) {
+			chiTiets = chiTiets.stream().filter(p -> Stream.of(filter.getChuyenTau())
+					.anyMatch(f -> f == p.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau())).toList();
+		}
+		if (filter.getTau() != null && filter.getTau().length > 0) {
+			chiTiets = chiTiets.stream().filter(
+					p -> Stream.of(filter.getTau()).anyMatch(f -> f == p.getVeTau().getGheTau().getToaTau().getTau()))
+					.toList();
+		}
+		if (filter.getTauStatus() != null && filter.getTauStatus().length > 0) {
+			chiTiets = chiTiets.stream().filter(p -> Stream.of(filter.getTauStatus())
+					.anyMatch(f -> f == p.getVeTau().getGheTau().getToaTau().getTau().getTrangThai())).toList();
+		}
+		if (filter.getToaTau() != null && filter.getToaTau().length > 0) {
+			chiTiets = chiTiets.stream()
+					.filter(p -> Stream.of(filter.getToaTau()).anyMatch(f -> f == p.getVeTau().getGheTau().getToaTau()))
+					.toList();
+		}
+		if (filter.getToaTauStatus() != null && filter.getToaTauStatus().length > 0) {
+			chiTiets = chiTiets.stream()
+					.filter(p -> Stream.of(filter.getToaTauStatus()).anyMatch(
+							f -> f.equals(Boolean.valueOf(p.getVeTau().getGheTau().getToaTau().isTrangThai()))))
+					.toList();
+		}
+		if (filter.getGheTau() != null && filter.getGheTau().length > 0) {
+			chiTiets = chiTiets.stream()
+					.filter(p -> Stream.of(filter.getGheTau()).anyMatch(f -> f == p.getVeTau().getGheTau())).toList();
+		}
+		if (filter.getGheTauStatus() != null && filter.getGheTauStatus().length > 0) {
+			chiTiets = chiTiets.stream().filter(p -> Stream.of(filter.getGheTauStatus())
+					.anyMatch(f -> f.equals(p.getVeTau().getGheTau().getTrangThai()))).toList();
+		}
+		if (filter.getLoaiVe() != null && filter.getLoaiVe().length > 0) {
+			chiTiets = chiTiets.stream().filter(p -> Stream.of(filter.getLoaiVe())
+					.anyMatch(f -> f.equals(Boolean.valueOf(p.getVeTau().isLoaiVe())))).toList();
+		}
+		if (filter.getTrangThaiVe() != null && filter.getTrangThaiVe().length > 0) {
+			chiTiets = chiTiets.stream().filter(p -> Stream.of(filter.getTrangThaiVe())
+					.anyMatch(f -> f.equals(Boolean.valueOf(p.getVeTau().isDaHuy())))).toList();
+		}
+
+		Map<Object, List<ChiTiet_HoaDon>> map = null;
+		if (groupBy.equals("Giờ")) {
+			map = chiTiets.stream()
+					.collect(Collectors.groupingBy(
+							m -> truncateTo(m.getHoaDon().getNgayLapHoaDon(), groupBy).toLocalTime(), TreeMap::new,
+							Collectors.toList()));
+		} else if (groupBy.equals("Ngày")) {
+			map = chiTiets.stream()
+					.collect(Collectors.groupingBy(
+							m -> truncateTo(m.getHoaDon().getNgayLapHoaDon(), groupBy).toLocalDate(), TreeMap::new,
+							Collectors.toList()));
+		} else {
+			map = chiTiets.stream()
+					.collect(Collectors.groupingBy(m -> truncateTo(m, groupBy), TreeMap::new, Collectors.toList()));
+		}
+
+		List<StatisticData> data = map.entrySet().stream().map(pair -> {
+			List<ChiTiet_HoaDon> list = pair.getValue();
+
+			double sumDoanhThu = list.stream()
+					.map(ct -> ct.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe().getGiaVe())
+					.collect(Collectors.summingDouble(Double::doubleValue));
+			int soLuongHoaDon = list.stream().map(m1 -> m1.getHoaDon()).distinct().toList().size();
+			int soLuongVeBan = list.size();
+			int soLuongVeHuy = list.stream().filter(p -> p.getVeTau().isDaHuy()).toList().size();
+			int soLuongKhuyenMai = list.stream().map(ct -> ct.getKhuyenMai()).toList().size();
+
+			return new StatisticData(pair.getKey(), sumDoanhThu, soLuongHoaDon, soLuongVeBan, soLuongVeHuy,
+					soLuongKhuyenMai);
+		}).toList();
+
+		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		DefaultCategoryDataset dataset2 = new DefaultCategoryDataset();
+		DefaultCategoryDataset dataset3 = new DefaultCategoryDataset();
+		DefaultCategoryDataset dataset4 = new DefaultCategoryDataset();
+
+		data.forEach(d -> dataset.addValue(d.getDoanhThu(), "Doanh thu (VNĐ)", d.getTarget().toString()));
+		data.forEach(d -> dataset2.addValue(d.getSoLuongHoaDon(), "Số hóa đơn", d.getTarget().toString()));
+		data.forEach(d -> dataset3.addValue(d.getSoLuongVeBan(), "Số vé bán", d.getTarget().toString()));
+		data.forEach(d -> dataset4.addValue(d.getSoLuongVeHuy(), "Số vé hủy", d.getTarget().toString()));
+
+		String type = "bar";
+		if (groupBy.equals("Giờ") || groupBy.equals("Ngày")) {
+			type = "line";
+		}
+
+		dialog.addChart(dataset, "Doanh thu theo " + groupBy.toLowerCase(), groupBy, "Doanh thu (VNĐ)", type);
+		dialog.addChart(dataset2, "Số lượng hóa đơn theo " + groupBy.toLowerCase(), groupBy, "Số hóa đơn", type);
+		dialog.addChart(dataset3, "Số lượng vé bán ra theo " + groupBy.toLowerCase(), groupBy, "Số vé bán", type);
+		dialog.addChart(dataset4, "Số lượng vé đã hủy theo " + groupBy.toLowerCase(), groupBy, "Số vé hủy", type);
 	}
 
 	public void refreshData() {
@@ -294,7 +412,8 @@ public class ThongKe_Controller {
 		taoMoiView.getKhachHangCategory().getTextField()
 				.setText(String.join("; ", selected.stream().map(String::toString).toList()));
 
-		filter.setKhachHangCategory(selected.stream().map(LoaiKhachHang::valueOf).toArray(LoaiKhachHang[]::new));
+		filter.setKhachHangCategory(
+				selected.stream().map(LoaiKhachHang::chuyenDoiLoaiKH).toArray(LoaiKhachHang[]::new));
 	}
 
 	private void onBtnNhanVienSelector() {
@@ -354,7 +473,22 @@ public class ThongKe_Controller {
 		if (selector.isCancelled())
 			return;
 
-		List<model.KhuyenMai> selected = Arrays.stream(selector.getSelectedRows()).mapToObj(i -> list.get(i + 1))
+		int[] selectedRows = selector.getSelectedRows();
+		boolean isNull = false;
+		for (int j : selectedRows) {
+			if (j == 0) {
+				filter.setKhuyenMai(null);
+				isNull = true;
+				break;
+			}
+		}
+
+		if (isNull) {
+			taoMoiView.getKhuyenMaiSelector().getTextField().setText("Không áp dụng");
+			return;
+		}
+
+		List<model.KhuyenMai> selected = Arrays.stream(selector.getSelectedRows()).mapToObj(i -> list.get(i - 1))
 				.toList();
 		taoMoiView.getKhuyenMaiSelector().getTextField().setText(String.join("; ",
 				selected.stream().map(x -> x.getMaKhuyenMai() + " - " + x.getTenKhuyenMai()).toList()));
@@ -414,7 +548,7 @@ public class ThongKe_Controller {
 		taoMoiView.getTauStatus().getTextField()
 				.setText(String.join("; ", selected.stream().map(String::toString).toList()));
 
-		filter.setTauStatus(selected.toArray(TrangThaiTau[]::new));
+		filter.setTauStatus(selected.stream().map(TrangThaiTau::toEnum).toArray(TrangThaiTau[]::new));
 	}
 
 	private void onBtnToaTauSelector() {
@@ -449,7 +583,7 @@ public class ThongKe_Controller {
 		taoMoiView.getToaTauStatus().getTextField()
 				.setText(String.join("; ", selected.stream().map(String::toString).toList()));
 
-//		filter.setToaTauStatus(selected.toArray(String[]::new));
+		filter.setToaTauStatus(selected.stream().map(s -> s.equals("Còn chỗ")).toArray(Boolean[]::new));
 	}
 
 	private void onBtnGheTauSelector() {
@@ -487,6 +621,21 @@ public class ThongKe_Controller {
 		filter.setGheTauStatus(selected.toArray(String[]::new));
 	}
 
+	private void onBtnVeTauCategory() {
+		String[] items = { "Vé VIP", "Vé thường" };
+		ThongKeListSelectorDialog selector = new ThongKeListSelectorDialog(taoMoiView, "Chọn loại vé tàu", items);
+		selector.setVisible(true);
+
+		if (selector.isCancelled())
+			return;
+
+		List<String> selected = Arrays.stream(selector.getSelectedIndices()).mapToObj(i -> items[i]).toList();
+		taoMoiView.getpVeTauCategory().getTextField()
+				.setText(String.join("; ", selected.stream().map(String::toString).toList()));
+
+		filter.setLoaiVe(selected.stream().map(s -> s.equals("Vé VIP")).toArray(Boolean[]::new));
+	}
+
 	private void onBtnVeTauStatus() {
 		String[] items = { "Đã mua", "Đã hủy" };
 		ThongKeListSelectorDialog selector = new ThongKeListSelectorDialog(taoMoiView, "Chọn trạng thái vé tàu", items);
@@ -499,7 +648,7 @@ public class ThongKe_Controller {
 		taoMoiView.getVeTauStatus().getTextField()
 				.setText(String.join("; ", selected.stream().map(String::toString).toList()));
 
-//		filter.setVeTauStatus(selected.toArray(String[]::new));
+		filter.setTrangThaiVe(selected.stream().map(s -> s.equals("Đã mua")).toArray(Boolean[]::new));
 	}
 
 	private String translateTrangThaiGheTau(String text) {
@@ -518,18 +667,12 @@ public class ThongKe_Controller {
 	}
 
 	public ArrayList<View> getViewList() {
+		viewList = new ArrayList<>();
+		viewList.add(tongQuanView);
+		if (HienThi_Controller.getInstance().getTaiKhoan().getNhanVien().getTenChucVu().trim().equals("NVQL")) {
+			viewList.add(taoMoiView);
+		}
 		return viewList;
-	}
-
-	public static void main(String[] args) {
-		FlatLightLaf.setup();
-		UIManager.put("TextField.margin", new Insets(8, 12, 8, 12));
-		UIManager.put("ComboBox.padding", new Insets(8, 12, 8, 12));
-		UIManager.put("TextComponent.arc", 8);
-		UIManager.put("Label.font", FontConstants.TEXT);
-
-		ThongKe_Controller.getInstance().viewList.get(1).setVisible(true);
-		ThongKe_Controller.getInstance().refreshData();
 	}
 
 }
