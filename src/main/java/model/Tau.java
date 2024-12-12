@@ -37,6 +37,20 @@ public class Tau {
 			}
 			throw new IllegalArgumentException("No enum constant for value: " + i);
 		}
+
+		@Override
+		public String toString() {
+			switch (this) {
+			case HOAT_DONG:
+				return "Hoạt động";
+			case BAO_TRI:
+				return "Bảo trì";
+			case DUNG_HOAT_DONG:
+				return "Dừng hoạt động";
+			default:
+				return "";
+			}
+		}
 	}
 
 	public Tau() {
