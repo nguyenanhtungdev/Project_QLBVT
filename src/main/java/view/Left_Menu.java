@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import constant.ColorConstants;
+import controller.ThongKe_Controller;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -44,6 +45,11 @@ public class Left_Menu extends JFrame {
 				@Override
 				public void mouseClicked(MouseEvent e) {
 					home.showView(page.getName());
+
+					// Tải lại dữ liệu khi chuyển sang view khác
+					if (page.getName().equals("Tổng quan")) {
+						ThongKe_Controller.getInstance().refreshData();
+					}
 				}
 
 				@Override
