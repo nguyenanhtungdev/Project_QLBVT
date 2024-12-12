@@ -4,13 +4,13 @@ public class StatisticData {
 
 	private Object target;
 	private double doanhThu;
-	private int soLuongHoaDon;
-	private int soLuongVeBan;
-	private int soLuongVeHuy;
-	private int soLuongKhuyenMai;
+	private long soLuongHoaDon;
+	private long soLuongVeBan;
+	private long soLuongVeHuy;
+	private long soLuongKhuyenMai;
 
-	public StatisticData(Object target, double doanhThu, int soLuongHoaDon, int soLuongVeBan, int soLuongVeHuy,
-			int soLuongKhuyenMai) {
+	public StatisticData(Object target, double doanhThu, long soLuongHoaDon, long soLuongVeBan, long soLuongVeHuy,
+			long soLuongKhuyenMai) {
 		this.target = target;
 		this.doanhThu = doanhThu;
 		this.soLuongHoaDon = soLuongHoaDon;
@@ -35,35 +35,35 @@ public class StatisticData {
 		this.doanhThu = doanhThu;
 	}
 
-	public int getSoLuongHoaDon() {
+	public long getSoLuongHoaDon() {
 		return soLuongHoaDon;
 	}
 
-	public void setSoLuongHoaDon(int soLuongHoaDon) {
+	public void setSoLuongHoaDon(long soLuongHoaDon) {
 		this.soLuongHoaDon = soLuongHoaDon;
 	}
 
-	public int getSoLuongVeBan() {
+	public long getSoLuongVeBan() {
 		return soLuongVeBan;
 	}
 
-	public void setSoLuongVeBan(int soLuongVeBan) {
+	public void setSoLuongVeBan(long soLuongVeBan) {
 		this.soLuongVeBan = soLuongVeBan;
 	}
 
-	public int getSoLuongVeHuy() {
+	public long getSoLuongVeHuy() {
 		return soLuongVeHuy;
 	}
 
-	public void setSoLuongVeHuy(int soLuongVeHuy) {
+	public void setSoLuongVeHuy(long soLuongVeHuy) {
 		this.soLuongVeHuy = soLuongVeHuy;
 	}
 
-	public int getSoLuongKhuyenMai() {
+	public long getSoLuongKhuyenMai() {
 		return soLuongKhuyenMai;
 	}
 
-	public void setSoLuongKhuyenMai(int soLuongKhuyenMai) {
+	public void setSoLuongKhuyenMai(long soLuongKhuyenMai) {
 		this.soLuongKhuyenMai = soLuongKhuyenMai;
 	}
 
