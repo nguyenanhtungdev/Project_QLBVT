@@ -46,6 +46,7 @@ public class ThongKeTaoMoi_View extends View {
 	private ThongKeSelectorPanel pToaTauStatus;
 	private ThongKeSelectorPanel pGheTauSelector;
 	private ThongKeSelectorPanel pGheTauStatus;
+	private ThongKeSelectorPanel pVeTauCategory;
 	private ThongKeSelectorPanel pVeTauStatus;
 
 	private ThongKeDatePanel pThoiGianDate;
@@ -89,6 +90,7 @@ public class ThongKeTaoMoi_View extends View {
 		pGheTau.add(pGheTauStatus = new ThongKeSelectorPanel("Trạng thái ghế"));
 
 		pCenter.add(pVeTau = new ThongKeTitledBox("Bộ lọc vé", BoxLayout.Y_AXIS));
+		pVeTau.add(pVeTauCategory = new ThongKeSelectorPanel("Loại vé tàu"));
 		pVeTau.add(pVeTauStatus = new ThongKeSelectorPanel("Trạng thái vé"));
 
 		pCenter.add(pThoiGian = new ThongKeTitledBox("Bộ lọc thời gian", BoxLayout.Y_AXIS));
@@ -121,6 +123,7 @@ public class ThongKeTaoMoi_View extends View {
 		pTauSelector.getLabel().setPreferredSize(pTauStatus.getLabel().getPreferredSize());
 		pGheTauSelector.getLabel().setPreferredSize(pTauStatus.getLabel().getPreferredSize());
 		pGheTauStatus.getLabel().setPreferredSize(pTauStatus.getLabel().getPreferredSize());
+		pVeTauCategory.getLabel().setPreferredSize(pTauStatus.getLabel().getPreferredSize());
 		pVeTauStatus.getLabel().setPreferredSize(pTauStatus.getLabel().getPreferredSize());
 
 		pThoiGianDate.getLabelTuNgay().setPreferredSize(pTauStatus.getLabel().getPreferredSize());
@@ -191,6 +194,10 @@ public class ThongKeTaoMoi_View extends View {
 		pGheTauStatus.getButton().addActionListener(e -> callback.run());
 	}
 
+	public void addBtnVeTauCategoryCallback(Runnable callback) {
+		pVeTauCategory.getButton().addActionListener(e -> callback.run());
+	}
+
 	public void addBtnVeTauStatusCallback(Runnable callback) {
 		pVeTauStatus.getButton().addActionListener(e -> callback.run());
 	}
@@ -245,6 +252,10 @@ public class ThongKeTaoMoi_View extends View {
 
 	public ThongKeSelectorPanel getGheTauStatus() {
 		return pGheTauStatus;
+	}
+
+	public ThongKeSelectorPanel getpVeTauCategory() {
+		return pVeTauCategory;
 	}
 
 	public ThongKeSelectorPanel getVeTauStatus() {
