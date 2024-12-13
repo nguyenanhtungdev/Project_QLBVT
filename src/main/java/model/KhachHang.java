@@ -75,6 +75,26 @@ public class KhachHang {
 			return String.format("%.0f%%", discount * 100);
 		}
 
+		public static LoaiKhachHang fromInt(int value) {
+			switch (value) {
+			case 0:
+				return TRE_EM;
+			case 1:
+				return SINH_VIEN;
+			case 2:
+				return HOC_SINH;
+			case 3:
+				return NGUOI_GIA;
+			case 4:
+				return NGUOI_KHUYET_TAT;
+			case 5:
+				return KHACH_THUONG;
+
+			default:
+				throw new IllegalArgumentException("Out of range");
+			}
+		}
+
 		@Override
 		public String toString() {
 			switch (this) {

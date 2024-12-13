@@ -54,9 +54,14 @@ public class ChiTiet_HoaDon {
 	}
 
 	public KhuyenMai getKhuyenMai() {
-		return (khuyenMai != null && khuyenMai.getTenKhuyenMai() == null)
-				? khuyenMai = KhuyenMai_DAO.getInstance().getByMaKhuyenMai(khuyenMai.getMaKhuyenMai())
-				: khuyenMai;
+		if (khuyenMai == null) {
+			return khuyenMai;
+		} else {
+			return (khuyenMai.getTenKhuyenMai() == null)
+					? khuyenMai = KhuyenMai_DAO.getInstance().getByMaKhuyenMai(khuyenMai.getMaKhuyenMai())
+					: khuyenMai;
+		}
+
 	}
 
 	public void setKhuyenMai(KhuyenMai khuyenMai) {
