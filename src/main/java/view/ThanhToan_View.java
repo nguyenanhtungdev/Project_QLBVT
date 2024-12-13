@@ -566,6 +566,7 @@ public class ThanhToan_View extends View {
 		btn_XemTruoc.setPreferredSize(new Dimension(135, 40));
 		btn_XemTruoc.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
 		panel_2.add(btn_XemTruoc);
+		btn_XemTruoc.setVisible(false);
 		
 		btn_ThuTien = new PrimaryButton("Thu tiền", "/Image/file-check.png");
 		btn_ThuTien.setFont(new Font("Arial", Font.BOLD, 18));

@@ -2,6 +2,12 @@ package controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -9,6 +15,7 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 import model.NhanVien;
 import model.NhanVien_DAO;
@@ -16,7 +23,7 @@ import view.DangXuat_View;
 import view.ThongTinCaNhan_View;
 import view.View;
 
-public class CaiDat_Controller implements ActionListener {
+public class CaiDat_Controller implements ActionListener, MouseListener, FocusListener, KeyListener {
 
 	private static CaiDat_Controller instance;
 	private ArrayList<View> pageList = new ArrayList<View>();
@@ -52,10 +59,11 @@ public class CaiDat_Controller implements ActionListener {
 		this.dangXuat_View = new DangXuat_View("Đăng xuất", "/Image/exit.png");
 		addView();
 		themSuKienTTCN();
+		themThongTinInput(HienThi_Controller.getInstance().getTaiKhoan().getNhanVien());
 	}
 
 	private void themSuKienTTCN() {
-		thongTinCaNhan_View.addSuKienCD(this);
+		thongTinCaNhan_View.addSuKienCD(this, this, this);
 	}
 
 	private boolean capNhatThongTinNV() {
@@ -129,10 +137,19 @@ public class CaiDat_Controller implements ActionListener {
 		thongTinCaNhan_View.getTxt_HoTen().setText(nhanVien.getHoTenNV());
 		thongTinCaNhan_View.getTxt_CCCD().setText(nhanVien.getCCCD());
 		thongTinCaNhan_View.getTxt_Email().setText(nhanVien.getEmail());
-//		thongTinCaNhan_View.getTxt_NgaySinh().setText(null);
+		thongTinCaNhan_View.getTxt_NgaySinh().setText(formatter.format(LocalDate.parse(nhanVien.getNgaySinh().toString())));
 		thongTinCaNhan_View.getTxt_SDT().setText(nhanVien.getSoDienThoai());
-//		thongTinCaNhan_View.getComboBox_GioiTinh()
+		thongTinCaNhan_View.getComboBox_GioiTinh().setSelectedItem(nhanVien.isGioiTinh() ? "Nam" : "Nữ");
 		thongTinCaNhan_View.getTxt_ChucVu().setText(nhanVien.getTenChucVu());
+	}
+	
+	public void xoaTrangInput() {
+		thongTinCaNhan_View.getTxt_HoTen().setText("");;
+		thongTinCaNhan_View.getTxt_CCCD().setText("");;
+		thongTinCaNhan_View.getTxt_Email().setText("");
+		thongTinCaNhan_View.getTxt_NgaySinh().setText("");
+		thongTinCaNhan_View.getTxt_SDT().setText("");
+		thongTinCaNhan_View.getComboBox_GioiTinh().setSelectedIndex(0);
 	}
 
 	@Override
@@ -161,8 +178,93 @@ public class CaiDat_Controller implements ActionListener {
 			thongTinCaNhan_View.getBtnHuyBo().setVisible(false);
 			thongTinCaNhan_View.getBtnCapNhat().setVisible(true);
 			khoaInput();
+			xoaTrangInput();
+			themThongTinInput(HienThi_Controller.getInstance().getTaiKhoan().getNhanVien());
 		}
 
 	}
 
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		Object obj = e.getSource();
+		if (obj.equals(thongTinCaNhan_View.getTxt_NgaySinh())) {
+			JTextField txtNgaySinh = thongTinCaNhan_View.getTxt_NgaySinh();
+			String text = txtNgaySinh.getText().replaceAll("[^0-9/]", "");
+			int length = text.length();
+
+			if (length == 2 || length == 5) {
+				if (length < txtNgaySinh.getText().length()) {
+					txtNgaySinh.setText(text);
+				} else {
+					txtNgaySinh.setText(text + "/");
+				}
+			} else if (length > 10) {
+				txtNgaySinh.setText(text.substring(0, 10));
+			}
+		}
+	}
+
+	@Override
+	public void focusGained(FocusEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		// TODO Auto-generated method stub
+		Object obj = e.getSource();
+		if (obj.equals(thongTinCaNhan_View.getTxt_NgaySinh())) {
+			JTextField txtNgaySinh = thongTinCaNhan_View.getTxt_NgaySinh();
+			String text = txtNgaySinh.getText().trim();
+			if (!text.matches("\\d{2}/\\d{2}/\\d{4}")) {
+				JOptionPane.showMessageDialog(null, "Ngày sinh không hợp lệ! Vui lòng nhập theo định dạng dd/MM/yyyy.",
+						"Lỗi", JOptionPane.ERROR_MESSAGE);
+				txtNgaySinh.requestFocus();
+			}
+		}
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
+
+	}
 }

@@ -14,6 +14,8 @@ import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyListener;
 import java.awt.FlowLayout;
 import javax.swing.JTextField;
 import java.awt.Insets;
@@ -50,10 +52,12 @@ public class ThongTinCaNhan_View extends View {
 	private JComboBox comboBox_GioiTinh;
 	private PrimaryButton btnHuyBo;
 
-	public void addSuKienCD(ActionListener actionListener) {
+	public void addSuKienCD(ActionListener actionListener, FocusListener focusListener, KeyListener keyListener) {
 		btnCapNhat.addActionListener(actionListener);
 		btnHoanThanh.addActionListener(actionListener);
 		btnHuyBo.addActionListener(actionListener);
+		txt_NgaySinh.addFocusListener(focusListener);
+		txt_NgaySinh.addKeyListener(keyListener);
 	}
 
 	public ThongTinCaNhan_View(String name, String imagePath) {

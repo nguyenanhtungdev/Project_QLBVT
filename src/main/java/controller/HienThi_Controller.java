@@ -99,6 +99,8 @@ public class HienThi_Controller {
 		} else {
 			homeView.showView("Home");
 		}
+		
+		homeView.setNhanVien(taiKhoan.getNhanVien());
 	}
 
 	public void showView() {

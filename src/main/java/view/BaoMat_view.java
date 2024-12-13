@@ -6,6 +6,7 @@ import javax.swing.border.EmptyBorder;
 import other.RoundedPanel;
 import other.PrimaryButton;
 import other.RoundPassField;
+import java.awt.BorderLayout;
 
 public class BaoMat_view extends JFrame {
 	private static final long serialVersionUID = 1L;

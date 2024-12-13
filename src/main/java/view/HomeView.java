@@ -11,6 +11,7 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import constant.ColorConstants;
+import model.NhanVien;
 
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
@@ -21,6 +22,7 @@ import java.awt.Image;
 import java.awt.Panel;
 
 import javax.swing.JLabel;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.MouseEvent;
@@ -51,6 +53,7 @@ public class HomeView extends JFrame implements MouseListener {
 	private JPanel content_right;
 	private JPanel content_left;
 	private Panel demo;
+	private NhanVien nhanVien;
 
 	public JLabel getLbl_BanVe() {
 		return lbl_BanVe;
@@ -58,6 +61,16 @@ public class HomeView extends JFrame implements MouseListener {
 
 	public JLabel getLbl_TimKiemChuyenTau() {
 		return lbl_TimKiemChuyenTau;
+	}
+
+	public NhanVien getNhanVien() {
+		return nhanVien;
+	}
+
+	public void setNhanVien(NhanVien nhanVien) {
+		this.nhanVien = nhanVien;
+		lbl_MaNhanVien.setText(nhanVien.getMaNV());
+		lbl_TenNhanVien.setText(nhanVien.getHoTenNV());
 	}
 
 	public JLabel getLbl_QuanLy() {
@@ -143,7 +156,7 @@ public class HomeView extends JFrame implements MouseListener {
 		panel_2.add(panel_3);
 		panel_3.setLayout(new FlowLayout(FlowLayout.CENTER, 2, 3));
 
-		lbl_TenNhanVien = new JLabel("Nguyễn Anh Tùng");
+		lbl_TenNhanVien = new JLabel("");
 		lbl_TenNhanVien.setForeground(ColorConstants.TEXT_COLOR);
 		lbl_TenNhanVien.setFont(new Font("Arial", Font.BOLD, 17));
 		panel_3.add(lbl_TenNhanVien);
@@ -153,7 +166,7 @@ public class HomeView extends JFrame implements MouseListener {
 		panel_2.add(panel_4);
 		panel_4.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 2));
 
-		lbl_MaNhanVien = new JLabel("NV00001");
+		lbl_MaNhanVien = new JLabel("");
 		lbl_MaNhanVien.setForeground(ColorConstants.TEXT_COLOR);
 		lbl_MaNhanVien.setHorizontalAlignment(SwingConstants.LEFT);
 		lbl_MaNhanVien.setFont(new Font("Arial", Font.PLAIN, 16));
@@ -320,5 +333,5 @@ public class HomeView extends JFrame implements MouseListener {
 			jLabel.repaint();
 		}
 	}
-	
+
 }
