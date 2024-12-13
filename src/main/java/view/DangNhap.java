@@ -3,6 +3,7 @@ package view;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.GridLayout;
+import java.awt.Insets;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -12,6 +13,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
 import constant.ColorConstants;
+import constant.FontConstants;
 import controller.DangNhap_Controller;
 import other.PrimaryButton;
 import other.RoundedButton;
@@ -26,7 +28,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
-
 
 public class DangNhap extends JFrame {
 
@@ -44,6 +45,7 @@ public class DangNhap extends JFrame {
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+			UIManager.put("Label.font", FontConstants.TEXT);
 			DangNhap_Controller controller = new DangNhap_Controller();
 		} catch (ClassNotFoundException | InstantiationException | IllegalAccessException
 				| UnsupportedLookAndFeelException e) {
@@ -120,7 +122,6 @@ public class DangNhap extends JFrame {
 		lblMtKhu.setBounds(73, 274, 119, 27);
 		lblMtKhu.setForeground(ColorConstants.PRIMARY_COLOR);
 		panel_Right.add(lblMtKhu);
-		
 
 		JLabel lbl_DangNhap = new JLabel("ĐĂNG NHẬP");
 		lbl_DangNhap.setHorizontalAlignment(SwingConstants.CENTER);
