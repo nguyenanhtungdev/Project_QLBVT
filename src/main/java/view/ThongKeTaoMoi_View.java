@@ -102,8 +102,6 @@ public class ThongKeTaoMoi_View extends View {
 		pSouth.add(Box.createGlue());
 		pSouth.add(btnXemBaoCao = new PrimaryButton("Xem báo cáo"));
 
-		btnXoaRong.addActionListener(e -> onBtnXoaRong());
-
 		resizeComponents();
 
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -202,6 +200,10 @@ public class ThongKeTaoMoi_View extends View {
 		pVeTauStatus.getButton().addActionListener(e -> callback.run());
 	}
 
+	public void addBtnXoaRongCallback(Runnable callback) {
+		btnXoaRong.addActionListener(e -> callback.run());
+	}
+
 	public void addBtnXemBaoCaoCallback(Runnable callback) {
 		btnXemBaoCao.addActionListener(e -> callback.run());
 	}
@@ -268,23 +270,6 @@ public class ThongKeTaoMoi_View extends View {
 
 	public ThongKeTimePanel getThoiGianTimeSelector() {
 		return pThoiGianTime;
-	}
-
-	private void onBtnXoaRong() {
-		pKhachHangSelector.getTextField().setText("");
-		pKhachHangCategory.getTextField().setText("");
-		pNhanVienSelector.getTextField().setText("");
-		pCaLamSelector.getTextField().setText("");
-		pKhuyenMaiSelector.getTextField().setText("");
-		pChuyenTauSelector.getTextField().setText("");
-		pTauSelector.getTextField().setText("");
-		pToaTauSelector.getTextField().setText("");
-		pGheTauSelector.getTextField().setText("");
-		pVeTauStatus.getTextField().setText("");
-		pThoiGianDate.getTextFieldTuNgay().setDate(null);
-		pThoiGianDate.getTextFieldfDenNgay().setDate(null);
-		pThoiGianTime.getChooserTuLuc().setTime(null);
-		pThoiGianTime.getChooserDenLuc().setTime(null);
 	}
 
 }

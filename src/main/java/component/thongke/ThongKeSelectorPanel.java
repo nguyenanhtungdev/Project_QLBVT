@@ -25,13 +25,24 @@ public class ThongKeSelectorPanel extends TrainPanel {
 
 		add(label = new JLabel(title));
 		add(Box.createHorizontalStrut(8));
-		add(textField = new JTextField(50));
+		add(textField = createTextField());
 		add(Box.createHorizontalStrut(8));
 		add(button = new PrimaryButton("Chọn"));
 
 		textField.setFocusable(false);
 		textField.setEditable(false);
 		textField.setMaximumSize(new Dimension(Integer.MAX_VALUE, textField.getPreferredSize().height));
+	}
+
+	private JTextField createTextField() {
+		return new JTextField(50) {
+			private static final long serialVersionUID = -3557557592076443256L;
+
+			@Override
+			public Insets getInsets() {
+				return new Insets(8, 12, 8, 12);
+			}
+		};
 	}
 
 	public void addBtnSelectorListener(ActionListener listener) {

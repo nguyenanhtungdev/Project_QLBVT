@@ -105,7 +105,7 @@ public class ThongKeTongQuan_View extends View implements Printable {
 		if (data.getTarget() instanceof CaLam caLam) {
 			LocalTime start = caLam.getThoiGianBatDau();
 			LocalTime end = caLam.getThoiGianKetThuc();
-			tToday.setText("Tổng quan trong ca làm việc (" + start.format(ThongKe_Controller.FMT_TIME) + " - "
+			tToday.setText("Tổng quan trong ca làm việc (từ " + start.format(ThongKe_Controller.FMT_TIME) + " đến "
 					+ end.format(ThongKe_Controller.FMT_TIME) + " ngày " + today + ")");
 		} else {
 			tToday.setText("Tổng quan hôm nay (" + today + ")");
@@ -121,14 +121,19 @@ public class ThongKeTongQuan_View extends View implements Printable {
 	public void loadHourStatistic(List<StatisticData> data, LocalTime from, LocalTime to) {
 		clearCharts();
 
+		lcDoanhThu.getChart().setTitle("Doanh thu trong ca làm việc");
+		lcHoaDon.getChart().setTitle("Số lượng hóa đơn trong ca làm việc");
+		lcVeBan.getChart().setTitle("Số lượng vé bán ra trong ca làm việc");
+		lcVeHuy.getChart().setTitle("Số lượng vé được hủy trong ca làm việc");
+
 		String strFrom = from.format(ThongKe_Controller.FMT_TIME);
 		String strTo = to.format(ThongKe_Controller.FMT_TIME);
 
-		Title title = new TextTitle("Từ lúc " + strFrom + " đến lúc " + strTo, FontConstants.CAPTION);
-		lcDoanhThu.getChart().addSubtitle(title);
-		lcHoaDon.getChart().addSubtitle(title);
-		lcVeBan.getChart().addSubtitle(title);
-		lcVeHuy.getChart().addSubtitle(title);
+		Title subTitle = new TextTitle("Từ lúc " + strFrom + " đến lúc " + strTo, FontConstants.CAPTION);
+		lcDoanhThu.getChart().addSubtitle(subTitle);
+		lcHoaDon.getChart().addSubtitle(subTitle);
+		lcVeBan.getChart().addSubtitle(subTitle);
+		lcVeHuy.getChart().addSubtitle(subTitle);
 
 		lcDoanhThu.getChart().getCategoryPlot().getDomainAxis().setLabel("Giờ");
 		lcHoaDon.getChart().getCategoryPlot().getDomainAxis().setLabel("Giờ");
@@ -141,7 +146,7 @@ public class ThongKeTongQuan_View extends View implements Printable {
 
 		int index = 0;
 		LocalTime current = from;
-		while (current.isBefore(to) && current.isBefore(LocalTime.now())) {
+		while (current.isBefore(to)) {
 			String strCurrent = current.format(ThongKe_Controller.FMT_TIME);
 			if (index < data.size() && data.get(index).getTarget().equals(current)) {
 				StatisticData currentData = data.get(index);
@@ -163,6 +168,11 @@ public class ThongKeTongQuan_View extends View implements Printable {
 
 	public void loadWeekStatistic(List<StatisticData> data, LocalDate from, LocalDate to) {
 		clearCharts();
+
+		lcDoanhThu.getChart().setTitle("Doanh thu theo ngày");
+		lcHoaDon.getChart().setTitle("Số lượng hóa đơn theo ngày");
+		lcVeBan.getChart().setTitle("Số lượng vé bán ra theo ngày");
+		lcVeHuy.getChart().setTitle("Số lượng vé được hủy theo ngày");
 
 		String strFrom = from.format(ThongKe_Controller.FMT_DATE);
 		String strTo = to.format(ThongKe_Controller.FMT_DATE);

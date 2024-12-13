@@ -43,15 +43,15 @@ public class ThongKeTimeChooser extends TrainPanel {
 	public ThongKeTimeChooser() {
 		setLayout(new FlowLayout(FlowLayout.LEADING, 0, 0));
 
-		add(cbHour = new JComboBox<>());
+		add(cbHour = createComboBox());
 		add(Box.createHorizontalStrut(4));
 		add(new JLabel(":"));
 		add(Box.createHorizontalStrut(4));
-		add(cbMinute = new JComboBox<>());
+		add(cbMinute = createComboBox());
 		add(Box.createHorizontalStrut(4));
 		add(new JLabel(":"));
 		add(Box.createHorizontalStrut(4));
-		add(cnSecond = new JComboBox<>());
+		add(cnSecond = createComboBox());
 
 		cbHour.addItem("--");
 		cbMinute.addItem("--");
@@ -63,6 +63,19 @@ public class ThongKeTimeChooser extends TrainPanel {
 			cbMinute.addItem(i);
 		for (int i = 0; i < 60; i++)
 			cnSecond.addItem(i);
+	}
+
+	private JComboBox<Object> createComboBox() {
+		JComboBox<Object> comboBox = new JComboBox<>() {
+
+			private static final long serialVersionUID = -7507767422656111376L;
+
+			@Override
+			public Insets getInsets() {
+				return new Insets(8, 12, 8, 12);
+			}
+		};
+		return comboBox;
 	}
 
 	@Override
