@@ -106,7 +106,7 @@ public class ThongTinVe extends JFrame {
 		panelLogo = new JPanel();
 		panelLogo.setBackground(Color.WHITE);
 		lbl_Icon = new JLabel("");
-		iconLogo = new ImageIcon(getClass().getResource("/Image/logo1.png"));
+		iconLogo = new ImageIcon(getClass().getResource("/Image/Logo1.png"));
 		lbl_Icon.setPreferredSize(new Dimension(250, 70));
 		lbl_Icon.setMaximumSize(new Dimension(250, 70));
 		lbl_Icon.setIcon(new ImageIcon(iconLogo.getImage().getScaledInstance(130, 70, Image.SCALE_SMOOTH)));

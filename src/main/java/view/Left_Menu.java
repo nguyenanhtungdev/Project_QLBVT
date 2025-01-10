@@ -47,6 +47,8 @@ public class Left_Menu extends JFrame {
 								"Xác nhận", JOptionPane.YES_NO_OPTION);
 						if (confirm == JOptionPane.YES_OPTION) {
 							home.setVisible(false);
+							DangNhap dangNhap = new DangNhap();
+							dangNhap.setVisible(true);
 						}
 					}
 					home.showView(page.getName());
