@@ -33,9 +33,7 @@ public class VeTau {
 	}
 
 	public void setMaVeTau(String maVeTau) {
-		int y = Year.now().getValue();
-		String yy = String.valueOf(y).substring(2);
-		if (maVeTau != null && maVeTau.matches("^VT" + yy + "\\d{4}")) {
+		if (maVeTau != null && maVeTau.matches("^VT\\d{6}")) {
 			this.maVeTau = maVeTau;
 		} else {
 			throw new IllegalArgumentException(
