@@ -21,7 +21,7 @@ import javax.swing.JTable;
 
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import controller.ThongKe_Controller;
+import constant.FormatterConstants;
 import model.NhanVien;
 import model.Tau;
 import model.Tau.TrangThaiTau;
@@ -61,10 +61,10 @@ public class ThongKeKetQua_View extends View implements Printable {
 		add(new TrainScrollPane(pMain = new TrainPanel(new BorderLayout(), new Insets(16, 16, 16, 16))));
 
 		String createdBy = nhanVien.getHoTenNV();
-		String createdTime = LocalDateTime.now().format(ThongKe_Controller.FMT_DATETIME);
+		String createdTime = LocalDateTime.now().format(FormatterConstants.DATETIME);
 
-		String from = isBlank(f.getTuLuc()) ? "Không giới hạn" : f.getTuLuc().format(ThongKe_Controller.FMT_DATETIME);
-		String to = isBlank(f.getDenLuc()) ? "Không giới hạn" : f.getDenLuc().format(ThongKe_Controller.FMT_DATETIME);
+		String from = isBlank(f.getTuLuc()) ? "Không giới hạn" : f.getTuLuc().format(FormatterConstants.DATETIME);
+		String to = isBlank(f.getDenLuc()) ? "Không giới hạn" : f.getDenLuc().format(FormatterConstants.DATETIME);
 
 		String khachHangs = isBlank(f.getKhachHang()) ? "Tất cả khách hàng"
 				: toStream(f.getKhachHang()).map(KhachHang::getMaKhachHang).collect(Collectors.joining(", "));

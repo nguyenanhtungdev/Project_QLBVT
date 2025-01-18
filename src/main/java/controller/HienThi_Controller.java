@@ -2,10 +2,16 @@ package controller;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.swing.JPanel;
 
+import model.CaLam;
+import model.CaLam_DAO;
 import model.NhanVien;
 import model.TaiKhoan;
 import view.HomeView;
@@ -32,7 +38,7 @@ public class HienThi_Controller {
 		ArrayList<View> dsViewQuanLy = QuanLy_Controller.getInstance().getViewList();
 		ArrayList<View> dsViewThongKe = ThongKe_Controller.getInstance().getViewList();
 		ArrayList<View> dsViewCaiDat = CaiDat_Controller.getInstance().getViewList();
-		
+
 		QuanLy_Controller.getInstance().addView(taiKhoan.getNhanVien().getTenChucVu().trim());
 
 		for (View view : dsViewBanVe) {
@@ -84,7 +90,19 @@ public class HienThi_Controller {
 				} else if (obj == homeView.getLbl_ThongKe()) {
 					homeView.showView(dsViewThongKe.get(0).getName());
 					homeView.showLeft_Menu("ThongKe");
-					ThongKe_Controller.getInstance().refreshData();
+					// Xác định dữ liệu cần load
+					if (taiKhoan.getNhanVien().getTenChucVu().trim().equals("NVQL")) {
+						ThongKe_Controller.getInstance().loadManagerData();
+					} else {
+						LocalTime now = LocalTime.now();
+						Predicate<CaLam> pdDetermineCaLam = p -> (p.getThoiGianBatDau().equals(now)
+								|| p.getThoiGianBatDau().isBefore(now)) && p.getThoiGianKetThuc().isAfter(now);
+						CaLam caLam = CaLam_DAO.getInstance().getAll().stream().filter(pdDetermineCaLam).findFirst()
+								.orElse(null);
+
+						ThongKe_Controller.getInstance().loadSaleStaffData(taiKhoan.getNhanVien().getMaNV(),
+								caLam.getThoiGianBatDau(), caLam.getThoiGianKetThuc().plusSeconds(1));
+					}
 				} else if (obj == homeView.getLbl_CaiDat()) {
 					homeView.showView(dsViewCaiDat.get(0).getName());
 					homeView.showLeft_Menu("CaiDat");
@@ -99,7 +117,7 @@ public class HienThi_Controller {
 		} else {
 			homeView.showView("Home");
 		}
-		
+
 		homeView.setNhanVien(taiKhoan.getNhanVien());
 	}
 

@@ -2,7 +2,6 @@ package component.thongke;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-//import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Insets;
@@ -32,7 +31,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 
 import constant.FontConstants;
-import controller.ThongKe_Controller;
+import constant.FormatterConstants;
 import other.PrimaryButton;
 import other.TrainPanel;
 import other.TrainScrollPane;
@@ -175,11 +174,11 @@ public class ThongKeTableSelectorDialog extends JDialog {
 						|| value instanceof LocalTime) {
 
 					if (value instanceof LocalDateTime target) {
-						setText(target.format(ThongKe_Controller.FMT_DATETIME));
+						setText(target.format(FormatterConstants.DATETIME));
 					} else if (value instanceof LocalDate target) {
-						setText(target.format(ThongKe_Controller.FMT_DATE));
+						setText(target.format(FormatterConstants.DATE));
 					} else if (value instanceof LocalTime target) {
-						setText(target.format(ThongKe_Controller.FMT_TIME));
+						setText(target.format(FormatterConstants.TIME));
 					}
 
 					setHorizontalAlignment(RIGHT);

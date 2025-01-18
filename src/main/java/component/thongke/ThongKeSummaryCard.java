@@ -1,4 +1,4 @@
-package other;
+package component.thongke;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -13,7 +13,7 @@ import javax.swing.JPanel;
 import constant.ColorConstants;
 import constant.FontConstants;
 
-public class TrainStatisticCard extends JPanel {
+public class ThongKeSummaryCard extends JPanel {
 
 	private static final long serialVersionUID = -2454984566733070396L;
 
@@ -21,18 +21,18 @@ public class TrainStatisticCard extends JPanel {
 	private JLabel lValue;
 	private JLabel lChanges;
 
-	public TrainStatisticCard(String name) {
+	public ThongKeSummaryCard(String name) {
 		init();
 		lName.setText(name);
 	}
 
-	public TrainStatisticCard(String name, String value) {
+	public ThongKeSummaryCard(String name, String value) {
 		init();
 		lName.setText(name);
 		lValue.setText(value);
 	}
 
-	public TrainStatisticCard(String name, String value, String changes) {
+	public ThongKeSummaryCard(String name, String value, String changes) {
 		init();
 		lName.setText(name);
 		lValue.setText(value);

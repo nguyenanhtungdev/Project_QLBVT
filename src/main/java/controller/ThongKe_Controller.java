@@ -1,19 +1,19 @@
 package controller;
 
-import java.text.NumberFormat;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -59,11 +59,6 @@ public class ThongKe_Controller {
 	public static ThongKe_Controller getInstance() {
 		return instance == null ? instance = new ThongKe_Controller() : instance;
 	}
-
-	public static final NumberFormat FMT_MONEY = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-	public static final DateTimeFormatter FMT_DATETIME = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
-	public static final DateTimeFormatter FMT_DATE = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-	public static final DateTimeFormatter FMT_TIME = DateTimeFormatter.ofPattern("HH:mm:ss");
 
 	private ArrayList<View> viewList;
 	private ThongKeTongQuan_View tongQuanView;
@@ -331,131 +326,135 @@ public class ThongKe_Controller {
 		ketQuaView.addChart(dataset4, "Số lượng vé đã hủy theo " + groupBy.toLowerCase(), groupBy, "Số vé hủy", type);
 	}
 
-	public void refreshData() {
-		ThongKeFilters f = new ThongKeFilters();
+	public void loadManagerData() {
+		LocalDate today = LocalDate.now();
 
-		if (HienThi_Controller.getInstance().getTaiKhoan().getNhanVien().getTenChucVu().trim().equals("NVQL")) {
-			f.setTuLuc(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(7));
-			f.setDenLuc(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).minusDays(1));
-
-			LocalDate from = f.getTuLuc().toLocalDate();
-			LocalDate to = f.getDenLuc().toLocalDate();
-			tongQuanView.loadWeekStatistic(createStatisticDataGroupByDate(f), from, to);
-			tongQuanView.loadSummary(createSummaryStatisticData(null));
+		// Tổng quan trong TUẦN dành cho Nhân viên Quản lý
+		LocalDate fromDate = today.minusDays(7);
+		LocalDate toDate = today.minusDays(1);
+		Predicate<HoaDon> pdHoaDonInWeek = p -> p.getNgayLapHoaDon().toLocalDate().isAfter(fromDate)
+				&& (p.getNgayLapHoaDon().toLocalDate().isBefore(toDate)
+						|| p.getNgayLapHoaDon().toLocalDate().isEqual(toDate));
+		Stream<HoaDon> hoaDonInWeek = HoaDon_DAO.getInstance().getAll().stream().filter(pdHoaDonInWeek);
+		List<String> maHoaDonInWeek = hoaDonInWeek.map(HoaDon::getMaHoaDon).toList();
+		if (maHoaDonInWeek.isEmpty()) {
+			tongQuanView.setWeekData(null, fromDate, toDate);
 		} else {
-			List<CaLam> caLams = CaLam_DAO.getInstance().getAll();
-			CaLam caLam = caLams.stream().filter(p -> {
-				LocalTime now = LocalTime.now().truncatedTo(ChronoUnit.HOURS);
-				return p.getThoiGianBatDau().equals(now)
-						|| (p.getThoiGianBatDau().isBefore(now) && p.getThoiGianKetThuc().isAfter(now));
-			}).findFirst().orElse(null);
+			List<ChiTiet_HoaDon> chiTietInWeek = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDonInWeek);
+			Map<LocalDate, List<ChiTiet_HoaDon>> chiTietGroupByDate = chiTietInWeek.stream()
+					.collect(Collectors.groupingBy(m -> m.getHoaDon().getNgayLapHoaDon().toLocalDate(), TreeMap::new,
+							Collectors.toList()));
 
-			if (caLam == null) {
-				JOptionPane.showMessageDialog(tongQuanView, "Không tìm thấy ca làm hiện tại của người dùng",
-						"Lỗi dữ liệu", JOptionPane.ERROR_MESSAGE);
-				return;
+			// Điền vào các dữ liệu bị trống
+			Period period = Period.between(fromDate, toDate);
+			for (int i = 0; i <= period.getDays(); i++) {
+				LocalDate date = fromDate.plusDays(i);
+				chiTietGroupByDate.putIfAbsent(date, new ArrayList<ChiTiet_HoaDon>());
 			}
 
-			f.setTuLuc(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).with(caLam.getThoiGianBatDau()));
-			f.setDenLuc(LocalDateTime.now().truncatedTo(ChronoUnit.DAYS).with(caLam.getThoiGianKetThuc()));
-			f.setNhanVien(new NhanVien[] { HienThi_Controller.getInstance().getTaiKhoan().getNhanVien() });
+			List<StatisticData> dataInWeek = new ArrayList<StatisticData>();
+			chiTietGroupByDate.forEach((date, listChiTiet) -> {
+				double doanhThu = listChiTiet.stream()
+						.map(ct -> ct.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe().getGiaVe())
+						.collect(Collectors.summingDouble(Double::doubleValue));
+				long slHoaDon = listChiTiet.stream().map(chiTiet -> chiTiet.getHoaDon()).distinct().count();
+				long slVeBan = listChiTiet.size();
+				long slVeHuy = listChiTiet.stream().filter(chiTiet -> chiTiet.getVeTau().isDaHuy()).count();
+				long slKhuyenMai = listChiTiet.stream().map(chiTiet -> chiTiet.getKhuyenMai()).count();
 
-			tongQuanView.loadHourStatistic(createStatisticDataGroupByHour(f), caLam.getThoiGianBatDau(),
-					caLam.getThoiGianKetThuc());
-			tongQuanView.loadSummary(createSummaryStatisticData(caLam));
-		}
-	}
+				dataInWeek.add(new StatisticData(date, doanhThu, slHoaDon, slVeBan, slVeHuy, slKhuyenMai));
+			});
 
-	private StatisticData createSummaryStatisticData(CaLam caLam) {
-		LocalDateTime start = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
-		LocalDateTime end = start.plusDays(1).minusSeconds(1);
-		NhanVien[] nhanViens = null;
-
-		if (caLam != null) {
-			start = start.with(caLam.getThoiGianBatDau());
-			end = end.with(caLam.getThoiGianKetThuc());
-			nhanViens = new NhanVien[] { HienThi_Controller.getInstance().getTaiKhoan().getNhanVien() };
+			tongQuanView.setWeekData(dataInWeek, fromDate, toDate);
 		}
 
-		List<HoaDon> hoaDons = HoaDon_DAO.getInstance().getByFilters(start, end, null, nhanViens);
-		List<String> maHoaDons = hoaDons.stream().map(HoaDon::getMaHoaDon).toList();
-		if (maHoaDons.isEmpty()) {
-			return new StatisticData(caLam == null ? start : caLam, 0, 0, 0, 0, 0);
-		}
-
-		List<ChiTiet_HoaDon> chiTiets = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDons);
-		double doanhThu = chiTiets.stream()
-				.map(ct -> ct.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe().getGiaVe())
-				.collect(Collectors.summingDouble(Double::doubleValue));
-		long soLuongHoaDon = chiTiets.stream().map(ct -> ct.getHoaDon()).distinct().count();
-		long soLuongVeBan = chiTiets.size();
-		long soLuongVeHuy = chiTiets.stream().filter(ct -> ct.getVeTau().isDaHuy()).count();
-		long soLuongKhuyenMai = chiTiets.stream().map(ct -> ct.getKhuyenMai()).count();
-
-		return new StatisticData(caLam == null ? start : caLam, doanhThu, soLuongHoaDon, soLuongVeBan, soLuongVeHuy,
-				soLuongKhuyenMai);
-	}
-
-	private List<StatisticData> createStatisticDataGroupByDate(ThongKeFilters f) {
-		LocalDateTime from = f.getTuLuc();
-		LocalDateTime to = f.getDenLuc();
-		List<HoaDon> hoaDons = HoaDon_DAO.getInstance().getByFilters(from, to, f.getKhachHang(), f.getNhanVien());
-		List<String> maHoaDons = hoaDons.stream().map(HoaDon::getMaHoaDon).toList();
-		if (maHoaDons.isEmpty()) {
-			return null;
-		}
-
-		List<ChiTiet_HoaDon> chiTiets = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDons);
-		Map<Object, List<ChiTiet_HoaDon>> map = chiTiets.stream()
-				.collect(Collectors.groupingBy(
-						m -> m.getHoaDon().getNgayLapHoaDon().truncatedTo(ChronoUnit.DAYS).toLocalDate(), TreeMap::new,
-						Collectors.toList()));
-
-		return map.entrySet().stream().map(pair -> {
-			List<ChiTiet_HoaDon> list = pair.getValue();
-
-			double doanhThu = list.stream()
+		// Tổng quan trong NGÀY dành cho Nhân viên Quản lý
+		Predicate<HoaDon> pdHoaDonInDay = p -> p.getNgayLapHoaDon().toLocalDate().equals(today);
+		Stream<HoaDon> hoaDonInDay = HoaDon_DAO.getInstance().getAll().stream().filter(pdHoaDonInDay);
+		List<String> maHoaDonInDay = hoaDonInDay.map(HoaDon::getMaHoaDon).toList();
+		if (maHoaDonInDay.isEmpty()) {
+			tongQuanView.setManagerSummaryData(new StatisticData(today, 0, 0, 0, 0, 0));
+		} else {
+			List<ChiTiet_HoaDon> chiTietInDay = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDonInDay);
+			double doanhThu = chiTietInDay.stream()
 					.map(ct -> ct.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe().getGiaVe())
 					.collect(Collectors.summingDouble(Double::doubleValue));
-			long soLuongHoaDon = list.stream().map(m1 -> m1.getHoaDon()).distinct().count();
-			long soLuongVeBan = list.size();
-			long soLuongVeHuy = list.stream().filter(p -> p.getVeTau().isDaHuy()).count();
-			long soLuongKhuyenMai = list.stream().map(ct -> ct.getKhuyenMai()).count();
+			long slHoaDon = chiTietInDay.stream().map(chiTiet -> chiTiet.getHoaDon()).distinct().count();
+			long slVeBan = chiTietInDay.size();
+			long slVeHuy = chiTietInDay.stream().filter(chiTiet -> chiTiet.getVeTau().isDaHuy()).count();
+			long slKhuyenMai = chiTietInDay.stream().map(chiTiet -> chiTiet.getKhuyenMai()).count();
 
-			return new StatisticData(pair.getKey(), doanhThu, soLuongHoaDon, soLuongVeBan, soLuongVeHuy,
-					soLuongKhuyenMai);
-		}).toList();
+			tongQuanView
+					.setManagerSummaryData(new StatisticData(today, doanhThu, slHoaDon, slVeBan, slVeHuy, slKhuyenMai));
+		}
 	}
 
-	private List<StatisticData> createStatisticDataGroupByHour(ThongKeFilters f) {
-		LocalDateTime from = f.getTuLuc();
-		LocalDateTime to = f.getDenLuc();
-		List<HoaDon> hoaDons = HoaDon_DAO.getInstance().getByFilters(from, to, f.getKhachHang(), f.getNhanVien());
-		List<String> maHoaDons = hoaDons.stream().map(HoaDon::getMaHoaDon).toList();
-		if (maHoaDons.isEmpty()) {
-			return null;
+	public void loadSaleStaffData(String maNV, LocalTime fromTime, LocalTime toTime) {
+		LocalDateTime today = LocalDateTime.now();
+//		LocalDateTime today = LocalDateTime.of(2025, 1, 14, 0, 0, 0); // TEST NHA ĐỪNG CÓ UNCOMMENT
+
+		// Tổng quan trong ca theo giờ dành cho Nhân viên Bán vé
+		LocalDateTime fromDateTime = today.with(fromTime);
+		LocalDateTime toDateTime = today.with(toTime);
+		Predicate<HoaDon> pdHoaDonInShift = p -> p.getNgayLapHoaDon().isAfter(fromDateTime)
+				&& p.getNgayLapHoaDon().isBefore(toDateTime);
+		Stream<HoaDon> hoaDonInShiftByHour = HoaDon_DAO.getInstance().getAll().stream().filter(pdHoaDonInShift);
+		List<String> maHoaDonInShiftByHour = hoaDonInShiftByHour.map(HoaDon::getMaHoaDon).toList();
+		if (maHoaDonInShiftByHour.isEmpty()) {
+			tongQuanView.setHourData(null, fromTime, toTime);
+		} else {
+			List<ChiTiet_HoaDon> chiTietInShiftByHour = ChiTiet_HoaDon_DAO.getInstance()
+					.getByMaHoaDon(maHoaDonInShiftByHour);
+			Map<LocalTime, List<ChiTiet_HoaDon>> chiTietGroupByHour = chiTietInShiftByHour.stream()
+					.collect(Collectors.groupingBy(
+							m -> m.getHoaDon().getNgayLapHoaDon().toLocalTime().truncatedTo(ChronoUnit.HOURS),
+							TreeMap::new, Collectors.toList()));
+
+			// Điền vào các dữ liệu bị trống
+			Duration duration = Duration.between(fromTime, toTime);
+			for (int i = 0; i <= duration.toHours(); i++) {
+				LocalTime time = LocalTime.of(i, 0, 0);
+				chiTietGroupByHour.putIfAbsent(time, new ArrayList<ChiTiet_HoaDon>());
+			}
+
+			List<StatisticData> dataInShiftByHour = new ArrayList<StatisticData>();
+			chiTietGroupByHour.forEach((date, listChiTiet) -> {
+				double doanhThu = listChiTiet.stream()
+						.map(ct -> ct.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe().getGiaVe())
+						.collect(Collectors.summingDouble(Double::doubleValue));
+				long slHoaDon = listChiTiet.stream().map(chiTiet -> chiTiet.getHoaDon()).distinct().count();
+				long slVeBan = listChiTiet.size();
+				long slVeHuy = listChiTiet.stream().filter(chiTiet -> chiTiet.getVeTau().isDaHuy()).count();
+				long slKhuyenMai = listChiTiet.stream().map(chiTiet -> chiTiet.getKhuyenMai()).count();
+
+				dataInShiftByHour.add(new StatisticData(date, doanhThu, slHoaDon, slVeBan, slVeHuy, slKhuyenMai));
+			});
+			tongQuanView.setHourData(dataInShiftByHour, fromTime, toTime);
 		}
 
-		List<ChiTiet_HoaDon> chiTiets = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDons);
-		Map<Object, List<ChiTiet_HoaDon>> map = chiTiets.stream()
-				.collect(Collectors.groupingBy(
-						m -> m.getHoaDon().getNgayLapHoaDon().truncatedTo(ChronoUnit.HOURS).toLocalTime(), TreeMap::new,
-						Collectors.toList()));
-
-		return map.entrySet().stream().map(pair -> {
-			List<ChiTiet_HoaDon> list = pair.getValue();
-
-			double sumDoanhThu = list.stream()
+//		Tổng quan trong ca dành cho Nhân viên Bán vé
+		Predicate<HoaDon> pHoaDonInDay = p -> p.getNgayLapHoaDon().toLocalDate().equals(today.toLocalDate());
+		Predicate<HoaDon> pHoaDonTheoNhanVien = p -> p.getNhanVien().getMaNV().equals(maNV);
+		Predicate<HoaDon> pHoaDonTheoCaLam = p -> p.getNgayLapHoaDon().toLocalTime().isAfter(fromTime)
+				&& p.getNgayLapHoaDon().toLocalTime().isBefore(toTime);
+		Stream<HoaDon> hoaDonInShift = HoaDon_DAO.getInstance().getAll().stream().filter(pHoaDonInDay)
+				.filter(pHoaDonTheoNhanVien).filter(pHoaDonTheoCaLam);
+		List<String> maHoaDonInShift = hoaDonInShift.map(HoaDon::getMaHoaDon).toList();
+		if (maHoaDonInShift.isEmpty()) {
+			tongQuanView.setSaleStaffSummaryData(new StatisticData(today, 0, 0, 0, 0, 0), fromTime, toTime);
+		} else {
+			List<ChiTiet_HoaDon> chiTietInShift = ChiTiet_HoaDon_DAO.getInstance().getByMaHoaDon(maHoaDonInShift);
+			double doanhThu = chiTietInShift.stream()
 					.map(ct -> ct.getVeTau().getGheTau().getToaTau().getTau().getChuyenTau().getGiaVe().getGiaVe())
 					.collect(Collectors.summingDouble(Double::doubleValue));
-			long soLuongHoaDon = list.stream().map(m1 -> m1.getHoaDon()).distinct().count();
-			long soLuongVeBan = list.size();
-			long soLuongVeHuy = list.stream().filter(p -> p.getVeTau().isDaHuy()).count();
-			long soLuongKhuyenMai = list.stream().map(ct -> ct.getKhuyenMai()).count();
+			long slHoaDon = chiTietInShift.stream().map(chiTiet -> chiTiet.getHoaDon()).distinct().count();
+			long slVeBan = chiTietInShift.size();
+			long slVeHuy = chiTietInShift.stream().filter(chiTiet -> chiTiet.getVeTau().isDaHuy()).count();
+			long slKhuyenMai = chiTietInShift.stream().map(chiTiet -> chiTiet.getKhuyenMai()).count();
 
-			return new StatisticData(pair.getKey(), sumDoanhThu, soLuongHoaDon, soLuongVeBan, soLuongVeHuy,
-					soLuongKhuyenMai);
-		}).toList();
+			tongQuanView.setSaleStaffSummaryData(
+					new StatisticData(today, doanhThu, slHoaDon, slVeBan, slVeHuy, slKhuyenMai), fromTime, toTime);
+		}
 
 	}
 
@@ -778,6 +777,21 @@ public class ThongKe_Controller {
 			viewList.add(taoMoiView);
 		}
 		return viewList;
+	}
+
+	public ArrayList<View> getViewList(boolean isManager) {
+		viewList = new ArrayList<>();
+		viewList.add(tongQuanView);
+		if (isManager) {
+			viewList.add(taoMoiView);
+		}
+		return viewList;
+	}
+
+	public static void main(String[] args) {
+		ThongKe_Controller.getInstance().getViewList(true).get(0).setVisible(true);
+		ThongKe_Controller.getInstance().loadManagerData();
+//		ThongKe_Controller.getInstance().loadSaleStaffData("NV00001", LocalTime.of(9, 0), LocalTime.of(12, 0));
 	}
 
 }

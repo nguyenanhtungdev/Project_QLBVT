@@ -4,12 +4,17 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import constant.ColorConstants;
+import controller.HienThi_Controller;
 import controller.ThongKe_Controller;
+import model.CaLam;
+import model.CaLam_DAO;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.function.Predicate;
 
 public class Left_Menu extends JFrame {
 
@@ -55,7 +60,21 @@ public class Left_Menu extends JFrame {
 
 					// Tải lại dữ liệu khi chuyển sang view khác
 					if (page.getName().equals("Tổng quan")) {
-						ThongKe_Controller.getInstance().refreshData();
+						// Xác định dữ liệu cần load
+						if (HienThi_Controller.getInstance().getTaiKhoan().getNhanVien().getTenChucVu().trim()
+								.equals("NVQL")) {
+							ThongKe_Controller.getInstance().loadManagerData();
+						} else {
+							LocalTime now = LocalTime.now();
+							Predicate<CaLam> pdDetermineCaLam = p -> (p.getThoiGianBatDau().equals(now)
+									|| p.getThoiGianBatDau().isBefore(now)) && p.getThoiGianKetThuc().isAfter(now);
+							CaLam caLam = CaLam_DAO.getInstance().getAll().stream().filter(pdDetermineCaLam).findFirst()
+									.orElse(null);
+
+							ThongKe_Controller.getInstance().loadSaleStaffData(
+									HienThi_Controller.getInstance().getTaiKhoan().getNhanVien().getMaNV(),
+									caLam.getThoiGianBatDau(), caLam.getThoiGianKetThuc().plusSeconds(1));
+						}
 					}
 				}
 

@@ -15,20 +15,16 @@ import java.util.List;
 import javax.swing.Box;
 import javax.swing.JPanel;
 
-import org.jfree.chart.title.TextTitle;
-import org.jfree.chart.title.Title;
 import org.jfree.data.category.DefaultCategoryDataset;
 
-import constant.FontConstants;
-import controller.ThongKe_Controller;
-import model.CaLam;
+import component.thongke.ThongKeSummaryCard;
+import constant.FormatterConstants;
 import model.StatisticData;
 import other.TrainChart;
 import other.TrainPanel;
 import other.TrainScrollPane;
 import other.PrimaryButton;
 import other.RoundedButton;
-import other.TrainStatisticCard;
 import other.TrainTitle;
 import util.PrinterUtils;
 
@@ -41,23 +37,23 @@ public class ThongKeTongQuan_View extends View implements Printable {
 	private final DefaultCategoryDataset datasetVeBan = new DefaultCategoryDataset();
 	private final DefaultCategoryDataset datasetVeHuy = new DefaultCategoryDataset();
 
-	private Box pNorth;
-	private Box pSouth;
+	private Box pnNorth;
+	private Box pnSouth;
 	private RoundedButton btnIn;
 
-	private TrainTitle tToday;
-	private JPanel pCards;
-	private TrainStatisticCard cDoanhThu;
-	private TrainStatisticCard cSLHoaDon;
-	private TrainStatisticCard cSLVeBan;
-	private TrainStatisticCard cSLVeHuy;
-	private TrainStatisticCard cSLKhuyenMai;
+	private TrainTitle lbToday;
+	private JPanel pnCards;
+	private ThongKeSummaryCard cdDoanhThu;
+	private ThongKeSummaryCard cdSLHoaDon;
+	private ThongKeSummaryCard cdSLVeBan;
+	private ThongKeSummaryCard cdSLVeHuy;
+	private ThongKeSummaryCard cdSLKhuyenMai;
 
-	private TrainPanel pCenter;
-	private TrainChart lcDoanhThu;
-	private TrainChart lcHoaDon;
-	private TrainChart lcVeBan;
-	private TrainChart lcVeHuy;
+	private TrainPanel pnCenter;
+	private TrainChart chDoanhThu;
+	private TrainChart chHoaDon;
+	private TrainChart chVeBan;
+	private TrainChart chVeHuy;
 
 	public ThongKeTongQuan_View(String name, String imagePath) {
 		super(name, imagePath);
@@ -65,165 +61,145 @@ public class ThongKeTongQuan_View extends View implements Printable {
 		setContentPane(new TrainPanel(new BorderLayout(16, 16), new Insets(16, 16, 16, 16)));
 
 		// NORTH
-		add(pNorth = Box.createVerticalBox(), BorderLayout.NORTH);
-		pNorth.add(tToday = new TrainTitle("Tổng quan hôm nay (dd/MM/yyyy)"));
-		pNorth.add(Box.createVerticalStrut(8));
-		pNorth.add(new TrainScrollPane(pCards = new TrainPanel(new GridLayout(1, 0, 8, 8))));
+		add(pnNorth = Box.createVerticalBox(), BorderLayout.NORTH);
+		pnNorth.add(lbToday = new TrainTitle("Tổng quan hôm nay (dd/MM/yyyy)"));
+		pnNorth.add(Box.createVerticalStrut(8));
+		pnNorth.add(new TrainScrollPane(pnCards = new TrainPanel(new GridLayout(1, 0, 8, 8))));
 
-		pCards.add(cDoanhThu = new TrainStatisticCard("Doanh thu", "0"));
-		pCards.add(cSLHoaDon = new TrainStatisticCard("Số lượng hóa đơn", "0"));
-		pCards.add(cSLVeBan = new TrainStatisticCard("Vé bán được", "0"));
-		pCards.add(cSLVeHuy = new TrainStatisticCard("Vé đã hủy", "0"));
-		pCards.add(cSLKhuyenMai = new TrainStatisticCard("Khuyến mãi đã dùng", "0"));
+		pnCards.add(cdDoanhThu = new ThongKeSummaryCard("Doanh thu", "0"));
+		pnCards.add(cdSLHoaDon = new ThongKeSummaryCard("Số lượng hóa đơn", "0"));
+		pnCards.add(cdSLVeBan = new ThongKeSummaryCard("Vé bán được", "0"));
+		pnCards.add(cdSLVeHuy = new ThongKeSummaryCard("Vé đã hủy", "0"));
+		pnCards.add(cdSLKhuyenMai = new ThongKeSummaryCard("Khuyến mãi đã dùng", "0"));
 
 		// CENTER
-		add(pCenter = new TrainPanel(new GridLayout(2, 2, 16, 16)));
-		lcDoanhThu = TrainChart.createLineChart(datasetDoanhThu, "Doanh thu theo ngày", "Ngày", "Doanh thu (VNĐ)");
-		lcHoaDon = TrainChart.createLineChart(datasetHoaDon, "Số lượng hóa đơn theo ngày", "Ngày", "Số lượng hóa đơn");
-		lcVeBan = TrainChart.createLineChart(datasetVeBan, "Số lượng vé bán theo ngày", "Ngày", "Số lượng vé bán ra");
-		lcVeHuy = TrainChart.createLineChart(datasetVeHuy, "Số lượng vé hủy theo ngày", "Ngày", "Số lượng vé đã hủy");
+		add(pnCenter = new TrainPanel(new GridLayout(2, 2, 16, 16)));
+		chDoanhThu = TrainChart.createBarChart(datasetDoanhThu, "Doanh thu theo ngày", "", "Doanh thu (VNĐ)");
+		chHoaDon = TrainChart.createBarChart(datasetHoaDon, "Số lượng hóa đơn theo ngày", "", "Số lượng hóa đơn");
+		chVeBan = TrainChart.createBarChart(datasetVeBan, "Số lượng vé bán theo ngày", "", "Số lượng vé bán ra");
+		chVeHuy = TrainChart.createBarChart(datasetVeHuy, "Số lượng vé hủy theo ngày", "", "Số lượng vé đã hủy");
 
-		pCenter.add(lcDoanhThu.getPanel());
-		pCenter.add(lcHoaDon.getPanel());
-		pCenter.add(lcVeBan.getPanel());
-		pCenter.add(lcVeHuy.getPanel());
+		pnCenter.add(chDoanhThu.getPanel());
+		pnCenter.add(chHoaDon.getPanel());
+		pnCenter.add(chVeBan.getPanel());
+		pnCenter.add(chVeHuy.getPanel());
 
 		// SOUTH
-		add(pSouth = Box.createHorizontalBox(), BorderLayout.SOUTH);
-		pSouth.add(btnIn = new PrimaryButton("In thống kê"));
-
+		add(pnSouth = Box.createHorizontalBox(), BorderLayout.SOUTH);
+		pnSouth.add(btnIn = new PrimaryButton("In thống kê"));
 		btnIn.addActionListener(e -> PrinterUtils.print(this, "In thống kê tổng quan"));
 
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setSize(1800, 1100);
 		setExtendedState(MAXIMIZED_BOTH);
 		setLocationRelativeTo(null);
 	}
 
-	public void loadSummary(StatisticData data) {
-		String today = LocalDate.now().format(ThongKe_Controller.FMT_DATE);
-		if (data.getTarget() instanceof CaLam caLam) {
-			LocalTime start = caLam.getThoiGianBatDau();
-			LocalTime end = caLam.getThoiGianKetThuc();
-			tToday.setText("Tổng quan trong ca làm việc (từ " + start.format(ThongKe_Controller.FMT_TIME) + " đến "
-					+ end.format(ThongKe_Controller.FMT_TIME) + " ngày " + today + ")");
-		} else {
-			tToday.setText("Tổng quan hôm nay (" + today + ")");
-		}
-
-		cDoanhThu.setValueText(ThongKe_Controller.FMT_MONEY.format(data.getDoanhThu()));
-		cSLHoaDon.setValueText(Long.toString(data.getSoLuongHoaDon()));
-		cSLVeBan.setValueText(Long.toString(data.getSoLuongVeBan()));
-		cSLVeHuy.setValueText(Long.toString(data.getSoLuongVeHuy()));
-		cSLKhuyenMai.setValueText(Long.toString(data.getSoLuongKhuyenMai()));
-	}
-
-	public void loadHourStatistic(List<StatisticData> data, LocalTime from, LocalTime to) {
-		clearCharts();
-
-		lcDoanhThu.getChart().setTitle("Doanh thu trong ca làm việc");
-		lcHoaDon.getChart().setTitle("Số lượng hóa đơn trong ca làm việc");
-		lcVeBan.getChart().setTitle("Số lượng vé bán ra trong ca làm việc");
-		lcVeHuy.getChart().setTitle("Số lượng vé được hủy trong ca làm việc");
-
-		String strFrom = from.format(ThongKe_Controller.FMT_TIME);
-		String strTo = to.format(ThongKe_Controller.FMT_TIME);
-
-		Title subTitle = new TextTitle("Từ lúc " + strFrom + " đến lúc " + strTo, FontConstants.CAPTION);
-		lcDoanhThu.getChart().addSubtitle(subTitle);
-		lcHoaDon.getChart().addSubtitle(subTitle);
-		lcVeBan.getChart().addSubtitle(subTitle);
-		lcVeHuy.getChart().addSubtitle(subTitle);
-
-		lcDoanhThu.getChart().getCategoryPlot().getDomainAxis().setLabel("Giờ");
-		lcHoaDon.getChart().getCategoryPlot().getDomainAxis().setLabel("Giờ");
-		lcVeBan.getChart().getCategoryPlot().getDomainAxis().setLabel("Giờ");
-		lcVeHuy.getChart().getCategoryPlot().getDomainAxis().setLabel("Giờ");
-
-		if (data == null) {
-			return;
-		}
-
-		int index = 0;
-		LocalTime current = from;
-		while (current.isBefore(to)) {
-			String strCurrent = current.format(ThongKe_Controller.FMT_TIME);
-			if (index < data.size() && data.get(index).getTarget().equals(current)) {
-				StatisticData currentData = data.get(index);
-
-				datasetDoanhThu.addValue(currentData.getDoanhThu(), "Doanh thu", strCurrent);
-				datasetHoaDon.addValue(currentData.getSoLuongHoaDon(), "Hóa đơn", strCurrent);
-				datasetVeBan.addValue(currentData.getSoLuongVeBan(), "Vé bán", strCurrent);
-				datasetVeHuy.addValue(currentData.getSoLuongVeHuy(), "Vé hủy", strCurrent);
-				index++;
-			} else {
-				datasetDoanhThu.addValue(0, "Doanh thu", strCurrent);
-				datasetHoaDon.addValue(0, "Hóa đơn", strCurrent);
-				datasetVeBan.addValue(0, "Vé bán", strCurrent);
-				datasetVeHuy.addValue(0, "Vé hủy", strCurrent);
-			}
-			current = current.plusHours(1);
+	public void setManagerSummaryData(StatisticData data) {
+		String today = FormatterConstants.DATE.format(LocalDate.now());
+		lbToday.setText("Tổng quan hôm nay (" + today + ")");
+		if (data != null) {
+			cdDoanhThu.setValueText(FormatterConstants.MONEY.format(data.getDoanhThu()));
+			cdSLHoaDon.setValueText(Long.toString(data.getSoLuongHoaDon()));
+			cdSLVeBan.setValueText(Long.toString(data.getSoLuongVeBan()));
+			cdSLVeHuy.setValueText(Long.toString(data.getSoLuongVeHuy()));
+			cdSLKhuyenMai.setValueText(Long.toString(data.getSoLuongKhuyenMai()));
 		}
 	}
 
-	public void loadWeekStatistic(List<StatisticData> data, LocalDate from, LocalDate to) {
-		clearCharts();
+	public void setSaleStaffSummaryData(StatisticData data, LocalTime fromTime, LocalTime toTime) {
+		String strFrom = FormatterConstants.TIME.format(fromTime);
+		String strTo = FormatterConstants.TIME.format(toTime);
+		String today = FormatterConstants.DATE.format(LocalDate.now());
 
-		lcDoanhThu.getChart().setTitle("Doanh thu theo ngày");
-		lcHoaDon.getChart().setTitle("Số lượng hóa đơn theo ngày");
-		lcVeBan.getChart().setTitle("Số lượng vé bán ra theo ngày");
-		lcVeHuy.getChart().setTitle("Số lượng vé được hủy theo ngày");
-
-		String strFrom = from.format(ThongKe_Controller.FMT_DATE);
-		String strTo = to.format(ThongKe_Controller.FMT_DATE);
-
-		Title title = new TextTitle("Từ ngày " + strFrom + " đến ngày " + strTo, FontConstants.CAPTION);
-		lcDoanhThu.getChart().addSubtitle(title);
-		lcHoaDon.getChart().addSubtitle(title);
-		lcVeBan.getChart().addSubtitle(title);
-		lcVeHuy.getChart().addSubtitle(title);
-
-		lcDoanhThu.getChart().getCategoryPlot().getDomainAxis().setLabel("Ngày");
-		lcHoaDon.getChart().getCategoryPlot().getDomainAxis().setLabel("Ngày");
-		lcVeBan.getChart().getCategoryPlot().getDomainAxis().setLabel("Ngày");
-		lcVeHuy.getChart().getCategoryPlot().getDomainAxis().setLabel("Ngày");
-
-		if (data == null) {
-			return;
-		}
-
-		int index = 0;
-		LocalDate current = from;
-		while (current.isBefore(to.plusDays(1))) {
-			String strCurrent = current.format(ThongKe_Controller.FMT_DATE);
-			if (index < data.size() && data.get(index).getTarget().equals(current)) {
-				StatisticData currentData = data.get(index);
-
-				datasetDoanhThu.addValue(currentData.getDoanhThu(), "Doanh thu", strCurrent);
-				datasetHoaDon.addValue(currentData.getSoLuongHoaDon(), "Hóa đơn", strCurrent);
-				datasetVeBan.addValue(currentData.getSoLuongVeBan(), "Vé bán", strCurrent);
-				datasetVeHuy.addValue(currentData.getSoLuongVeHuy(), "Vé hủy", strCurrent);
-				index++;
-			} else {
-				datasetDoanhThu.addValue(0, "Doanh thu", strCurrent);
-				datasetHoaDon.addValue(0, "Hóa đơn", strCurrent);
-				datasetVeBan.addValue(0, "Vé bán", strCurrent);
-				datasetVeHuy.addValue(0, "Vé hủy", strCurrent);
-			}
-			current = current.plusDays(1);
+		lbToday.setText("Tổng quan trong ca làm việc (từ " + strFrom + " đến " + strTo + " ngày " + today + ")");
+		if (data != null) {
+			cdDoanhThu.setValueText(FormatterConstants.MONEY.format(data.getDoanhThu()));
+			cdSLHoaDon.setValueText(Long.toString(data.getSoLuongHoaDon()));
+			cdSLVeBan.setValueText(Long.toString(data.getSoLuongVeBan()));
+			cdSLVeHuy.setValueText(Long.toString(data.getSoLuongVeHuy()));
+			cdSLKhuyenMai.setValueText(Long.toString(data.getSoLuongKhuyenMai()));
 		}
 	}
 
-	private void clearCharts() {
+	public void setHourData(List<StatisticData> data, LocalTime fromTime, LocalTime toTime) {
+		resetCharts();
+
+		chDoanhThu.setChartTitle("Doanh thu trong ca làm việc");
+		chHoaDon.setChartTitle("Số lượng hóa đơn trong ca làm việc");
+		chVeBan.setChartTitle("Số lượng vé bán ra trong ca làm việc");
+		chVeHuy.setChartTitle("Số lượng vé được hủy trong ca làm việc");
+
+		String strFrom = fromTime.format(FormatterConstants.TIME);
+		String strTo = toTime.format(FormatterConstants.TIME);
+
+		String subtitle = "Từ lúc " + strFrom + " đến lúc " + strTo;
+		chDoanhThu.addChartSubtitle(subtitle);
+		chHoaDon.addChartSubtitle(subtitle);
+		chVeBan.addChartSubtitle(subtitle);
+		chVeHuy.addChartSubtitle(subtitle);
+
+		// Đổi label trục x thành giờ
+		chDoanhThu.setCategoryAxisLabel("Giờ");
+		chHoaDon.setCategoryAxisLabel("Giờ");
+		chVeBan.setCategoryAxisLabel("Giờ");
+		chVeHuy.setCategoryAxisLabel("Giờ");
+
+		if (data != null) {
+			data.forEach(d -> {
+				LocalTime time = (LocalTime) d.getTarget();
+				datasetDoanhThu.addValue(d.getDoanhThu(), "Doanh thu", FormatterConstants.TIME.format(time));
+				datasetHoaDon.addValue(d.getSoLuongHoaDon(), "Số lượng hóa đơn", FormatterConstants.TIME.format(time));
+				datasetVeBan.addValue(d.getSoLuongVeBan(), "Số lượng vé bán", FormatterConstants.TIME.format(time));
+				datasetVeHuy.addValue(d.getSoLuongVeHuy(), "Số lượng vé hủy", FormatterConstants.TIME.format(time));
+			});
+		}
+	}
+
+	public void setWeekData(List<StatisticData> data, LocalDate fromDate, LocalDate toDate) {
+		resetCharts();
+
+		chDoanhThu.setChartTitle("Doanh thu theo ngày");
+		chHoaDon.setChartTitle("Số lượng hóa đơn theo ngày");
+		chVeBan.setChartTitle("Số lượng vé bán ra theo ngày");
+		chVeHuy.setChartTitle("Số lượng vé được hủy theo ngày");
+
+		String strFrom = FormatterConstants.DATE.format(fromDate);
+		String strTo = FormatterConstants.DATE.format(toDate);
+
+		String subtitle = "Từ ngày " + strFrom + " đến ngày " + strTo;
+		chDoanhThu.addChartSubtitle(subtitle);
+		chHoaDon.addChartSubtitle(subtitle);
+		chVeBan.addChartSubtitle(subtitle);
+		chVeHuy.addChartSubtitle(subtitle);
+
+		// Đổi label trục x thành ngày
+		chDoanhThu.setCategoryAxisLabel("Ngày");
+		chHoaDon.setCategoryAxisLabel("Ngày");
+		chVeBan.setCategoryAxisLabel("Ngày");
+		chVeHuy.setCategoryAxisLabel("Ngày");
+
+		if (data != null) {
+			data.forEach(d -> {
+				LocalDate date = (LocalDate) d.getTarget();
+				datasetDoanhThu.addValue(d.getDoanhThu(), "Doanh thu", FormatterConstants.DATE.format(date));
+				datasetHoaDon.addValue(d.getSoLuongHoaDon(), "Số lượng hóa đơn", FormatterConstants.DATE.format(date));
+				datasetVeBan.addValue(d.getSoLuongVeBan(), "Số lượng vé bán", FormatterConstants.DATE.format(date));
+				datasetVeHuy.addValue(d.getSoLuongVeHuy(), "Số lượng vé hủy", FormatterConstants.DATE.format(date));
+			});
+		}
+	}
+
+	private void resetCharts() {
 		datasetDoanhThu.clear();
 		datasetHoaDon.clear();
 		datasetVeBan.clear();
 		datasetVeHuy.clear();
 
-		lcDoanhThu.getChart().clearSubtitles();
-		lcHoaDon.getChart().clearSubtitles();
-		lcVeBan.getChart().clearSubtitles();
-		lcVeHuy.getChart().clearSubtitles();
+		chDoanhThu.clearSubtitles();
+		chHoaDon.clearSubtitles();
+		chVeBan.clearSubtitles();
+		chVeHuy.clearSubtitles();
 	}
 
 	@Override
@@ -245,9 +221,9 @@ public class ThongKeTongQuan_View extends View implements Printable {
 
 		g2d.translate(pageFormat.getImageableX(), -pageIndex * scaledPageHeight);
 
-		pSouth.setVisible(false);
+		pnSouth.setVisible(false);
 		getContentPane().printAll(g2d);
-		pSouth.setVisible(true);
+		pnSouth.setVisible(true);
 
 		return PAGE_EXISTS;
 	}
